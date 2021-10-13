@@ -2,8 +2,8 @@ package bot
 
 import (
 	twitch "github.com/gempir/go-twitch-irc/v2"
+	"github.com/lyx0/nourybot/pkg/commands"
 	cfg "github.com/lyx0/nourybot/pkg/config"
-	"github.com/lyx0/nourybot/pkg/config/commands"
 	log "github.com/sirupsen/logrus"
 )
 
