@@ -2,7 +2,7 @@ package main
 
 import (
 	"github.com/lyx0/nourybot/cmd/bot"
-	config "github.com/lyx0/nourybot/pkg/config"
+	"github.com/lyx0/nourybot/pkg/config"
 )
 
 func main() {
@@ -11,7 +11,7 @@ func main() {
 
 	nb.Join("nourybot")
 
-	nb.Say("nourybot", "test")
+	nb.Say("nourybot", "HeyGuys")
 
 	nb.Connect()
 }
