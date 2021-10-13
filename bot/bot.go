@@ -42,3 +42,12 @@ func (b *Bot) Disconnect() error {
 
 	return err
 }
+
+func (b *Bot) Say(channel string, message string) {
+	tc := b.newTwitchClient()
+	tc.Say(channel, message)
+}
+
+func (b *Bot) OnPrivateMessage(callback func(message *twitch.PrivateMessage)) {
+	log.Info(callback)
+}
