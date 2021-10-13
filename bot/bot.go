@@ -12,17 +12,14 @@ type Bot struct {
 	log          *log.Logger
 }
 
-func NewBot(cfg *cfg.Config, log *log.Logger, twitchClient *twitch.Client) *Bot {
+func NewBot(cfg *cfg.Config, log *log.Logger) *Bot {
+
+	twitchClient := twitch.NewClient(cfg.Username, cfg.Oauth)
 	return &Bot{
 		cfg:          cfg,
 		twitchClient: twitchClient,
 		log:          log,
 	}
-}
-
-func (b *Bot) newTwitchClient() *twitch.Client {
-	twitchClient := twitch.NewClient(b.cfg.Username, b.cfg.Oauth)
-	return twitchClient
 }
 
 func (b *Bot) Connect() error {
@@ -44,8 +41,7 @@ func (b *Bot) Disconnect() error {
 }
 
 func (b *Bot) Say(channel string, message string) {
-	tc := b.newTwitchClient()
-	tc.Say(channel, message)
+	b.twitchClient.Say(channel, message)
 }
 
 func (b *Bot) OnPrivateMessage(callback func(message *twitch.PrivateMessage)) {
