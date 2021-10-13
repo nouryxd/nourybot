@@ -7,12 +7,12 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
-// HandleTwitchMessage takes in a twitch.Privatemessage and
-// *twitch.Client and has the logic to decide if the provided
+// HandlePrivateMessage takes in a twitch.Privatemessage,
+// *twitch.Client and *config.Config and has the logic to decide if the provided
 // PrivateMessage is a command or not and passes it on accordingly.
 // Typical twitch message tags https://paste.ivr.fi/nopiradodo.lua
-func HandleTwitchMessage(message twitch.PrivateMessage, client *twitch.Client, cfg *config.Config) {
-	log.Info("fn HandleTwitchMessage")
+func HandlePrivateMessage(message twitch.PrivateMessage, client *twitch.Client, cfg *config.Config) {
+	log.Info("fn HandlePrivateMessage")
 	// log.Info(message)
 
 	// roomId is the Twitch UserID of the channel the message

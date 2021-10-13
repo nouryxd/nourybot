@@ -28,7 +28,7 @@ func (b *Bot) Connect() error {
 	log.Info("fn Connect")
 	cfg := cfg.LoadConfig()
 	b.twitchClient.OnPrivateMessage(func(message twitch.PrivateMessage) {
-		handlers.HandleTwitchMessage(message, b.twitchClient, cfg)
+		handlers.HandlePrivateMessage(message, b.twitchClient, cfg)
 	})
 
 	err := b.twitchClient.Connect()
