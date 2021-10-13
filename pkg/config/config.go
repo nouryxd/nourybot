@@ -8,8 +8,9 @@ import (
 )
 
 type Config struct {
-	Username string
-	Oauth    string
+	Username  string
+	Oauth     string
+	BotUserId string
 }
 
 func LoadConfig() *Config {
@@ -19,8 +20,9 @@ func LoadConfig() *Config {
 	}
 
 	cfg := &Config{
-		Username: os.Getenv("TWITCH_USER"),
-		Oauth:    os.Getenv("TWITCH_PASS"),
+		Username:  os.Getenv("TWITCH_USER"),
+		Oauth:     os.Getenv("TWITCH_PASS"),
+		BotUserId: os.Getenv("BOT_USER_ID"),
 	}
 	log.Info("Config loaded succesfully")
 

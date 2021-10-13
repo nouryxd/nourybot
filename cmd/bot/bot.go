@@ -4,6 +4,7 @@ import (
 	twitch "github.com/gempir/go-twitch-irc/v2"
 	"github.com/lyx0/nourybot/pkg/commands"
 	cfg "github.com/lyx0/nourybot/pkg/config"
+	"github.com/lyx0/nourybot/pkg/handlers"
 	log "github.com/sirupsen/logrus"
 )
 
@@ -26,7 +27,7 @@ func NewBot(cfg *cfg.Config) *Bot {
 func (b *Bot) Connect() error {
 	log.Info("fn Connect")
 	b.twitchClient.OnPrivateMessage(func(message twitch.PrivateMessage) {
-		commands.HandleCommand(message, b.twitchClient)
+		handlers.HandleTwitchMessage(message, b.twitchClient)
 	})
 
 	err := b.twitchClient.Connect()
