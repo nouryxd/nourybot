@@ -2,7 +2,6 @@ package handlers
 
 import (
 	"github.com/gempir/go-twitch-irc/v2"
-	"github.com/lyx0/nourybot/pkg/commands"
 	"github.com/lyx0/nourybot/pkg/config"
 	log "github.com/sirupsen/logrus"
 )
@@ -39,7 +38,7 @@ func HandlePrivateMessage(message twitch.PrivateMessage, client *twitch.Client, 
 		// Message starts with (), pass it on to
 		// the command handler.
 		if message.Message[:2] == "()" {
-			commands.HandleCommand(message, client)
+			HandleCommand(message, client)
 			return
 		}
 	}
