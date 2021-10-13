@@ -25,5 +25,4 @@ func LoadConfig() *Config {
 	log.Info("Config loaded succesfully")
 
 	return cfg
-
 }
