@@ -26,8 +26,9 @@ func NewBot(cfg *cfg.Config) *Bot {
 
 func (b *Bot) Connect() error {
 	log.Info("fn Connect")
+	cfg := cfg.LoadConfig()
 	b.twitchClient.OnPrivateMessage(func(message twitch.PrivateMessage) {
-		handlers.HandleTwitchMessage(message, b.twitchClient)
+		handlers.HandleTwitchMessage(message, b.twitchClient, cfg)
 	})
 
 	err := b.twitchClient.Connect()

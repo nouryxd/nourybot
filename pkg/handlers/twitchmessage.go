@@ -3,7 +3,7 @@ package handlers
 import (
 	"github.com/gempir/go-twitch-irc/v2"
 	"github.com/lyx0/nourybot/pkg/commands"
-	config "github.com/lyx0/nourybot/pkg/config"
+	"github.com/lyx0/nourybot/pkg/config"
 	log "github.com/sirupsen/logrus"
 )
 
@@ -11,9 +11,9 @@ import (
 // *twitch.Client and has the logic to decide if the provided
 // PrivateMessage is a command or not and passes it on accordingly.
 // Typical twitch message tags https://paste.ivr.fi/nopiradodo.lua
-func HandleTwitchMessage(message twitch.PrivateMessage, client *twitch.Client) {
+func HandleTwitchMessage(message twitch.PrivateMessage, client *twitch.Client, cfg *config.Config) {
 	log.Info("fn HandleTwitchMessage")
-	log.Info(message)
+	// log.Info(message)
 
 	// roomId is the Twitch UserID of the channel the message
 	// was sent in.
@@ -27,14 +27,25 @@ func HandleTwitchMessage(message twitch.PrivateMessage, client *twitch.Client) {
 
 	// Message was sent from the Bot. Don't act on it
 	// so that we don't repeat ourself.
-	if message.Tags["user-id"] == config.LoadConfig().BotUserId {
+	botUserId := cfg.BotUserId
+	if message.Tags["user-id"] == botUserId {
 		return
 	}
 
+	// Since our command prefix is () ignore every message
+	// that is less than 2
 	if len(message.Message) >= 2 {
+
+		// Message starts with (), pass it on to
+		// the command handler.
 		if message.Message[:2] == "()" {
 			commands.HandleCommand(message, client)
+			return
 		}
 	}
+
+	// Message was no command, just log it for now
+	// TODO: Add actual message logger
+	log.Info(message)
 
 }
