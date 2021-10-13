@@ -9,20 +9,21 @@ import (
 type Bot struct {
 	twitchClient *twitch.Client
 	cfg          *cfg.Config
-	log          *log.Logger
 }
 
-func NewBot(cfg *cfg.Config, log *log.Logger) *Bot {
+func NewBot(cfg *cfg.Config) *Bot {
 
+	log.Info("fn Newbot")
 	twitchClient := twitch.NewClient(cfg.Username, cfg.Oauth)
+
 	return &Bot{
 		cfg:          cfg,
 		twitchClient: twitchClient,
-		log:          log,
 	}
 }
 
 func (b *Bot) Connect() error {
+	log.Info("fn Connect")
 	err := b.twitchClient.Connect()
 	if err != nil {
 		log.Error("Error Connecting from Twitch: ", err)
@@ -46,4 +47,9 @@ func (b *Bot) Say(channel string, message string) {
 
 func (b *Bot) OnPrivateMessage(callback func(message *twitch.PrivateMessage)) {
 	log.Info(callback)
+}
+
+func (b *Bot) Join(channel string) {
+	log.Info("fn Join")
+	b.twitchClient.Join(channel)
 }
