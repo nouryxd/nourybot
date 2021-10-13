@@ -2,7 +2,6 @@ package bot
 
 import (
 	twitch "github.com/gempir/go-twitch-irc/v2"
-	"github.com/lyx0/nourybot/pkg/commands"
 	cfg "github.com/lyx0/nourybot/pkg/config"
 	"github.com/lyx0/nourybot/pkg/handlers"
 	log "github.com/sirupsen/logrus"
@@ -50,13 +49,6 @@ func (b *Bot) Disconnect() error {
 
 func (b *Bot) Say(channel string, message string) {
 	b.twitchClient.Say(channel, message)
-}
-
-func (b *Bot) OnPrivateMessage(message *twitch.PrivateMessage) {
-	log.Info("fn OnPrivateMessage")
-
-	tc := b.twitchClient
-	commands.HandleCommand(*message, tc)
 }
 
 func (b *Bot) Join(channel string) {
