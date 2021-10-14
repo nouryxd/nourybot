@@ -46,6 +46,6 @@ func HandleCommand(message twitch.PrivateMessage, twitchClient *twitch.Client) {
 		twitchClient.Say(message.Channel, cmdParams[1])
 		return
 	case "ping":
-		commands.PingCommand(message.Channel, twitchClient)
+		commands.Ping(message.Channel, twitchClient)
 	}
 }
