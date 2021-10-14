@@ -3,6 +3,7 @@ module github.com/lyx0/nourybot
 go 1.17
 
 require (
+	github.com/dustin/go-humanize v1.0.0
 	github.com/gempir/go-twitch-irc/v2 v2.5.0
 	github.com/joho/godotenv v1.4.0
 	github.com/sirupsen/logrus v1.8.1
