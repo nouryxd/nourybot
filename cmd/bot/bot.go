@@ -23,13 +23,14 @@ func NewBot(cfg *cfg.Config) *Bot {
 	return &Bot{
 		cfg:          cfg,
 		twitchClient: twitchClient,
-		Uptime:       time.Now(),
 	}
 }
 
 func (b *Bot) Connect() error {
 	log.Info("fn Connect")
 	cfg := cfg.LoadConfig()
+
+	b.Uptime = time.Now()
 
 	b.twitchClient.OnPrivateMessage(func(message twitch.PrivateMessage) {
 		handlers.HandlePrivateMessage(message, b.twitchClient, cfg, b.Uptime)
