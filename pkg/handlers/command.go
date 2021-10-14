@@ -68,5 +68,12 @@ func HandleCommand(message twitch.PrivateMessage, twitchClient *twitch.Client, u
 		commands.EightBall(message, twitchClient)
 		return
 
+	case "weather":
+		if msgLen == 1 {
+			twitchClient.Say(message.Channel, "Usage: ()weather [location]")
+		} else {
+			commands.Weather(message.Channel, message.Message[9:len(message.Message)], twitchClient)
+		}
+
 	}
 }
