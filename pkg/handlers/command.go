@@ -82,6 +82,18 @@ func HandleCommand(message twitch.PrivateMessage, twitchClient *twitch.Client, u
 			commands.Uptime(message.Channel, cmdParams[1], twitchClient)
 			return
 		}
+	case "godoc":
+		if msgLen == 1 {
+			twitchClient.Say(message.Channel, "Usage: ()godoc [term]")
+		} else {
+			commands.Godocs(message.Channel, message.Message[8:len(message.Message)], twitchClient)
+		}
+	case "godocs":
+		if msgLen == 1 {
+			twitchClient.Say(message.Channel, "Usage: ()godoc [term]")
+		} else {
+			commands.Godocs(message.Channel, message.Message[9:len(message.Message)], twitchClient)
+		}
 
 	}
 }
