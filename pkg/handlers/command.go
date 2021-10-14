@@ -75,6 +75,13 @@ func HandleCommand(message twitch.PrivateMessage, twitchClient *twitch.Client, u
 			commands.Weather(message.Channel, message.Message[9:len(message.Message)], twitchClient)
 			return
 		}
+	case "uptime":
+		if msgLen == 1 {
+			commands.Uptime(message.Channel, message.Channel, twitchClient)
+		} else {
+			commands.Uptime(message.Channel, cmdParams[1], twitchClient)
+			return
+		}
 
 	}
 }
