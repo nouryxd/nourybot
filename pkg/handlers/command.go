@@ -4,6 +4,8 @@ import (
 	"strings"
 
 	"github.com/gempir/go-twitch-irc/v2"
+	"github.com/lyx0/nourybot/pkg/commands"
+	"github.com/lyx0/nourybot/pkg/utils"
 	log "github.com/sirupsen/logrus"
 )
 
@@ -13,6 +15,9 @@ import (
 // command handler for further action.
 func HandleCommand(message twitch.PrivateMessage, twitchClient *twitch.Client) {
 	log.Info("fn HandleCommand")
+
+	// Counter that increments on every command call.
+	utils.CommandUsed()
 
 	// commandName is the actual command name without the prefix.
 	commandName := strings.SplitN(message.Message, " ", 3)[0][2:]
@@ -40,5 +45,7 @@ func HandleCommand(message twitch.PrivateMessage, twitchClient *twitch.Client) {
 	case "echo":
 		twitchClient.Say(message.Channel, cmdParams[1])
 		return
+	case "ping":
+		commands.PingCommand(message.Channel, twitchClient)
 	}
 }
