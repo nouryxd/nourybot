@@ -1,6 +1,8 @@
 package bot
 
 import (
+	"time"
+
 	twitch "github.com/gempir/go-twitch-irc/v2"
 	cfg "github.com/lyx0/nourybot/pkg/config"
 	"github.com/lyx0/nourybot/pkg/handlers"
@@ -10,6 +12,7 @@ import (
 type Bot struct {
 	twitchClient *twitch.Client
 	cfg          *cfg.Config
+	Uptime       time.Time
 }
 
 func NewBot(cfg *cfg.Config) *Bot {
@@ -20,6 +23,7 @@ func NewBot(cfg *cfg.Config) *Bot {
 	return &Bot{
 		cfg:          cfg,
 		twitchClient: twitchClient,
+		Uptime:       time.Now(),
 	}
 }
 
@@ -28,7 +32,7 @@ func (b *Bot) Connect() error {
 	cfg := cfg.LoadConfig()
 
 	b.twitchClient.OnPrivateMessage(func(message twitch.PrivateMessage) {
-		handlers.HandlePrivateMessage(message, b.twitchClient, cfg)
+		handlers.HandlePrivateMessage(message, b.twitchClient, cfg, b.Uptime)
 	})
 
 	b.twitchClient.OnWhisperMessage(func(message twitch.WhisperMessage) {

@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"strings"
+	"time"
 
 	"github.com/gempir/go-twitch-irc/v2"
 	"github.com/lyx0/nourybot/pkg/commands"
@@ -13,7 +14,7 @@ import (
 // HandlePrivateMessage where it found a command in it.
 // HandleCommand passes on the message to the specific
 // command handler for further action.
-func HandleCommand(message twitch.PrivateMessage, twitchClient *twitch.Client) {
+func HandleCommand(message twitch.PrivateMessage, twitchClient *twitch.Client, uptime time.Time) {
 	log.Info("fn HandleCommand")
 
 	// Counter that increments on every command call.
@@ -46,6 +47,6 @@ func HandleCommand(message twitch.PrivateMessage, twitchClient *twitch.Client) {
 		twitchClient.Say(message.Channel, cmdParams[1])
 		return
 	case "ping":
-		commands.Ping(message.Channel, twitchClient)
+		commands.Ping(message.Channel, twitchClient, uptime)
 	}
 }
