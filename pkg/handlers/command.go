@@ -21,7 +21,7 @@ func HandleCommand(message twitch.PrivateMessage, twitchClient *twitch.Client, u
 	utils.CommandUsed()
 
 	// commandName is the actual command name without the prefix.
-	commandName := strings.SplitN(message.Message, " ", 3)[0][2:]
+	commandName := strings.ToLower(strings.SplitN(message.Message, " ", 3)[0][2:])
 
 	// cmdParams are additional command inputs.
 	// example:
@@ -59,6 +59,9 @@ func HandleCommand(message twitch.PrivateMessage, twitchClient *twitch.Client, u
 		commands.Coinflip(message.Channel, twitchClient)
 		return
 	case "color":
+		commands.Color(message, twitchClient)
+		return
+	case "mycolor":
 		commands.Color(message, twitchClient)
 		return
 
