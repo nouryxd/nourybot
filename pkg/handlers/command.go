@@ -48,5 +48,16 @@ func HandleCommand(message twitch.PrivateMessage, twitchClient *twitch.Client, u
 		return
 	case "ping":
 		commands.Ping(message.Channel, twitchClient, uptime)
+		return
+	case "cf":
+		commands.Coinflip(message.Channel, twitchClient)
+		return
+	case "coin":
+		commands.Coinflip(message.Channel, twitchClient)
+		return
+	case "coinflip":
+		commands.Coinflip(message.Channel, twitchClient)
+		return
+
 	}
 }
