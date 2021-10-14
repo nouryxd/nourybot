@@ -58,6 +58,9 @@ func HandleCommand(message twitch.PrivateMessage, twitchClient *twitch.Client, u
 	case "coinflip":
 		commands.Coinflip(message.Channel, twitchClient)
 		return
+	case "color":
+		commands.Color(message, twitchClient)
+		return
 
 	}
 }
