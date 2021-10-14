@@ -31,6 +31,10 @@ func (b *Bot) Connect() error {
 		handlers.HandlePrivateMessage(message, b.twitchClient, cfg)
 	})
 
+	b.twitchClient.OnWhisperMessage(func(message twitch.WhisperMessage) {
+		handlers.HandleWhisperMessage(message, b.twitchClient)
+	})
+
 	err := b.twitchClient.Connect()
 	if err != nil {
 		log.Error("Error Connecting from Twitch: ", err)

@@ -43,8 +43,7 @@ func HandlePrivateMessage(message twitch.PrivateMessage, client *twitch.Client, 
 		}
 	}
 
-	// Message was no command, just log it for now
-	// TODO: Add actual message logger
-	log.Info(message)
+	// Message was no command
+	// log.Info(message)
 
 }
