@@ -64,6 +64,9 @@ func HandleCommand(message twitch.PrivateMessage, twitchClient *twitch.Client, u
 	case "mycolor":
 		commands.Color(message, twitchClient)
 		return
+	case "8ball":
+		commands.EightBall(message, twitchClient)
+		return
 
 	}
 }
