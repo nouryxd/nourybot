@@ -108,5 +108,16 @@ func HandleCommand(message twitch.PrivateMessage, twitchClient *twitch.Client, u
 			commands.Fill(message.Channel, message.Message[7:len(message.Message)], twitchClient)
 		}
 
+	case "pyramid":
+		if msgLen != 3 {
+			twitchClient.Say(message.Channel, "Usage: ()pyramid [size] [emote]")
+			return
+		} else if utils.ElevatedPrivsMessage(message) {
+			commands.Pyramid(message.Channel, cmdParams[1], cmdParams[2], twitchClient)
+			return
+		} else {
+			twitchClient.Say(message.Channel, "Pleb's can't pyramid FeelsBadMan")
+		}
+
 	}
 }
