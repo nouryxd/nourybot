@@ -40,15 +40,6 @@ func HandleCommand(message twitch.PrivateMessage, twitchClient *twitch.Client, u
 			twitchClient.Say(message.Channel, "Why yes, that's my prefix :)")
 		}
 		return
-	case "xd":
-		commands.Xd(message.Channel, twitchClient)
-		return
-	case "echo":
-		commands.Echo(message.Channel, message.Message[7:len(message.Message)], twitchClient)
-		return
-	case "ping":
-		commands.Ping(message.Channel, twitchClient, uptime)
-		return
 	case "cf":
 		commands.Coinflip(message.Channel, twitchClient)
 		return
@@ -64,23 +55,18 @@ func HandleCommand(message twitch.PrivateMessage, twitchClient *twitch.Client, u
 	case "mycolor":
 		commands.Color(message, twitchClient)
 		return
+	case "echo":
+		commands.Echo(message.Channel, message.Message[7:len(message.Message)], twitchClient)
+		return
 	case "8ball":
 		commands.EightBall(message, twitchClient)
 		return
-	case "weather":
+	case "fill":
 		if msgLen == 1 {
-			twitchClient.Say(message.Channel, "Usage: ()weather [location]")
+			twitchClient.Say(message.Channel, "Usage: ()fill [emote]")
 			return
 		} else {
-			commands.Weather(message.Channel, message.Message[9:len(message.Message)], twitchClient)
-			return
-		}
-	case "uptime":
-		if msgLen == 1 {
-			commands.Uptime(message.Channel, message.Channel, twitchClient)
-			return
-		} else {
-			commands.Uptime(message.Channel, cmdParams[1], twitchClient)
+			commands.Fill(message.Channel, message.Message[7:len(message.Message)], twitchClient)
 			return
 		}
 	case "godoc":
@@ -99,15 +85,11 @@ func HandleCommand(message twitch.PrivateMessage, twitchClient *twitch.Client, u
 			commands.Godocs(message.Channel, message.Message[9:len(message.Message)], twitchClient)
 			return
 		}
-
-	case "fill":
-		if msgLen == 1 {
-			twitchClient.Say(message.Channel, "Usage: ()fill [emote]")
-			return
-		} else {
-			commands.Fill(message.Channel, message.Message[7:len(message.Message)], twitchClient)
-			return
-		}
+	case "ping":
+		commands.Ping(message.Channel, twitchClient, uptime)
+		return
+	case "pingme":
+		commands.Pingme(message.Channel, message.User.DisplayName, twitchClient)
 
 	case "pyramid":
 		if msgLen != 3 {
@@ -117,9 +99,26 @@ func HandleCommand(message twitch.PrivateMessage, twitchClient *twitch.Client, u
 		} else {
 			twitchClient.Say(message.Channel, "Pleb's can't pyramid FeelsBadMan")
 		}
-
-	case "pingme":
-		commands.Pingme(message.Channel, message.User.DisplayName, twitchClient)
+	case "uptime":
+		if msgLen == 1 {
+			commands.Uptime(message.Channel, message.Channel, twitchClient)
+			return
+		} else {
+			commands.Uptime(message.Channel, cmdParams[1], twitchClient)
+			return
+		}
+	case "xd":
+		commands.Xd(message.Channel, twitchClient)
+		return
+	case "weather":
+		if msgLen == 1 {
+			twitchClient.Say(message.Channel, "Usage: ()weather [location]")
+			return
+		} else {
+			commands.Weather(message.Channel, message.Message[9:len(message.Message)], twitchClient)
+			return
+		}
 
 	}
+
 }
