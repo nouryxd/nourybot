@@ -107,9 +107,6 @@ func HandleCommand(message twitch.PrivateMessage, twitchClient *twitch.Client, u
 			commands.Uptime(message.Channel, cmdParams[1], twitchClient)
 			return
 		}
-	case "xd":
-		commands.Xd(message.Channel, twitchClient)
-		return
 	case "weather":
 		if msgLen == 1 {
 			twitchClient.Say(message.Channel, "Usage: ()weather [location]")
@@ -118,6 +115,9 @@ func HandleCommand(message twitch.PrivateMessage, twitchClient *twitch.Client, u
 			commands.Weather(message.Channel, message.Message[9:len(message.Message)], twitchClient)
 			return
 		}
+	case "xd":
+		commands.Xd(message.Channel, twitchClient)
+		return
 
 	}
 
