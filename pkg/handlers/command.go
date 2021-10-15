@@ -118,5 +118,8 @@ func HandleCommand(message twitch.PrivateMessage, twitchClient *twitch.Client, u
 			twitchClient.Say(message.Channel, "Pleb's can't pyramid FeelsBadMan")
 		}
 
+	case "pingme":
+		commands.Pingme(message.Channel, message.User.DisplayName, twitchClient)
+
 	}
 }
