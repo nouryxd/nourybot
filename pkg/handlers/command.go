@@ -41,7 +41,7 @@ func HandleCommand(message twitch.PrivateMessage, twitchClient *twitch.Client, u
 		}
 		return
 	case "xd":
-		twitchClient.Say(message.Channel, "xd")
+		commands.Xd(message.Channel, twitchClient)
 		return
 	case "echo":
 		commands.Echo(message.Channel, message.Message[7:len(message.Message)], twitchClient)
