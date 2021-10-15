@@ -99,6 +99,14 @@ func HandleCommand(message twitch.PrivateMessage, twitchClient *twitch.Client, u
 		} else {
 			twitchClient.Say(message.Channel, "Pleb's can't pyramid FeelsBadMan")
 		}
+
+	case "subage":
+		if msgLen < 3 {
+			twitchClient.Say(message.Channel, "Usage: ()subage [user] [streamer]")
+			return
+		} else {
+			commands.Subage(message.Channel, cmdParams[1], cmdParams[2], twitchClient)
+		}
 	case "uptime":
 		if msgLen == 1 {
 			commands.Uptime(message.Channel, message.Channel, twitchClient)
