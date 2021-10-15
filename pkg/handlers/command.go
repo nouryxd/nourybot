@@ -100,5 +100,13 @@ func HandleCommand(message twitch.PrivateMessage, twitchClient *twitch.Client, u
 			return
 		}
 
+	case "fill":
+		if msgLen == 1 {
+			twitchClient.Say(message.Channel, "Usage: ()fill [emote]")
+			return
+		} else {
+			commands.Fill(message.Channel, message.Message[7:len(message.Message)], twitchClient)
+		}
+
 	}
 }
