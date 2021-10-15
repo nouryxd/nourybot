@@ -106,6 +106,7 @@ func HandleCommand(message twitch.PrivateMessage, twitchClient *twitch.Client, u
 			return
 		} else {
 			commands.Fill(message.Channel, message.Message[7:len(message.Message)], twitchClient)
+			return
 		}
 
 	case "pyramid":
