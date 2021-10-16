@@ -38,7 +38,10 @@ func HandleCommand(message twitch.PrivateMessage, twitchClient *twitch.Client, u
 	case "":
 		if msgLen == 1 {
 			twitchClient.Say(message.Channel, "Why yes, that's my prefix :)")
+			return
 		}
+	case "bttvemotes":
+		commands.BttvEmotes(message.Channel, twitchClient)
 		return
 	case "cf":
 		commands.Coinflip(message.Channel, twitchClient)
