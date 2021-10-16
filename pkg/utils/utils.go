@@ -49,6 +49,10 @@ func GenerateRandomNumber(max int) int {
 	return rand.Intn(max)
 }
 
+func GenerateRandomNumberRange(min int, max int) int {
+	return (rand.Intn(max-min) + min)
+}
+
 // ElevatedPrivsMessage is checking a given message twitch.PrivateMessage
 // if it came from a moderator/vip/or broadcaster and returns a bool
 func ElevatedPrivsMessage(message twitch.PrivateMessage) bool {
