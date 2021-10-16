@@ -64,6 +64,9 @@ func HandleCommand(message twitch.PrivateMessage, twitchClient *twitch.Client, u
 	case "8ball":
 		commands.EightBall(message, twitchClient)
 		return
+	case "ffzemotes":
+		commands.FfzEmotes(message.Channel, twitchClient)
+		return
 	case "fill":
 		if msgLen == 1 {
 			twitchClient.Say(message.Channel, "Usage: ()fill [emote]")
@@ -109,6 +112,23 @@ func HandleCommand(message twitch.PrivateMessage, twitchClient *twitch.Client, u
 			return
 		} else {
 			commands.Subage(message.Channel, cmdParams[1], cmdParams[2], twitchClient)
+			return
+		}
+	case "thumb":
+		if msgLen == 1 {
+			twitchClient.Say(message.Channel, "Usage: ()thumbnail [channel]")
+			return
+		} else {
+			commands.Thumbnail(message.Channel, cmdParams[1], twitchClient)
+			return
+		}
+	case "thumbnail":
+		if msgLen == 1 {
+			twitchClient.Say(message.Channel, "Usage: ()thumbnail [channel]")
+			return
+		} else {
+			commands.Thumbnail(message.Channel, cmdParams[1], twitchClient)
+			return
 		}
 	case "uptime":
 		if msgLen == 1 {
