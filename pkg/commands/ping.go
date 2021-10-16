@@ -11,7 +11,7 @@ import (
 
 func Ping(channel string, client *twitch.Client, uptime time.Time) {
 	commandCount := fmt.Sprint(utils.GetCommandsUsed())
-	botUptime := humanize.HumanizeTime(uptime)
+	botUptime := humanize.Time(uptime)
 
 	reply := fmt.Sprintf("Pong! :) Commands used: %v, Last restart: %v", commandCount, botUptime)
 	client.Say(channel, reply)
