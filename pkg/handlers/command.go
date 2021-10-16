@@ -75,6 +75,13 @@ func HandleCommand(message twitch.PrivateMessage, twitchClient *twitch.Client, u
 			commands.Fill(message.Channel, message.Message[7:len(message.Message)], twitchClient)
 			return
 		}
+	case "game":
+		if msgLen == 1 {
+			twitchClient.Say(message.Channel, "Usage: ()game [channel]")
+			return
+		} else {
+			commands.Game(message.Channel, cmdParams[1], twitchClient)
+		}
 	case "godoc":
 		if msgLen == 1 {
 			twitchClient.Say(message.Channel, "Usage: ()godoc [term]")
@@ -96,7 +103,7 @@ func HandleCommand(message twitch.PrivateMessage, twitchClient *twitch.Client, u
 		return
 	case "pingme":
 		commands.Pingme(message.Channel, message.User.DisplayName, twitchClient)
-
+		return
 	case "pyramid":
 		if msgLen != 3 {
 			twitchClient.Say(message.Channel, "Usage: ()pyramid [size] [emote]")
