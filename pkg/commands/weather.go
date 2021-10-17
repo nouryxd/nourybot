@@ -9,7 +9,7 @@ import (
 
 func Weather(channel string, location string, client *twitch.Client) {
 
-	reply := aiden.Weather(fmt.Sprintf("api/v1/misc/weather/%s", location))
+	reply := aiden.ApiCall(fmt.Sprintf("api/v1/misc/weather/%s", location))
 	client.Say(channel, reply)
 
 }
