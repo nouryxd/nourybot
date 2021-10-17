@@ -94,6 +94,17 @@ func HandleCommand(message twitch.PrivateMessage, twitchClient *twitch.Client, u
 			commands.Firstline(message.Channel, cmdParams[1], cmdParams[2], twitchClient)
 			return
 		}
+	case "fl":
+		if msgLen == 1 {
+			twitchClient.Say(message.Channel, "Usage: ()firstline [channel] [user]")
+			return
+		} else if msgLen == 2 {
+			commands.Firstline(message.Channel, message.Channel, cmdParams[1], twitchClient)
+			return
+		} else {
+			commands.Firstline(message.Channel, cmdParams[1], cmdParams[2], twitchClient)
+			return
+		}
 	case "followage":
 		if msgLen <= 2 {
 			twitchClient.Say(message.Channel, "Usage: ()followage [channel] [user]")
