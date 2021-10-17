@@ -31,7 +31,7 @@ func FirstLine(streamer string, username string) (string, error) {
 
 	body, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
-		log.Fatalln(err)
+		log.Error(err)
 	}
 
 	var responseObject firstLineApiResponse
