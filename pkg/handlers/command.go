@@ -40,6 +40,14 @@ func HandleCommand(message twitch.PrivateMessage, twitchClient *twitch.Client, u
 			twitchClient.Say(message.Channel, "Why yes, that's my prefix :)")
 			return
 		}
+	case "botstatus":
+		if msgLen == 1 {
+			twitchClient.Say(message.Channel, "Usage: ()botstatus [username]")
+			return
+		} else {
+			commands.BotStatus(message.Channel, cmdParams[1], twitchClient)
+			return
+		}
 	case "bttvemotes":
 		commands.BttvEmotes(message.Channel, twitchClient)
 		return
