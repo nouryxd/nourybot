@@ -2,29 +2,20 @@ package commands
 
 import (
 	"fmt"
-	"io/ioutil"
-	"net/http"
 
 	"github.com/gempir/go-twitch-irc/v2"
+	"github.com/lyx0/nourybot/pkg/api/aiden"
 	log "github.com/sirupsen/logrus"
 )
 
-func Uptime(channel string, target string, client *twitch.Client) {
-	resp, err := http.Get(fmt.Sprintf("https://customapi.aidenwallis.co.uk/api/v1/twitch/channel/%s/uptime", target))
+func Uptime(channel string, name string, client *twitch.Client) {
 
+	resp, err := aiden.ApiCall(fmt.Sprintf("api/v1/twitch/channel/%s/uptime", name))
 	if err != nil {
 		client.Say(channel, "Something went wrong FeelsBadMan")
 		log.Error(err)
 	}
 
-	defer resp.Body.Close()
-
-	body, err := ioutil.ReadAll(resp.Body)
-	if err != nil {
-		client.Say(channel, "Something went wrong FeelsBadMan")
-		log.Error(err)
-	}
-
-	client.Say(channel, string(body))
+	client.Say(channel, resp)
 
 }
