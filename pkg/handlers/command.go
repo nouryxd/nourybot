@@ -83,6 +83,17 @@ func HandleCommand(message twitch.PrivateMessage, twitchClient *twitch.Client, u
 			commands.Fill(message.Channel, message.Message[7:len(message.Message)], twitchClient)
 			return
 		}
+	case "firstline":
+		if msgLen == 1 {
+			twitchClient.Say(message.Channel, "Usage: ()firstline [channel] [user]")
+			return
+		} else if msgLen == 2 {
+			commands.Firstline(message.Channel, message.Channel, cmdParams[1], twitchClient)
+			return
+		} else {
+			commands.Firstline(message.Channel, cmdParams[1], cmdParams[2], twitchClient)
+			return
+		}
 	case "game":
 		if msgLen == 1 {
 			twitchClient.Say(message.Channel, "Usage: ()game [channel]")
