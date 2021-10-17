@@ -8,8 +8,8 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
-func Weather(location string) string {
-	resp, err := http.Get(fmt.Sprintf("https://customapi.aidenwallis.co.uk/api/v1/misc/weather/%s", location))
+func Weather(uri string) string {
+	resp, err := http.Get(fmt.Sprintf("https://customapi.aidenwallis.co.uk/%s", uri))
 	if err != nil {
 		log.Error(err)
 		return "Something went wrong FeelsBadMan"
