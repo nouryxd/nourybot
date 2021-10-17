@@ -70,7 +70,7 @@ func HandleCommand(message twitch.PrivateMessage, twitchClient *twitch.Client, u
 		commands.Echo(message.Channel, message.Message[7:len(message.Message)], twitchClient)
 		return
 	case "8ball":
-		commands.EightBall(message, twitchClient)
+		commands.EightBall(message.Channel, twitchClient)
 		return
 	case "ffzemotes":
 		commands.FfzEmotes(message.Channel, twitchClient)

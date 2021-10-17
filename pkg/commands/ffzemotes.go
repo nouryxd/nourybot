@@ -2,25 +2,19 @@ package commands
 
 import (
 	"fmt"
-	"io/ioutil"
-	"net/http"
 
 	"github.com/gempir/go-twitch-irc/v2"
+	"github.com/lyx0/nourybot/pkg/api/aiden"
 	log "github.com/sirupsen/logrus"
 )
 
 func FfzEmotes(channel string, client *twitch.Client) {
-	resp, err := http.Get(fmt.Sprintf("https://customapi.aidenwallis.co.uk/api/v1/emotes/%s/ffz", channel))
+
+	resp, err := aiden.ApiCall(fmt.Sprintf("api/v1/emotes/%s/ffz", channel))
 	if err != nil {
-		log.Fatalln(err)
+		log.Error(err)
+		client.Say(channel, "Something went wrong FeelsBadMan")
 	}
 
-	defer resp.Body.Close()
-
-	body, err := ioutil.ReadAll(resp.Body)
-	if err != nil {
-		log.Fatalln(err)
-	}
-
-	client.Say(channel, string(body))
+	client.Say(channel, string(resp))
 }
