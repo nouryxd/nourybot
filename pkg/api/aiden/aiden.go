@@ -8,11 +8,11 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
-func ApiCall(uri string) string {
+func ApiCall(uri string) (string, error) {
 	resp, err := http.Get(fmt.Sprintf("https://customapi.aidenwallis.co.uk/%s", uri))
 	if err != nil {
 		log.Error(err)
-		return "Something went wrong FeelsBadMan"
+		return "Something went wrong FeelsBadMan", err
 	}
 
 	defer resp.Body.Close()
@@ -20,7 +20,7 @@ func ApiCall(uri string) string {
 	body, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
 		log.Error(err)
-		return "Something went wrong FeelsBadMan"
+		return "Something went wrong FeelsBadMan", err
 	}
-	return string(body)
+	return string(body), nil
 }
