@@ -4,8 +4,9 @@ import (
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
-	"log"
 	"net/http"
+
+	log "github.com/sirupsen/logrus"
 )
 
 // https://api.ivr.fi
@@ -21,14 +22,14 @@ type followageApiResponse struct {
 func Followage(streamer string, username string) (string, error) {
 	resp, err := http.Get(fmt.Sprintf("https://api.ivr.fi/twitch/subage/%s/%s", username, streamer))
 	if err != nil {
-		log.Fatalln(err)
+		log.Error(err)
 	}
 
 	defer resp.Body.Close()
 
 	body, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
-		log.Fatalln(err)
+		log.Error(err)
 	}
 
 	var responseObject followageApiResponse
