@@ -17,23 +17,28 @@ type subageApiResponse struct {
 	SubageHidden bool       `json:"hidden"`
 	Subscribed   bool       `json:"subscribed"`
 	FollowedAt   string     `json:"followedAt"`
-	Cumulative   Cumulative `json:"cumulative"`
-	Streak       SubStreak  `json:"streak"`
+	Cumulative   cumulative `json:"cumulative"`
+	Streak       subStreak  `json:"streak"`
 	Error        string     `json:"error"`
 }
 
-type Cumulative struct {
+type cumulative struct {
 	Months int `json:"months"`
 }
 
-type SubStreak struct {
+type subStreak struct {
 	Months int `json:"months"`
 }
 
-func Subage(username string, streamer string) string {
-	resp, err := http.Get(fmt.Sprintf("https://api.ivr.fi/twitch/subage/%s/%s", username, streamer))
+var (
+	subageBaseUrl = "https://api.ivr.fi/twitch/subage"
+)
+
+func Subage(username string, streamer string) (string, error) {
+	resp, err := http.Get(fmt.Sprintf("%s/%s/%s", subageBaseUrl, username, streamer))
 	if err != nil {
 		log.Error(err)
+		return "Something went wrong FeelsBadMan", err
 	}
 
 	defer resp.Body.Close()
@@ -50,16 +55,16 @@ func Subage(username string, streamer string) string {
 	if responseObject.Error != "" {
 		reply := fmt.Sprintf(responseObject.Error + " FeelsBadMan")
 		// client.Say(channel, fmt.Sprintf(responseObject.Error+" FeelsBadMan"))
-		return reply
+		return reply, nil
 	}
 
 	if responseObject.SubageHidden {
 
 		reply := fmt.Sprintf(username + " has their subscription status hidden. FeelsBadMan")
-		return reply
+		return reply, nil
 	} else {
 		months := fmt.Sprint(responseObject.Cumulative.Months)
 		reply := fmt.Sprintf(username + " has been subscribed to " + streamer + " for " + months + " months.")
-		return reply
+		return reply, nil
 	}
 }
