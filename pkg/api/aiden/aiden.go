@@ -8,8 +8,12 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
+var (
+	basePath = "https://customapi.aidenwallis.co.uk/"
+)
+
 func ApiCall(uri string) (string, error) {
-	resp, err := http.Get(fmt.Sprintf("https://customapi.aidenwallis.co.uk/%s", uri))
+	resp, err := http.Get(fmt.Sprint(basePath + uri))
 	if err != nil {
 		log.Error(err)
 		return "Something went wrong FeelsBadMan", err
