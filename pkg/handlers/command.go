@@ -136,6 +136,12 @@ func HandleCommand(message twitch.PrivateMessage, twitchClient *twitch.Client, u
 			commands.Godocs(message.Channel, message.Message[9:len(message.Message)], twitchClient)
 			return
 		}
+	case "num":
+		if msgLen == 1 {
+			commands.RandomNumber(message.Channel, twitchClient)
+		} else {
+			commands.Number(message.Channel, cmdParams[1], twitchClient)
+		}
 	case "number":
 		if msgLen == 1 {
 			commands.RandomNumber(message.Channel, twitchClient)
