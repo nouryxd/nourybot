@@ -162,7 +162,9 @@ func HandleCommand(message twitch.PrivateMessage, twitchClient *twitch.Client, u
 		} else {
 			twitchClient.Say(message.Channel, "Pleb's can't pyramid FeelsBadMan")
 		}
-
+	case "randomcat":
+		commands.RandomCat(message.Channel, twitchClient)
+		return
 	case "subage":
 		if msgLen < 3 {
 			twitchClient.Say(message.Channel, "Usage: ()subage [user] [streamer]")
