@@ -168,6 +168,9 @@ func HandleCommand(message twitch.PrivateMessage, twitchClient *twitch.Client, u
 	case "randomfox":
 		commands.RandomFox(message.Channel, twitchClient)
 		return
+	case "randomxkcd":
+		commands.RandomXkcd(message.Channel, twitchClient)
+		return
 	case "subage":
 		if msgLen < 3 {
 			twitchClient.Say(message.Channel, "Usage: ()subage [user] [streamer]")
@@ -212,6 +215,8 @@ func HandleCommand(message twitch.PrivateMessage, twitchClient *twitch.Client, u
 		commands.Xd(message.Channel, twitchClient)
 		return
 
+	case "xkcd":
+		commands.Xkcd(message.Channel, twitchClient)
+		return
 	}
-
 }
