@@ -222,7 +222,7 @@ func HandleCommand(message twitch.PrivateMessage, twitchClient *twitch.Client, u
 		}
 	case "uid":
 		if msgLen == 1 {
-			twitchClient.Say(message.Channel, "Usage: ()userid [username]")
+			twitchClient.Say(message.Channel, "Usage: ()uid [username]")
 			return
 		} else {
 			commands.Userid(message.Channel, cmdParams[1], twitchClient)
