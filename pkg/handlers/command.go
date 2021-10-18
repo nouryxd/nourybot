@@ -154,6 +154,20 @@ func HandleCommand(message twitch.PrivateMessage, twitchClient *twitch.Client, u
 	case "pingme":
 		commands.Pingme(message.Channel, message.User.DisplayName, twitchClient)
 		return
+	case "profilepicture":
+		if msgLen == 1 {
+			twitchClient.Say(message.Channel, "Usage: ()profilepicture [user]")
+			return
+		}
+		commands.ProfilePicture(message.Channel, cmdParams[1], twitchClient)
+		return
+	case "pfp":
+		if msgLen == 1 {
+			twitchClient.Say(message.Channel, "Usage: ()pfp [user]")
+			return
+		}
+		commands.ProfilePicture(message.Channel, cmdParams[1], twitchClient)
+		return
 	case "pyramid":
 		if msgLen != 3 {
 			twitchClient.Say(message.Channel, "Usage: ()pyramid [size] [emote]")
