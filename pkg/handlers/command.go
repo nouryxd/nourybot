@@ -220,6 +220,22 @@ func HandleCommand(message twitch.PrivateMessage, twitchClient *twitch.Client, u
 			commands.Uptime(message.Channel, cmdParams[1], twitchClient)
 			return
 		}
+	case "uid":
+		if msgLen == 1 {
+			twitchClient.Say(message.Channel, "Usage: ()userid [username]")
+			return
+		} else {
+			commands.Userid(message.Channel, cmdParams[1], twitchClient)
+			return
+		}
+	case "userid":
+		if msgLen == 1 {
+			twitchClient.Say(message.Channel, "Usage: ()userid [username]")
+			return
+		} else {
+			commands.Userid(message.Channel, cmdParams[1], twitchClient)
+			return
+		}
 	case "weather":
 		if msgLen == 1 {
 			twitchClient.Say(message.Channel, "Usage: ()weather [location]")
