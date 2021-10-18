@@ -165,6 +165,9 @@ func HandleCommand(message twitch.PrivateMessage, twitchClient *twitch.Client, u
 	case "randomcat":
 		commands.RandomCat(message.Channel, twitchClient)
 		return
+	case "randomdog":
+		commands.RandomDog(message.Channel, twitchClient)
+		return
 	case "randomfox":
 		commands.RandomFox(message.Channel, twitchClient)
 		return
