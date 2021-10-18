@@ -154,6 +154,14 @@ func HandleCommand(message twitch.PrivateMessage, twitchClient *twitch.Client, u
 	case "pingme":
 		commands.Pingme(message.Channel, message.User.DisplayName, twitchClient)
 		return
+	case "preview":
+		if msgLen == 1 {
+			twitchClient.Say(message.Channel, "Usage: ()preview [channel]")
+			return
+		} else {
+			commands.Thumbnail(message.Channel, cmdParams[1], twitchClient)
+			return
+		}
 	case "profilepicture":
 		if msgLen == 1 {
 			twitchClient.Say(message.Channel, "Usage: ()profilepicture [user]")
