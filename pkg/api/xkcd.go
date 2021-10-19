@@ -4,18 +4,19 @@ import (
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
-	"log"
 	"net/http"
+
+	log "github.com/sirupsen/logrus"
 )
 
 func Xkcd() string {
 	response, err := http.Get("https://xkcd.com/info.0.json")
 	if err != nil {
-		log.Fatalln(err)
+		log.Error(err)
 	}
 	responseData, err := ioutil.ReadAll(response.Body)
 	if err != nil {
-		log.Fatalln(err)
+		log.Error(err)
 	}
 	var responseObject XkcdResponse
 	json.Unmarshal(responseData, &responseObject)

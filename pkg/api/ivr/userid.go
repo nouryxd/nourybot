@@ -4,8 +4,9 @@ import (
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
-	"log"
 	"net/http"
+
+	log "github.com/sirupsen/logrus"
 )
 
 // https://api.ivr.fi
@@ -17,14 +18,14 @@ type uidApiResponse struct {
 func Userid(username string) string {
 	resp, err := http.Get(fmt.Sprintf("https://api.ivr.fi/twitch/resolve/%s", username))
 	if err != nil {
-		log.Fatalln(err)
+		log.Error(err)
 	}
 
 	defer resp.Body.Close()
 
 	body, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
-		log.Fatalln(err)
+		log.Error(err)
 	}
 
 	var responseObject uidApiResponse

@@ -3,8 +3,9 @@ package api
 import (
 	"encoding/json"
 	"io/ioutil"
-	"log"
 	"net/http"
+
+	log "github.com/sirupsen/logrus"
 )
 
 type randomDogResponse struct {
@@ -14,12 +15,12 @@ type randomDogResponse struct {
 func RandomDog() string {
 	response, err := http.Get("https://random.dog/woof.json")
 	if err != nil {
-		log.Fatalln(err)
+		log.Error(err)
 	}
 
 	responseData, err := ioutil.ReadAll(response.Body)
 	if err != nil {
-		log.Fatalln(err)
+		log.Error(err)
 	}
 
 	var responseObject randomDogResponse
