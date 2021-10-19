@@ -3,11 +3,11 @@ package commands
 import (
 	"fmt"
 
-	"github.com/gempir/go-twitch-irc/v2"
+	"github.com/lyx0/nourybot/cmd/bot"
 )
 
-func Godocs(channel string, searchTerm string, client *twitch.Client) {
+func Godocs(channel string, searchTerm string, nb *bot.Bot) {
 	resp := fmt.Sprintf("https://godocs.io/?q=%s", searchTerm)
 
-	client.Say(channel, resp)
+	nb.Send(channel, resp)
 }

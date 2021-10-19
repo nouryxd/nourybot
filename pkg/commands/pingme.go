@@ -3,12 +3,11 @@ package commands
 import (
 	"fmt"
 
-	"github.com/gempir/go-twitch-irc/v2"
+	"github.com/lyx0/nourybot/cmd/bot"
 )
 
-func Pingme(channel string, user string, client *twitch.Client) {
+func Pingme(channel string, user string, nb *bot.Bot) {
 	response := fmt.Sprintf("@%s", user)
 
-	client.Say(channel, response)
-
+	nb.Send(channel, response)
 }

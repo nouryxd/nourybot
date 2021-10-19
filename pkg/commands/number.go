@@ -1,16 +1,16 @@
 package commands
 
 import (
-	"github.com/gempir/go-twitch-irc/v2"
+	"github.com/lyx0/nourybot/cmd/bot"
 	"github.com/lyx0/nourybot/pkg/api"
 )
 
-func RandomNumber(channel string, client *twitch.Client) {
+func RandomNumber(channel string, nb *bot.Bot) {
 	reply := api.RandomNumber()
-	client.Say(channel, string(reply))
+	nb.Send(channel, string(reply))
 }
 
-func Number(channel string, number string, client *twitch.Client) {
+func Number(channel string, number string, nb *bot.Bot) {
 	reply := api.Number(number)
-	client.Say(channel, string(reply))
+	nb.Send(channel, string(reply))
 }

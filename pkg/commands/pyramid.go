@@ -5,17 +5,17 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/gempir/go-twitch-irc/v2"
+	"github.com/lyx0/nourybot/cmd/bot"
 )
 
-func Pyramid(channel string, size string, emote string, client *twitch.Client) {
+func Pyramid(channel string, size string, emote string, nb *bot.Bot) {
 	if size[0] == '.' || size[0] == '/' {
-		client.Say(channel, ":tf:")
+		nb.Send(channel, ":tf:")
 		return
 	}
 
 	if emote[0] == '.' || emote[0] == '/' {
-		client.Say(channel, ":tf:")
+		nb.Send(channel, ":tf:")
 		return
 	}
 
@@ -23,27 +23,27 @@ func Pyramid(channel string, size string, emote string, client *twitch.Client) {
 	pyramidEmote := fmt.Sprint(emote + " ")
 
 	if err != nil {
-		client.Say(channel, "Something went wrong")
+		nb.Send(channel, "Something went wrong")
 	}
 
 	if pyramidSize == 1 {
-		client.Say(channel, fmt.Sprint(pyramidEmote+"..."))
+		nb.Send(channel, fmt.Sprint(pyramidEmote+"..."))
 		return
 	}
 
 	if pyramidSize > 20 {
-		client.Say(channel, "Max pyramid size is 20")
+		nb.Send(channel, "Max pyramid size is 20")
 		return
 	}
 
 	for i := 0; i <= pyramidSize; i++ {
 		pyramidMessageAsc := strings.Repeat(pyramidEmote, i)
 		// fmt.Println(pyramidMessageAsc)
-		client.Say(channel, pyramidMessageAsc)
+		nb.Send(channel, pyramidMessageAsc)
 	}
 	for j := pyramidSize - 1; j >= 0; j-- {
 		pyramidMessageDesc := strings.Repeat(pyramidEmote, j)
 		// fmt.Println(pyramidMessageDesc)
-		client.Say(channel, pyramidMessageDesc)
+		nb.Send(channel, pyramidMessageDesc)
 	}
 }

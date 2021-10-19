@@ -2,23 +2,16 @@ package handlers
 
 import (
 	"strings"
-	"time"
 
 	"github.com/gempir/go-twitch-irc/v2"
+	"github.com/lyx0/nourybot/cmd/bot"
 	"github.com/lyx0/nourybot/pkg/commands"
 	"github.com/lyx0/nourybot/pkg/utils"
-	log "github.com/sirupsen/logrus"
+	"github.com/sirupsen/logrus"
 )
 
-// HandleCommand receives a twitch.PrivateMessage from
-// HandlePrivateMessage where it found a command in it.
-// HandleCommand passes on the message to the specific
-// command handler for further action.
-func HandleCommand(message twitch.PrivateMessage, twitchClient *twitch.Client, uptime time.Time) {
-	log.Info("fn HandleCommand")
-
-	// Counter that increments on every command call.
-	utils.CommandUsed()
+func Command(message twitch.PrivateMessage, nb *bot.Bot) {
+	logrus.Info("fn Command")
 
 	// commandName is the actual command name without the prefix.
 	commandName := strings.ToLower(strings.SplitN(message.Message, " ", 3)[0][2:])
@@ -34,238 +27,242 @@ func HandleCommand(message twitch.PrivateMessage, twitchClient *twitch.Client, u
 	// Useful for checking if enough cmdParams are given.
 	msgLen := len(strings.SplitN(message.Message, " ", -2))
 
+	// target channel
+	target := message.Channel
+
 	switch commandName {
 	case "":
 		if msgLen == 1 {
-			twitchClient.Say(message.Channel, "Why yes, that's my prefix :)")
-			return
+			nb.Send(target, "xd")
 		}
 	case "botstatus":
 		if msgLen == 1 {
-			twitchClient.Say(message.Channel, "Usage: ()botstatus [username]")
+			nb.Send(target, "Usage: ()botstatus [username]")
 			return
 		} else {
-			commands.BotStatus(message.Channel, cmdParams[1], twitchClient)
+			commands.BotStatus(target, cmdParams[1], nb)
 			return
 		}
 	case "bttvemotes":
-		commands.BttvEmotes(message.Channel, twitchClient)
+		commands.BttvEmotes(target, nb)
 		return
 	case "cf":
-		commands.Coinflip(message.Channel, twitchClient)
+		commands.Coinflip(target, nb)
 		return
 	case "coin":
-		commands.Coinflip(message.Channel, twitchClient)
+		commands.Coinflip(target, nb)
 		return
 	case "coinflip":
-		commands.Coinflip(message.Channel, twitchClient)
+		commands.Coinflip(target, nb)
 		return
 	case "color":
-		commands.Color(message, twitchClient)
+		commands.Color(message, nb)
 		return
 	case "mycolor":
-		commands.Color(message, twitchClient)
+		commands.Color(message, nb)
 		return
 	case "echo":
-		commands.Echo(message.Channel, message.Message[7:len(message.Message)], twitchClient)
+		commands.Echo(target, message.Message[7:len(message.Message)], nb)
 		return
 	case "8ball":
-		commands.EightBall(message.Channel, twitchClient)
+		commands.EightBall(target, nb)
 		return
 	case "ffzemotes":
-		commands.FfzEmotes(message.Channel, twitchClient)
+		commands.FfzEmotes(target, nb)
 		return
+
 	case "fill":
 		if msgLen == 1 {
-			twitchClient.Say(message.Channel, "Usage: ()fill [emote]")
+			nb.Send(target, "Usage: ()fill [emote]")
 			return
 		} else {
-			commands.Fill(message.Channel, message.Message[7:len(message.Message)], twitchClient)
+			commands.Fill(target, message.Message[7:len(message.Message)], nb)
 			return
 		}
 	case "firstline":
 		if msgLen == 1 {
-			twitchClient.Say(message.Channel, "Usage: ()firstline [channel] [user]")
+			nb.Send(target, "Usage: ()firstline [channel] [user]")
 			return
 		} else if msgLen == 2 {
-			commands.Firstline(message.Channel, message.Channel, cmdParams[1], twitchClient)
+			commands.Firstline(target, target, cmdParams[1], nb)
 			return
 		} else {
-			commands.Firstline(message.Channel, cmdParams[1], cmdParams[2], twitchClient)
+			commands.Firstline(target, cmdParams[1], cmdParams[2], nb)
 			return
 		}
 	case "fl":
 		if msgLen == 1 {
-			twitchClient.Say(message.Channel, "Usage: ()firstline [channel] [user]")
+			nb.Send(target, "Usage: ()firstline [channel] [user]")
 			return
 		} else if msgLen == 2 {
-			commands.Firstline(message.Channel, message.Channel, cmdParams[1], twitchClient)
+			commands.Firstline(target, target, cmdParams[1], nb)
 			return
 		} else {
-			commands.Firstline(message.Channel, cmdParams[1], cmdParams[2], twitchClient)
+			commands.Firstline(target, cmdParams[1], cmdParams[2], nb)
 			return
 		}
 	case "followage":
 		if msgLen <= 2 {
-			twitchClient.Say(message.Channel, "Usage: ()followage [channel] [user]")
+			nb.Send(target, "Usage: ()followage [channel] [user]")
 			return
 		} else {
-			commands.Followage(message.Channel, cmdParams[1], cmdParams[2], twitchClient)
+			commands.Followage(target, cmdParams[1], cmdParams[2], nb)
 			return
 		}
 	case "game":
 		if msgLen == 1 {
-			twitchClient.Say(message.Channel, "Usage: ()game [channel]")
+			nb.Send(target, "Usage: ()game [channel]")
 			return
 		} else {
-			commands.Game(message.Channel, cmdParams[1], twitchClient)
+			commands.Game(target, cmdParams[1], nb)
 		}
 	case "godoc":
 		if msgLen == 1 {
-			twitchClient.Say(message.Channel, "Usage: ()godoc [term]")
+			nb.Send(target, "Usage: ()godoc [term]")
 			return
 		} else {
-			commands.Godocs(message.Channel, message.Message[8:len(message.Message)], twitchClient)
+			commands.Godocs(target, message.Message[8:len(message.Message)], nb)
 			return
 		}
 	case "godocs":
 		if msgLen == 1 {
-			twitchClient.Say(message.Channel, "Usage: ()godoc [term]")
+			nb.Send(target, "Usage: ()godoc [term]")
 			return
 		} else {
-			commands.Godocs(message.Channel, message.Message[9:len(message.Message)], twitchClient)
+			commands.Godocs(target, message.Message[9:len(message.Message)], nb)
 			return
 		}
 	case "num":
 		if msgLen == 1 {
-			commands.RandomNumber(message.Channel, twitchClient)
+			commands.RandomNumber(target, nb)
 		} else {
-			commands.Number(message.Channel, cmdParams[1], twitchClient)
+			commands.Number(target, cmdParams[1], nb)
 		}
 	case "number":
 		if msgLen == 1 {
-			commands.RandomNumber(message.Channel, twitchClient)
+			commands.RandomNumber(target, nb)
 		} else {
-			commands.Number(message.Channel, cmdParams[1], twitchClient)
+			commands.Number(target, cmdParams[1], nb)
 		}
 	case "ping":
-		commands.Ping(message.Channel, twitchClient, uptime)
+		commands.Ping(target, nb)
 		return
 	case "pingme":
-		commands.Pingme(message.Channel, message.User.DisplayName, twitchClient)
+		commands.Pingme(target, message.User.DisplayName, nb)
 		return
 	case "preview":
 		if msgLen == 1 {
-			twitchClient.Say(message.Channel, "Usage: ()preview [channel]")
+			nb.Send(target, "Usage: ()preview [channel]")
 			return
 		} else {
-			commands.Thumbnail(message.Channel, cmdParams[1], twitchClient)
+			commands.Thumbnail(target, cmdParams[1], nb)
 			return
 		}
 	case "profilepicture":
 		if msgLen == 1 {
-			twitchClient.Say(message.Channel, "Usage: ()profilepicture [user]")
+			nb.Send(target, "Usage: ()profilepicture [user]")
 			return
 		}
-		commands.ProfilePicture(message.Channel, cmdParams[1], twitchClient)
+		commands.ProfilePicture(target, cmdParams[1], nb)
 		return
 	case "pfp":
 		if msgLen == 1 {
-			twitchClient.Say(message.Channel, "Usage: ()pfp [user]")
+			nb.Send(target, "Usage: ()pfp [user]")
 			return
 		}
-		commands.ProfilePicture(message.Channel, cmdParams[1], twitchClient)
+		commands.ProfilePicture(target, cmdParams[1], nb)
 		return
+
 	case "pyramid":
 		if msgLen != 3 {
-			twitchClient.Say(message.Channel, "Usage: ()pyramid [size] [emote]")
+			nb.Send(target, "Usage: ()pyramid [size] [emote]")
 		} else if utils.ElevatedPrivsMessage(message) {
-			commands.Pyramid(message.Channel, cmdParams[1], cmdParams[2], twitchClient)
+			commands.Pyramid(target, cmdParams[1], cmdParams[2], nb)
 		} else {
-			twitchClient.Say(message.Channel, "Pleb's can't pyramid FeelsBadMan")
+			nb.Send(target, "Pleb's can't pyramid FeelsBadMan")
 		}
 	case "randomcat":
-		commands.RandomCat(message.Channel, twitchClient)
+		commands.RandomCat(target, nb)
 		return
 	case "randomdog":
-		commands.RandomDog(message.Channel, twitchClient)
+		commands.RandomDog(target, nb)
 		return
 	case "randomfox":
-		commands.RandomFox(message.Channel, twitchClient)
+		commands.RandomFox(target, nb)
 		return
 	case "randomxkcd":
-		commands.RandomXkcd(message.Channel, twitchClient)
+		commands.RandomXkcd(target, nb)
 		return
 	case "subage":
 		if msgLen < 3 {
-			twitchClient.Say(message.Channel, "Usage: ()subage [user] [streamer]")
+			nb.Send(target, "Usage: ()subage [user] [streamer]")
 			return
 		} else {
-			commands.Subage(message.Channel, cmdParams[1], cmdParams[2], twitchClient)
+			commands.Subage(target, cmdParams[1], cmdParams[2], nb)
 			return
 		}
 	case "thumb":
 		if msgLen == 1 {
-			twitchClient.Say(message.Channel, "Usage: ()thumbnail [channel]")
+			nb.Send(target, "Usage: ()thumbnail [channel]")
 			return
 		} else {
-			commands.Thumbnail(message.Channel, cmdParams[1], twitchClient)
+			commands.Thumbnail(target, cmdParams[1], nb)
 			return
 		}
 	case "thumbnail":
 		if msgLen == 1 {
-			twitchClient.Say(message.Channel, "Usage: ()thumbnail [channel]")
+			nb.Send(target, "Usage: ()thumbnail [channel]")
 			return
 		} else {
-			commands.Thumbnail(message.Channel, cmdParams[1], twitchClient)
+			commands.Thumbnail(target, cmdParams[1], nb)
 			return
 		}
 	case "title":
 		if msgLen == 1 {
-			commands.Title(message.Channel, message.Channel, twitchClient)
+			commands.Title(target, target, nb)
 			return
 		} else {
-			commands.Title(message.Channel, cmdParams[1], twitchClient)
+			commands.Title(target, cmdParams[1], nb)
 			return
 		}
 	case "uptime":
 		if msgLen == 1 {
-			commands.Uptime(message.Channel, message.Channel, twitchClient)
+			commands.Uptime(target, target, nb)
 			return
 		} else {
-			commands.Uptime(message.Channel, cmdParams[1], twitchClient)
+			commands.Uptime(target, cmdParams[1], nb)
 			return
 		}
 	case "uid":
 		if msgLen == 1 {
-			twitchClient.Say(message.Channel, "Usage: ()uid [username]")
+			nb.Send(target, "Usage: ()uid [username]")
 			return
 		} else {
-			commands.Userid(message.Channel, cmdParams[1], twitchClient)
+			commands.Userid(target, cmdParams[1], nb)
 			return
 		}
 	case "userid":
 		if msgLen == 1 {
-			twitchClient.Say(message.Channel, "Usage: ()userid [username]")
+			nb.Send(target, "Usage: ()userid [username]")
 			return
 		} else {
-			commands.Userid(message.Channel, cmdParams[1], twitchClient)
+			commands.Userid(target, cmdParams[1], nb)
 			return
 		}
+
 	case "weather":
 		if msgLen == 1 {
-			twitchClient.Say(message.Channel, "Usage: ()weather [location]")
+			nb.Send(target, "Usage: ()weather [location]")
 			return
 		} else {
-			commands.Weather(message.Channel, message.Message[9:len(message.Message)], twitchClient)
+			commands.Weather(target, message.Message[9:len(message.Message)], nb)
 			return
 		}
 	case "xd":
-		commands.Xd(message.Channel, twitchClient)
-		return
-
+		commands.Xd(target, nb)
 	case "xkcd":
-		commands.Xkcd(message.Channel, twitchClient)
+		commands.Xkcd(target, nb)
 		return
 	}
+
 }

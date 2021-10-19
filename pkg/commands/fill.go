@@ -4,12 +4,12 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/gempir/go-twitch-irc/v2"
+	"github.com/lyx0/nourybot/cmd/bot"
 )
 
-func Fill(channel string, emote string, client *twitch.Client) {
+func Fill(channel string, emote string, nb *bot.Bot) {
 	if emote[0] == '.' || emote[0] == '/' {
-		client.Say(channel, ":tf:")
+		nb.Send(channel, ":tf:")
 		return
 	}
 
@@ -20,6 +20,6 @@ func Fill(channel string, emote string, client *twitch.Client) {
 	repeatCount := (499 / emoteLength)
 
 	reply := strings.Repeat(fmt.Sprintf(emote+" "), repeatCount)
-	client.Say(channel, reply)
+	nb.Send(channel, reply)
 
 }

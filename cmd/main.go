@@ -1,17 +1,42 @@
 package main
 
 import (
+	"fmt"
+	"time"
+
+	"github.com/gempir/go-twitch-irc/v2"
 	"github.com/lyx0/nourybot/cmd/bot"
 	"github.com/lyx0/nourybot/pkg/config"
+	"github.com/lyx0/nourybot/pkg/handlers"
 )
 
+var nb *bot.Bot
+
 func main() {
-	cfg := config.LoadConfig()
-	nb := bot.NewBot(cfg)
+	conf := config.LoadConfig()
 
-	nb.Join("nourybot")
+	nb = &bot.Bot{
+		TwitchClient: twitch.NewClient(conf.Username, conf.Oauth),
+		Uptime:       time.Now(),
+	}
 
-	nb.Say("nourybot", "HeyGuys")
+	nb.TwitchClient.OnPrivateMessage(func(message twitch.PrivateMessage) {
+		// If channelID is missing something must have gone wrong.
+		channelID := message.Tags["room-id"]
+		if channelID == "" {
+			fmt.Printf("Missing room-id tag in message")
+			return
+		}
 
-	nb.Connect()
+		// So that the bot doesn't repeat itself.
+		if message.Tags["user-id"] == "596581605" {
+			return
+		}
+
+		handlers.PrivateMessage(message, nb)
+	})
+
+	nb.TwitchClient.Join("nouryqt", "nourybot")
+	nb.Send("nourybot", "HeyGuys")
+	nb.TwitchClient.Connect()
 }

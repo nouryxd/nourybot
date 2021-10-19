@@ -3,16 +3,16 @@ package commands
 import (
 	"fmt"
 
-	"github.com/gempir/go-twitch-irc/v2"
+	"github.com/lyx0/nourybot/cmd/bot"
 	"github.com/lyx0/nourybot/pkg/api/ivr"
 )
 
-func ProfilePicture(channel string, target string, client *twitch.Client) {
+func ProfilePicture(channel string, target string, nb *bot.Bot) {
 	reply, err := ivr.ProfilePicture(target)
 	if err != nil {
-		client.Say(channel, fmt.Sprint(err))
+		nb.Send(channel, fmt.Sprint(err))
 		return
 	}
 
-	client.Say(channel, reply)
+	nb.Send(channel, reply)
 }

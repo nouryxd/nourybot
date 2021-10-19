@@ -1,11 +1,11 @@
 package commands
 
 import (
-	"github.com/gempir/go-twitch-irc/v2"
+	"github.com/lyx0/nourybot/cmd/bot"
 	"github.com/lyx0/nourybot/pkg/api/ivr"
 )
 
-func Userid(channel string, target string, client *twitch.Client) {
+func Userid(channel string, target string, nb *bot.Bot) {
 	reply := ivr.Userid(target)
-	client.Say(channel, reply)
+	nb.Send(channel, reply)
 }

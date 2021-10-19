@@ -1,7 +1,7 @@
 package commands
 
-import "github.com/gempir/go-twitch-irc/v2"
+import "github.com/lyx0/nourybot/cmd/bot"
 
-func Xd(channel string, client *twitch.Client) {
-	client.Say(channel, "xd")
+func Xd(channel string, nb *bot.Bot) {
+	nb.Send(channel, "xd")
 }

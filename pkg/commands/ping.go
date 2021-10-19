@@ -2,17 +2,17 @@ package commands
 
 import (
 	"fmt"
-	"time"
 
-	"github.com/gempir/go-twitch-irc/v2"
+	"github.com/lyx0/nourybot/cmd/bot"
 	"github.com/lyx0/nourybot/pkg/humanize"
 	"github.com/lyx0/nourybot/pkg/utils"
 )
 
-func Ping(channel string, client *twitch.Client, uptime time.Time) {
+func Ping(target string, nb *bot.Bot) {
 	commandCount := fmt.Sprint(utils.GetCommandsUsed())
-	botUptime := humanize.Time(uptime)
+	botUptime := humanize.Time(nb.Uptime)
 
-	reply := fmt.Sprintf("Pong! :) Commands used: %v, Last restart: %v", commandCount, botUptime)
-	client.Say(channel, reply)
+	reply := fmt.Sprintf("Pong! :) Commands Used: %v, Last restart: %v", commandCount, botUptime)
+
+	nb.Send(target, reply)
 }

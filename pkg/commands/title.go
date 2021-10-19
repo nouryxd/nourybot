@@ -3,17 +3,17 @@ package commands
 import (
 	"fmt"
 
-	"github.com/gempir/go-twitch-irc/v2"
+	"github.com/lyx0/nourybot/cmd/bot"
 	"github.com/lyx0/nourybot/pkg/api/aiden"
 	log "github.com/sirupsen/logrus"
 )
 
-func Title(channel string, target string, client *twitch.Client) {
+func Title(channel string, target string, nb *bot.Bot) {
 	title, err := aiden.ApiCall(fmt.Sprintf("api/v1/twitch/channel/%s/title", target))
 	if err != nil {
-		client.Say(channel, "Something went wrong FeelsBadMan")
+		nb.Send(channel, "Something went wrong FeelsBadMan")
 		log.Error(err)
 	}
 	reply := fmt.Sprintf("%s title is: %s", target, title)
-	client.Say(channel, reply)
+	nb.Send(channel, reply)
 }
