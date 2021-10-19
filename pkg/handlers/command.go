@@ -13,6 +13,8 @@ import (
 func Command(message twitch.PrivateMessage, nb *bot.Bot) {
 	logrus.Info("fn Command")
 
+	utils.CommandUsed()
+
 	// commandName is the actual command name without the prefix.
 	commandName := strings.ToLower(strings.SplitN(message.Message, " ", 3)[0][2:])
 
