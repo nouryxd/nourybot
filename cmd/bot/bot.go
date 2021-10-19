@@ -20,8 +20,8 @@ func (b *Bot) Send(target, text string) {
 		return
 	}
 
-	// if message[0] == '.' || message[0] == '/' {
-	// 	message = ". " + message
+	// if text[0] == '.' || text[0] == '/' {
+	// 	text = ". " + text
 	// }
 
 	if len(text) > 500 {

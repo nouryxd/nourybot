@@ -203,7 +203,7 @@ func Command(message twitch.PrivateMessage, nb *bot.Bot) {
 		}
 	case "thumb":
 		if msgLen == 1 {
-			nb.Send(target, "Usage: ()thumbnail [channel]")
+			nb.Send(target, "Usage: ()thumb [channel]")
 			return
 		} else {
 			commands.Thumbnail(target, cmdParams[1], nb)
@@ -249,7 +249,6 @@ func Command(message twitch.PrivateMessage, nb *bot.Bot) {
 			commands.Userid(target, cmdParams[1], nb)
 			return
 		}
-
 	case "weather":
 		if msgLen == 1 {
 			nb.Send(target, "Usage: ()weather [location]")
