@@ -6,6 +6,7 @@ import (
 	"github.com/gempir/go-twitch-irc/v2"
 	"github.com/lyx0/nourybot/cmd/bot"
 	"github.com/lyx0/nourybot/pkg/commands"
+	"github.com/lyx0/nourybot/pkg/utils"
 	"github.com/sirupsen/logrus"
 )
 
@@ -83,7 +84,7 @@ func Command(message twitch.PrivateMessage, nb *bot.Bot) {
 			nb.Send(target, "Usage: ()firstline [channel] [user]")
 			return
 		} else if msgLen == 2 {
-			commands.Firstline(target, message.Channel, cmdParams[1], nb)
+			commands.Firstline(target, target, cmdParams[1], nb)
 			return
 		} else {
 			commands.Firstline(target, cmdParams[1], cmdParams[2], nb)
@@ -94,7 +95,7 @@ func Command(message twitch.PrivateMessage, nb *bot.Bot) {
 			nb.Send(target, "Usage: ()firstline [channel] [user]")
 			return
 		} else if msgLen == 2 {
-			commands.Firstline(target, message.Channel, cmdParams[1], nb)
+			commands.Firstline(target, target, cmdParams[1], nb)
 			return
 		} else {
 			commands.Firstline(target, cmdParams[1], cmdParams[2], nb)
@@ -115,13 +116,139 @@ func Command(message twitch.PrivateMessage, nb *bot.Bot) {
 		} else {
 			commands.Game(target, cmdParams[1], nb)
 		}
-
-	case "randomxkcd":
-		commands.RandomXkcd(target, nb)
-		return
+	case "godoc":
+		if msgLen == 1 {
+			nb.Send(target, "Usage: ()godoc [term]")
+			return
+		} else {
+			commands.Godocs(target, message.Message[8:len(message.Message)], nb)
+			return
+		}
+	case "godocs":
+		if msgLen == 1 {
+			nb.Send(target, "Usage: ()godoc [term]")
+			return
+		} else {
+			commands.Godocs(target, message.Message[9:len(message.Message)], nb)
+			return
+		}
+	case "num":
+		if msgLen == 1 {
+			commands.RandomNumber(target, nb)
+		} else {
+			commands.Number(target, cmdParams[1], nb)
+		}
+	case "number":
+		if msgLen == 1 {
+			commands.RandomNumber(target, nb)
+		} else {
+			commands.Number(target, cmdParams[1], nb)
+		}
 	case "ping":
 		commands.Ping(target, nb)
 		return
+	case "pingme":
+		commands.Pingme(target, message.User.DisplayName, nb)
+		return
+	case "preview":
+		if msgLen == 1 {
+			nb.Send(target, "Usage: ()preview [channel]")
+			return
+		} else {
+			commands.Thumbnail(target, cmdParams[1], nb)
+			return
+		}
+	case "profilepicture":
+		if msgLen == 1 {
+			nb.Send(target, "Usage: ()profilepicture [user]")
+			return
+		}
+		commands.ProfilePicture(target, cmdParams[1], nb)
+		return
+	case "pfp":
+		if msgLen == 1 {
+			nb.Send(target, "Usage: ()pfp [user]")
+			return
+		}
+		commands.ProfilePicture(target, cmdParams[1], nb)
+		return
+
+	case "pyramid":
+		if msgLen != 3 {
+			nb.Send(target, "Usage: ()pyramid [size] [emote]")
+		} else if utils.ElevatedPrivsMessage(message) {
+			commands.Pyramid(target, cmdParams[1], cmdParams[2], nb)
+		} else {
+			nb.Send(target, "Pleb's can't pyramid FeelsBadMan")
+		}
+	case "randomcat":
+		commands.RandomCat(target, nb)
+		return
+	case "randomdog":
+		commands.RandomDog(target, nb)
+		return
+	case "randomfox":
+		commands.RandomFox(target, nb)
+		return
+	case "randomxkcd":
+		commands.RandomXkcd(target, nb)
+		return
+	case "subage":
+		if msgLen < 3 {
+			nb.Send(target, "Usage: ()subage [user] [streamer]")
+			return
+		} else {
+			commands.Subage(target, cmdParams[1], cmdParams[2], nb)
+			return
+		}
+	case "thumb":
+		if msgLen == 1 {
+			nb.Send(target, "Usage: ()thumbnail [channel]")
+			return
+		} else {
+			commands.Thumbnail(target, cmdParams[1], nb)
+			return
+		}
+	case "thumbnail":
+		if msgLen == 1 {
+			nb.Send(target, "Usage: ()thumbnail [channel]")
+			return
+		} else {
+			commands.Thumbnail(target, cmdParams[1], nb)
+			return
+		}
+	case "title":
+		if msgLen == 1 {
+			commands.Title(target, target, nb)
+			return
+		} else {
+			commands.Title(target, cmdParams[1], nb)
+			return
+		}
+	case "uptime":
+		if msgLen == 1 {
+			commands.Uptime(target, target, nb)
+			return
+		} else {
+			commands.Uptime(target, cmdParams[1], nb)
+			return
+		}
+	case "uid":
+		if msgLen == 1 {
+			nb.Send(target, "Usage: ()uid [username]")
+			return
+		} else {
+			commands.Userid(target, cmdParams[1], nb)
+			return
+		}
+	case "userid":
+		if msgLen == 1 {
+			nb.Send(target, "Usage: ()userid [username]")
+			return
+		} else {
+			commands.Userid(target, cmdParams[1], nb)
+			return
+		}
 
 	case "weather":
 		if msgLen == 1 {
@@ -131,6 +258,8 @@ func Command(message twitch.PrivateMessage, nb *bot.Bot) {
 			commands.Weather(target, message.Message[9:len(message.Message)], nb)
 			return
 		}
+	case "xd":
+		commands.Xd(target, nb)
 	case "xkcd":
 		commands.Xkcd(target, nb)
 		return
