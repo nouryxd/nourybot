@@ -12,7 +12,7 @@ func Ping(target string, nb *bot.Bot) {
 	commandCount := fmt.Sprint(utils.GetCommandsUsed())
 	botUptime := humanize.Time(nb.Uptime)
 
-	reply := fmt.Sprintf("Pong! :) Commands Used: %v, Last restart: %v", commandCount, botUptime)
+	reply := fmt.Sprintf("Pong! :) Commands used: %v, Last restart: %v", commandCount, botUptime)
 
 	nb.Send(target, reply)
 }
