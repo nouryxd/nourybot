@@ -220,6 +220,14 @@ func HandleCommand(message twitch.PrivateMessage, twitchClient *twitch.Client, u
 			commands.Thumbnail(message.Channel, cmdParams[1], twitchClient)
 			return
 		}
+	case "title":
+		if msgLen == 1 {
+			commands.Title(message.Channel, message.Channel, twitchClient)
+			return
+		} else {
+			commands.Title(message.Channel, cmdParams[1], twitchClient)
+			return
+		}
 	case "uptime":
 		if msgLen == 1 {
 			commands.Uptime(message.Channel, message.Channel, twitchClient)
