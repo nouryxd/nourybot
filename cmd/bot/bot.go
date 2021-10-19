@@ -4,63 +4,33 @@ import (
 	"time"
 
 	twitch "github.com/gempir/go-twitch-irc/v2"
-	cfg "github.com/lyx0/nourybot/pkg/config"
-	"github.com/lyx0/nourybot/pkg/handlers"
-	log "github.com/sirupsen/logrus"
 )
 
 type Bot struct {
-	twitchClient *twitch.Client
-	cfg          *cfg.Config
+	TwitchClient *twitch.Client
 	Uptime       time.Time
 }
 
-func NewBot(cfg *cfg.Config) *Bot {
-
-	log.Info("fn Newbot")
-	twitchClient := twitch.NewClient(cfg.Username, cfg.Oauth)
-
-	return &Bot{
-		cfg:          cfg,
-		twitchClient: twitchClient,
-	}
+type Channel struct {
+	Name string
 }
 
-func (b *Bot) Connect() error {
-	log.Info("fn Connect")
-
-	b.Uptime = time.Now()
-
-	b.twitchClient.OnPrivateMessage(func(message twitch.PrivateMessage) {
-		handlers.HandlePrivateMessage(message, b.twitchClient, b.cfg, b.Uptime)
-	})
-
-	b.twitchClient.OnWhisperMessage(func(message twitch.WhisperMessage) {
-		handlers.HandleWhisperMessage(message, b.twitchClient)
-	})
-
-	err := b.twitchClient.Connect()
-	if err != nil {
-		log.Error("Error Connecting from Twitch: ", err)
+func (b *Bot) Send(target, text string) {
+	if len(text) == 0 {
+		return
 	}
 
-	return err
-}
+	// if message[0] == '.' || message[0] == '/' {
+	// 	message = ". " + message
+	// }
 
-func (b *Bot) Disconnect() error {
-	err := b.twitchClient.Disconnect()
-	if err != nil {
-		log.Error("Error Disconnecting from Twitch: ", err)
+	if len(text) > 500 {
+		firstMessage := text[0:499]
+		secondMessage := text[499:]
+		b.TwitchClient.Say(target, firstMessage)
+		b.TwitchClient.Say(target, secondMessage)
+		return
 	}
 
-	return err
-}
-
-func (b *Bot) Say(channel string, message string) {
-	b.twitchClient.Say(channel, message)
-}
-
-func (b *Bot) Join(channel string) {
-	log.Info("fn Join")
-	b.twitchClient.Join(channel)
+	b.TwitchClient.Say(target, text)
 }

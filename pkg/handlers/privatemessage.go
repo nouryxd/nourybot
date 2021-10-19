@@ -1,10 +1,8 @@
 package handlers
 
 import (
-	"time"
-
 	"github.com/gempir/go-twitch-irc/v2"
-	"github.com/lyx0/nourybot/pkg/config"
+	"github.com/lyx0/nourybot/cmd/bot"
 	log "github.com/sirupsen/logrus"
 )
 
@@ -12,7 +10,7 @@ import (
 // *twitch.Client and *config.Config and has the logic to decide if the provided
 // PrivateMessage is a command or not and passes it on accordingly.
 // Typical twitch message tags https://paste.ivr.fi/nopiradodo.lua
-func HandlePrivateMessage(message twitch.PrivateMessage, client *twitch.Client, cfg *config.Config, uptime time.Time) {
+func PrivateMessage(message twitch.PrivateMessage, nb *bot.Bot) {
 	log.Info("fn HandlePrivateMessage")
 	// log.Info(message)
 
@@ -28,10 +26,6 @@ func HandlePrivateMessage(message twitch.PrivateMessage, client *twitch.Client, 
 
 	// Message was sent from the Bot. Don't act on it
 	// so that we don't repeat ourself.
-	botUserId := cfg.BotUserId
-	if message.Tags["user-id"] == botUserId {
-		return
-	}
 
 	// Since our command prefix is () ignore every message
 	// that is less than 2
@@ -40,7 +34,7 @@ func HandlePrivateMessage(message twitch.PrivateMessage, client *twitch.Client, 
 		// Message starts with (), pass it on to
 		// the command handler.
 		if message.Message[:2] == "()" {
-			HandleCommand(message, client, uptime)
+			Command(message, nb)
 			return
 		}
 	}
