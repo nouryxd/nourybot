@@ -36,8 +36,24 @@ func Command(message twitch.PrivateMessage, nb *bot.Bot) {
 			nb.Send(message.Channel, cmdParams[1])
 			return
 		}
+	case "randomxkcd":
+		commands.RandomXkcd(message.Channel, nb)
+		return
 	case "ping":
 		commands.Ping(message.Channel, nb)
+		return
+
+	case "weather":
+		if msgLen == 1 {
+			nb.Send(message.Channel, "Usage: ()weather [location]")
+			return
+		} else {
+			commands.Weather(message.Channel, message.Message[9:len(message.Message)], nb)
+			return
+		}
+	case "xkcd":
+		commands.Xkcd(message.Channel, nb)
+		return
 	}
 
 }
