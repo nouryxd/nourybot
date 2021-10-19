@@ -11,7 +11,7 @@ import (
 // PrivateMessage is a command or not and passes it on accordingly.
 // Typical twitch message tags https://paste.ivr.fi/nopiradodo.lua
 func PrivateMessage(message twitch.PrivateMessage, nb *bot.Bot) {
-	log.Info("fn HandlePrivateMessage")
+	log.Info("fn PrivateMessage")
 	// log.Info(message)
 
 	// roomId is the Twitch UserID of the channel the message
@@ -23,9 +23,6 @@ func PrivateMessage(message twitch.PrivateMessage, nb *bot.Bot) {
 		log.Errorf("Missing room-id in message tag", roomId)
 		return
 	}
-
-	// Message was sent from the Bot. Don't act on it
-	// so that we don't repeat ourself.
 
 	// Since our command prefix is () ignore every message
 	// that is less than 2

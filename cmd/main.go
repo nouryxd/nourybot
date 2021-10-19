@@ -35,4 +35,7 @@ func main() {
 
 		handlers.PrivateMessage(message, nb)
 	})
+
+	nb.TwitchClient.Join("nourybot")
+	nb.TwitchClient.Connect()
 }
