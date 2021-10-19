@@ -5,6 +5,7 @@ import (
 
 	"github.com/gempir/go-twitch-irc/v2"
 	"github.com/lyx0/nourybot/cmd/bot"
+	"github.com/lyx0/nourybot/pkg/commands"
 	"github.com/sirupsen/logrus"
 )
 
@@ -35,6 +36,8 @@ func Command(message twitch.PrivateMessage, nb *bot.Bot) {
 			nb.Send(message.Channel, cmdParams[1])
 			return
 		}
+	case "ping":
+		commands.Ping(message.Channel, nb)
 	}
 
 }
