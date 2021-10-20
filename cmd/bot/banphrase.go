@@ -3,6 +3,7 @@ package bot
 import (
 	"bytes"
 	"encoding/json"
+	"fmt"
 	"io/ioutil"
 	"net/http"
 
@@ -57,9 +58,14 @@ func CheckMessage(text string) (bool, string) {
 	var responseObject banphraseResponse
 	json.Unmarshal(body, &responseObject)
 
+	reason := responseObject.BanphraseData.Name
+
+	log.Info("Bancheck: ", responseObject.Banned)
+	log.Info("Reason: ", reason)
+
 	log.Info("Bancheck: ", responseObject.Banned)
 	if responseObject.Banned {
-		return true, "[banphrased] monkaS"
+		return true, fmt.Sprintf("Banphrased, reason: %s", reason)
 	} else {
 		return false, "okay"
 	}
