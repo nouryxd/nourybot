@@ -17,5 +17,4 @@ func Weather(channel string, location string, nb *bot.Bot) {
 	}
 
 	nb.Send(channel, reply)
-
 }

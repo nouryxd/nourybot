@@ -37,6 +37,7 @@ func Command(message twitch.PrivateMessage, nb *bot.Bot) {
 		if msgLen == 1 {
 			nb.Send(target, "xd")
 		}
+
 	case "botstatus":
 		if msgLen == 1 {
 			nb.Send(target, "Usage: ()botstatus [username]")
@@ -45,30 +46,39 @@ func Command(message twitch.PrivateMessage, nb *bot.Bot) {
 			commands.BotStatus(target, cmdParams[1], nb)
 			return
 		}
+
 	case "bttvemotes":
 		commands.BttvEmotes(target, nb)
 		return
+
 	case "cf":
 		commands.Coinflip(target, nb)
 		return
+
 	case "coin":
 		commands.Coinflip(target, nb)
 		return
+
 	case "coinflip":
 		commands.Coinflip(target, nb)
 		return
+
 	case "color":
 		commands.Color(message, nb)
 		return
+
 	case "mycolor":
 		commands.Color(message, nb)
 		return
+
 	case "echo":
 		commands.Echo(target, message.Message[7:len(message.Message)], nb)
 		return
+
 	case "8ball":
 		commands.EightBall(target, nb)
 		return
+
 	case "ffzemotes":
 		commands.FfzEmotes(target, nb)
 		return
@@ -81,6 +91,7 @@ func Command(message twitch.PrivateMessage, nb *bot.Bot) {
 			commands.Fill(target, message.Message[7:len(message.Message)], nb)
 			return
 		}
+
 	case "firstline":
 		if msgLen == 1 {
 			nb.Send(target, "Usage: ()firstline [channel] [user]")
@@ -92,6 +103,7 @@ func Command(message twitch.PrivateMessage, nb *bot.Bot) {
 			commands.Firstline(target, cmdParams[1], cmdParams[2], nb)
 			return
 		}
+
 	case "fl":
 		if msgLen == 1 {
 			nb.Send(target, "Usage: ()firstline [channel] [user]")
@@ -103,6 +115,7 @@ func Command(message twitch.PrivateMessage, nb *bot.Bot) {
 			commands.Firstline(target, cmdParams[1], cmdParams[2], nb)
 			return
 		}
+
 	case "followage":
 		if msgLen <= 2 {
 			nb.Send(target, "Usage: ()followage [channel] [user]")
@@ -111,6 +124,7 @@ func Command(message twitch.PrivateMessage, nb *bot.Bot) {
 			commands.Followage(target, cmdParams[1], cmdParams[2], nb)
 			return
 		}
+
 	case "game":
 		if msgLen == 1 {
 			nb.Send(target, "Usage: ()game [channel]")
@@ -118,6 +132,7 @@ func Command(message twitch.PrivateMessage, nb *bot.Bot) {
 		} else {
 			commands.Game(target, cmdParams[1], nb)
 		}
+
 	case "godoc":
 		if msgLen == 1 {
 			nb.Send(target, "Usage: ()godoc [term]")
@@ -126,6 +141,7 @@ func Command(message twitch.PrivateMessage, nb *bot.Bot) {
 			commands.Godocs(target, message.Message[8:len(message.Message)], nb)
 			return
 		}
+
 	case "godocs":
 		if msgLen == 1 {
 			nb.Send(target, "Usage: ()godoc [term]")
@@ -134,24 +150,29 @@ func Command(message twitch.PrivateMessage, nb *bot.Bot) {
 			commands.Godocs(target, message.Message[9:len(message.Message)], nb)
 			return
 		}
+
 	case "num":
 		if msgLen == 1 {
 			commands.RandomNumber(target, nb)
 		} else {
 			commands.Number(target, cmdParams[1], nb)
 		}
+
 	case "number":
 		if msgLen == 1 {
 			commands.RandomNumber(target, nb)
 		} else {
 			commands.Number(target, cmdParams[1], nb)
 		}
+
 	case "ping":
 		commands.Ping(target, nb)
 		return
+
 	case "pingme":
 		commands.Pingme(target, message.User.DisplayName, nb)
 		return
+
 	case "preview":
 		if msgLen == 1 {
 			nb.Send(target, "Usage: ()preview [channel]")
@@ -160,18 +181,22 @@ func Command(message twitch.PrivateMessage, nb *bot.Bot) {
 			commands.Thumbnail(target, cmdParams[1], nb)
 			return
 		}
+
 	case "profilepicture":
 		if msgLen == 1 {
 			nb.Send(target, "Usage: ()profilepicture [user]")
 			return
 		}
+
 		commands.ProfilePicture(target, cmdParams[1], nb)
 		return
+
 	case "pfp":
 		if msgLen == 1 {
 			nb.Send(target, "Usage: ()pfp [user]")
 			return
 		}
+
 		commands.ProfilePicture(target, cmdParams[1], nb)
 		return
 
@@ -183,33 +208,43 @@ func Command(message twitch.PrivateMessage, nb *bot.Bot) {
 		} else {
 			nb.Send(target, "Pleb's can't pyramid FeelsBadMan")
 		}
+
 	case "randomcat":
 		commands.RandomCat(target, nb)
 		return
+
 	case "cat":
 		commands.RandomCat(target, nb)
 		return
+
 	case "randomdog":
 		commands.RandomDog(target, nb)
 		return
+
 	case "dog":
 		commands.RandomDog(target, nb)
 		return
+
 	case "randomduck":
 		commands.RandomDuck(target, nb)
 		return
+
 	case "duck":
 		commands.RandomDuck(target, nb)
 		return
+
 	case "fox":
 		commands.RandomFox(target, nb)
 		return
+
 	case "randomfox":
 		commands.RandomFox(target, nb)
 		return
+
 	case "randomxkcd":
 		commands.RandomXkcd(target, nb)
 		return
+
 	case "subage":
 		if msgLen < 3 {
 			nb.Send(target, "Usage: ()subage [user] [streamer]")
@@ -218,6 +253,7 @@ func Command(message twitch.PrivateMessage, nb *bot.Bot) {
 			commands.Subage(target, cmdParams[1], cmdParams[2], nb)
 			return
 		}
+
 	case "thumb":
 		if msgLen == 1 {
 			nb.Send(target, "Usage: ()thumb [channel]")
@@ -226,6 +262,7 @@ func Command(message twitch.PrivateMessage, nb *bot.Bot) {
 			commands.Thumbnail(target, cmdParams[1], nb)
 			return
 		}
+
 	case "thumbnail":
 		if msgLen == 1 {
 			nb.Send(target, "Usage: ()thumbnail [channel]")
@@ -234,6 +271,7 @@ func Command(message twitch.PrivateMessage, nb *bot.Bot) {
 			commands.Thumbnail(target, cmdParams[1], nb)
 			return
 		}
+
 	case "title":
 		if msgLen == 1 {
 			commands.Title(target, target, nb)
@@ -242,6 +280,7 @@ func Command(message twitch.PrivateMessage, nb *bot.Bot) {
 			commands.Title(target, cmdParams[1], nb)
 			return
 		}
+
 	case "uptime":
 		if msgLen == 1 {
 			commands.Uptime(target, target, nb)
@@ -250,6 +289,7 @@ func Command(message twitch.PrivateMessage, nb *bot.Bot) {
 			commands.Uptime(target, cmdParams[1], nb)
 			return
 		}
+
 	case "uid":
 		if msgLen == 1 {
 			nb.Send(target, "Usage: ()uid [username]")
@@ -258,6 +298,7 @@ func Command(message twitch.PrivateMessage, nb *bot.Bot) {
 			commands.Userid(target, cmdParams[1], nb)
 			return
 		}
+
 	case "userid":
 		if msgLen == 1 {
 			nb.Send(target, "Usage: ()userid [username]")
@@ -266,6 +307,7 @@ func Command(message twitch.PrivateMessage, nb *bot.Bot) {
 			commands.Userid(target, cmdParams[1], nb)
 			return
 		}
+
 	case "weather":
 		if msgLen == 1 {
 			nb.Send(target, "Usage: ()weather [location]")
@@ -274,11 +316,13 @@ func Command(message twitch.PrivateMessage, nb *bot.Bot) {
 			commands.Weather(target, message.Message[9:len(message.Message)], nb)
 			return
 		}
+
 	case "xd":
 		commands.Xd(target, nb)
+		return
+
 	case "xkcd":
 		commands.Xkcd(target, nb)
 		return
 	}
-
 }
