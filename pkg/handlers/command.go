@@ -186,8 +186,23 @@ func Command(message twitch.PrivateMessage, nb *bot.Bot) {
 	case "randomcat":
 		commands.RandomCat(target, nb)
 		return
+	case "cat":
+		commands.RandomCat(target, nb)
+		return
 	case "randomdog":
 		commands.RandomDog(target, nb)
+		return
+	case "dog":
+		commands.RandomDog(target, nb)
+		return
+	case "randomduck":
+		commands.RandomDuck(target, nb)
+		return
+	case "duck":
+		commands.RandomDuck(target, nb)
+		return
+	case "fox":
+		commands.RandomFox(target, nb)
 		return
 	case "randomfox":
 		commands.RandomFox(target, nb)
