@@ -32,5 +32,11 @@ func (b *Bot) Send(target, text string) {
 		return
 	}
 
-	b.TwitchClient.Say(target, text)
+	banned, reason := CheckMessage(text)
+	if banned {
+		b.TwitchClient.Say(target, reason)
+	} else {
+		b.TwitchClient.Say(target, text)
+	}
+
 }
