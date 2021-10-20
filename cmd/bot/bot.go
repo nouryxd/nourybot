@@ -27,6 +27,18 @@ func (b *Bot) Send(target, text string) {
 	// 	text = ". " + text
 	// }
 
+	// If a message is too long for a single twitch
+	// message, split it into two messages.
+	if len(text) > 500 {
+		firstMessage := text[0:499]
+		secondMessage := text[499:]
+
+		b.TwitchClient.Say(target, firstMessage)
+		b.TwitchClient.Say(target, secondMessage)
+
+		return
+	}
+
 	// check the message for bad words before we say it
 	messageBanned, banReason := CheckMessage(text)
 	if messageBanned {
@@ -37,18 +49,6 @@ func (b *Bot) Send(target, text string) {
 	} else {
 		// Message was okay.
 		b.TwitchClient.Say(target, text)
-		return
-	}
-
-	// If a message is too long for a single twitch
-	// message, split it into two messages.
-	if len(text) > 500 {
-		firstMessage := text[0:499]
-		secondMessage := text[499:]
-
-		b.TwitchClient.Say(target, firstMessage)
-		b.TwitchClient.Say(target, secondMessage)
-
 		return
 	}
 
