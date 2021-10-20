@@ -33,6 +33,7 @@ func main() {
 			return
 		}
 
+		// Forward the message for further processing.
 		handlers.PrivateMessage(message, nb)
 	})
 
