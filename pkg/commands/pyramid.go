@@ -39,11 +39,14 @@ func Pyramid(channel string, size string, emote string, nb *bot.Bot) {
 	for i := 0; i <= pyramidSize; i++ {
 		pyramidMessageAsc := strings.Repeat(pyramidEmote, i)
 		// fmt.Println(pyramidMessageAsc)
+
 		nb.Send(channel, pyramidMessageAsc)
 	}
+
 	for j := pyramidSize - 1; j >= 0; j-- {
 		pyramidMessageDesc := strings.Repeat(pyramidEmote, j)
 		// fmt.Println(pyramidMessageDesc)
+
 		nb.Send(channel, pyramidMessageDesc)
 	}
 }

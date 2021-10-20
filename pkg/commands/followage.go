@@ -9,8 +9,10 @@ import (
 
 func Followage(channel string, streamer string, username string, nb *bot.Bot) {
 	ivrResponse, err := ivr.Followage(streamer, username)
+
 	if err != nil {
 		nb.Send(channel, fmt.Sprint(err))
 	}
+
 	nb.Send(channel, ivrResponse)
 }

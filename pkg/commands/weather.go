@@ -9,12 +9,13 @@ import (
 )
 
 func Weather(channel string, location string, nb *bot.Bot) {
-
 	reply, err := aiden.ApiCall(fmt.Sprintf("api/v1/misc/weather/%s", location))
+
 	if err != nil {
 		nb.Send(channel, "Something went wrong FeelsBadMan")
 		log.Error(err)
 	}
+
 	nb.Send(channel, reply)
 
 }

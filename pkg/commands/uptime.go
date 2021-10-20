@@ -9,8 +9,8 @@ import (
 )
 
 func Uptime(channel string, name string, nb *bot.Bot) {
-
-	resp, err := aiden.ApiCall(fmt.Sprintf("api/v1/twitch/channel/%s/uptime", name))
+	resp,
+		err := aiden.ApiCall(fmt.Sprintf("api/v1/twitch/channel/%s/uptime", name))
 	if err != nil {
 		nb.Send(channel, "Something went wrong FeelsBadMan")
 		log.Error(err)

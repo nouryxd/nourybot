@@ -9,6 +9,7 @@ import (
 
 func ProfilePicture(channel string, target string, nb *bot.Bot) {
 	reply, err := ivr.ProfilePicture(target)
+
 	if err != nil {
 		nb.Send(channel, fmt.Sprint(err))
 		return

@@ -7,5 +7,6 @@ import (
 
 func Userid(channel string, target string, nb *bot.Bot) {
 	reply := ivr.Userid(target)
+
 	nb.Send(channel, reply)
 }

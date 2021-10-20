@@ -8,6 +8,7 @@ import (
 
 func EightBall(channel string, nb *bot.Bot) {
 	resp, err := aiden.ApiCall("api/v1/misc/8ball")
+
 	if err != nil {
 		log.Error(err)
 		nb.Send(channel, "Something went wrong FeelsBadMan")

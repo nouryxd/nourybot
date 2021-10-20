@@ -10,6 +10,7 @@ import (
 
 func BotStatus(channel string, name string, nb *bot.Bot) {
 	resp, err := aiden.ApiCall(fmt.Sprintf("api/v1/twitch/botStatus/%s?includeLimits=1", name))
+
 	if err != nil {
 		nb.Send(channel, "Something went wrong FeelsBadMan")
 		log.Error(err)

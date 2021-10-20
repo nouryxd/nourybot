@@ -7,5 +7,6 @@ import (
 
 func RandomXkcd(channel string, nb *bot.Bot) {
 	reply := api.RandomXkcd()
+
 	nb.Send(channel, reply)
 }

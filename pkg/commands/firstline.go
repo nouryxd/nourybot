@@ -9,9 +9,11 @@ import (
 
 func Firstline(channel string, streamer string, username string, nb *bot.Bot) {
 	ivrResponse, err := ivr.FirstLine(streamer, username)
+
 	if err != nil {
 		nb.Send(channel, fmt.Sprint(err))
 		return
 	}
+
 	nb.Send(channel, ivrResponse)
 }
