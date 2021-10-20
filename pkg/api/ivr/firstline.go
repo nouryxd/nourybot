@@ -20,8 +20,10 @@ var (
 	firstLineBaseUrl = "https://api.ivr.fi/logs/firstmessage"
 )
 
-func FirstLine(streamer string, username string) (string, error) {
-	resp, err := http.Get(fmt.Sprintf("%s/%s/%s", firstLineBaseUrl, streamer, username))
+// FirstLine returns the first line a given user has sent in a
+// given channel.
+func FirstLine(channel string, username string) (string, error) {
+	resp, err := http.Get(fmt.Sprintf("%s/%s/%s", firstLineBaseUrl, channel, username))
 	if err != nil {
 		log.Error(err)
 		return "Something went wrong FeelsBadMan", err

@@ -9,6 +9,8 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
+// Xkcd returns a link to the latest Xkcd comic.
+// API used: https://xkcd.com/info.0.json
 func Xkcd() string {
 	response, err := http.Get("https://xkcd.com/info.0.json")
 	if err != nil {

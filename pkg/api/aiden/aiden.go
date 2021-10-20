@@ -12,6 +12,8 @@ var (
 	basePath = "https://customapi.aidenwallis.co.uk/"
 )
 
+// ApiCall calls https://customapi.aidenwallis.co.uk/ with
+// a given uri and returns the result and an error.
 func ApiCall(uri string) (string, error) {
 	resp, err := http.Get(fmt.Sprint(basePath + uri))
 	if err != nil {

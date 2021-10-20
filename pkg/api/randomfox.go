@@ -13,6 +13,8 @@ type randomFoxResponse struct {
 	Link  string `json:"link"`
 }
 
+// RandomFox returns a link to a random fox picture.
+// API used: https://randomfox.ca/floof/
 func RandomFox() string {
 	response, err := http.Get("https://randomfox.ca/floof/")
 	if err != nil {

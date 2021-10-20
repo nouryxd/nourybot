@@ -12,6 +12,8 @@ type randomDuckResponse struct {
 	Url string `json:"url"`
 }
 
+// RandomDuck returns a link to a random duck picture.
+// API used: https://random-d.uk/api/random
 func RandomDuck() string {
 	response, err := http.Get("https://random-d.uk/api/random")
 	if err != nil {

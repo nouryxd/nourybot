@@ -12,6 +12,8 @@ type randomDogResponse struct {
 	Url string `json:"url"`
 }
 
+// RandomDog returns a link to a random dog picture.
+// API used: https://random.dog/woof.json
 func RandomDog() string {
 	response, err := http.Get("https://random.dog/woof.json")
 	if err != nil {

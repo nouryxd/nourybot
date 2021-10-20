@@ -19,6 +19,7 @@ type followageApiResponse struct {
 	Error      string `json:"error"`
 }
 
+// Followage returns the time since a given user followed a given streamer
 func Followage(streamer string, username string) (string, error) {
 	resp, err := http.Get(fmt.Sprintf("https://api.ivr.fi/twitch/subage/%s/%s", username, streamer))
 	if err != nil {

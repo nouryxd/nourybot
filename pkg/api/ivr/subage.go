@@ -34,8 +34,9 @@ var (
 	subageBaseUrl = "https://api.ivr.fi/twitch/subage"
 )
 
-func Subage(username string, streamer string) (string, error) {
-	resp, err := http.Get(fmt.Sprintf("%s/%s/%s", subageBaseUrl, username, streamer))
+// Subage returns the length a given user has been subscribed to a given channel.
+func Subage(username string, channel string) (string, error) {
+	resp, err := http.Get(fmt.Sprintf("%s/%s/%s", subageBaseUrl, username, channel))
 	if err != nil {
 		log.Error(err)
 		return "Something went wrong FeelsBadMan", err
@@ -64,7 +65,7 @@ func Subage(username string, streamer string) (string, error) {
 		return reply, nil
 	} else {
 		months := fmt.Sprint(responseObject.Cumulative.Months)
-		reply := fmt.Sprintf(username + " has been subscribed to " + streamer + " for " + months + " months.")
+		reply := fmt.Sprintf(username + " has been subscribed to " + channel + " for " + months + " months.")
 		return reply, nil
 	}
 }

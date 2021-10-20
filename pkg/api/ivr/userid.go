@@ -15,6 +15,7 @@ type uidApiResponse struct {
 	Error string `json:"error"`
 }
 
+// Userid returns the userID of a given user
 func Userid(username string) string {
 	resp, err := http.Get(fmt.Sprintf("https://api.ivr.fi/twitch/resolve/%s", username))
 	if err != nil {

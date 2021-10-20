@@ -12,6 +12,8 @@ type randomCatResponse struct {
 	File string `json:"file"`
 }
 
+// RandomCat returns a link to a random cat picture.
+// API used: https://aws.random.cat/meow
 func RandomCat() string {
 	response, err := http.Get("https://aws.random.cat/meow")
 	if err != nil {
