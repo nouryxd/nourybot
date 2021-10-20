@@ -45,8 +45,10 @@ func (b *Bot) Send(target, text string) {
 	if len(text) > 500 {
 		firstMessage := text[0:499]
 		secondMessage := text[499:]
+
 		b.TwitchClient.Say(target, firstMessage)
 		b.TwitchClient.Say(target, secondMessage)
+
 		return
 	}
 

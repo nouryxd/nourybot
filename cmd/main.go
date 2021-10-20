@@ -21,6 +21,7 @@ func main() {
 	}
 
 	nb.TwitchClient.OnPrivateMessage(func(message twitch.PrivateMessage) {
+
 		// If channelID is missing something must have gone wrong.
 		channelID := message.Tags["room-id"]
 		if channelID == "" {
@@ -28,7 +29,7 @@ func main() {
 			return
 		}
 
-		// So that the bot doesn't repeat itself.
+		// Don't act on bots own messages.
 		if message.Tags["user-id"] == "596581605" {
 			return
 		}

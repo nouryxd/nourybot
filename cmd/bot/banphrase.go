@@ -28,12 +28,13 @@ type banphraseData struct {
 	Permanent bool   `json:"permanent"`
 }
 
-// CheckMessage checks if a message contains
-// banphrased content.
-// If a message is allowed it returns
-// false, "okay"
-// If a message is not allowed it returns:
-// true, "[banphrased] monkaS"
+var (
+	banPhraseUrl = "https://pajlada.pajbot.com/api/v1/banphrases/test"
+)
+
+// CheckMessage checks a message against a banphrase api..
+// returns false, "okay" if a message was allowed
+// returns true, "[banphrased] monkaS" and the reason if not.
 // More information:
 // https://gist.github.com/pajlada/57464e519ba8d195a97ddcd0755f9715
 func CheckMessage(text string) (bool, string) {
@@ -47,7 +48,7 @@ func CheckMessage(text string) (bool, string) {
 		log.Error(err)
 	}
 
-	resp, err := http.Post("https://pajlada.pajbot.com/api/v1/banphrases/test", "application/json", bytes.NewBuffer(reqBody))
+	resp, err := http.Post(banPhraseUrl, "application/json", bytes.NewBuffer(reqBody))
 	if err != nil {
 		log.Error(err)
 	}
