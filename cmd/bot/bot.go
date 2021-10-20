@@ -23,6 +23,14 @@ func (b *Bot) Send(target, text string) {
 	// if text[0] == '.' || text[0] == '/' {
 	// 	text = ". " + text
 	// }
+	banned, reason := CheckMessage(text)
+	if banned {
+		b.TwitchClient.Say(target, reason)
+		return
+	} else {
+		b.TwitchClient.Say(target, text)
+		return
+	}
 
 	if len(text) > 500 {
 		firstMessage := text[0:499]
@@ -30,13 +38,6 @@ func (b *Bot) Send(target, text string) {
 		b.TwitchClient.Say(target, firstMessage)
 		b.TwitchClient.Say(target, secondMessage)
 		return
-	}
-
-	banned, reason := CheckMessage(text)
-	if banned {
-		b.TwitchClient.Say(target, reason)
-	} else {
-		b.TwitchClient.Say(target, text)
 	}
 
 }

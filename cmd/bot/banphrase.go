@@ -42,7 +42,7 @@ func CheckMessage(text string) (bool, string) {
 
 	log.Info(reqBody)
 
-	resp, err := http.Post("https://forsen.tv/api/v1/banphrases/test", "application/json", bytes.NewBuffer(reqBody))
+	resp, err := http.Post("https://pajlada.pajbot.com/api/v1/banphrases/test", "application/json", bytes.NewBuffer(reqBody))
 	if err != nil {
 		log.Error(err)
 	}
