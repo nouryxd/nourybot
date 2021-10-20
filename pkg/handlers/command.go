@@ -10,6 +10,8 @@ import (
 	"github.com/sirupsen/logrus"
 )
 
+// Command contains all the logic for routing mesasges containing commands
+// and will forward the messages to the specific command handlers.
 func Command(message twitch.PrivateMessage, nb *bot.Bot) {
 	logrus.Info("fn Command")
 

@@ -6,10 +6,8 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
-// HandlePrivateMessage takes in a twitch.Privatemessage,
-// *twitch.Client and *config.Config and has the logic to decide if the provided
-// PrivateMessage is a command or not and passes it on accordingly.
-// Typical twitch message tags https://paste.ivr.fi/nopiradodo.lua
+// PrivateMessage checks messages for correctness and forwards
+// commands to the command handler.
 func PrivateMessage(message twitch.PrivateMessage, nb *bot.Bot) {
 	log.Info("fn PrivateMessage")
 	// log.Info(message)

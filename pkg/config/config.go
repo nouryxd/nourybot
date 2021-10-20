@@ -15,6 +15,7 @@ type Config struct {
 
 func LoadConfig() *Config {
 	err := godotenv.Load()
+
 	if err != nil {
 		log.Fatal("Error loading .env")
 	}
@@ -24,6 +25,7 @@ func LoadConfig() *Config {
 		Oauth:     os.Getenv("TWITCH_PASS"),
 		BotUserId: os.Getenv("BOT_USER_ID"),
 	}
+
 	log.Info("Config loaded succesfully")
 
 	return cfg
