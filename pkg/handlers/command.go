@@ -21,10 +21,8 @@ func Command(message twitch.PrivateMessage, nb *bot.Bot) {
 	commandName := strings.ToLower(strings.SplitN(message.Message, " ", 3)[0][2:])
 
 	// cmdParams are additional command inputs.
-	// example:
-	// weather san antonio
-	// is
-	// commandName cmdParams[0] cmdParams[1]
+	// example: "weather san antonion
+	// is: commandName cmdParams[0] cmdParams[1]
 	cmdParams := strings.SplitN(message.Message, " ", 500)
 
 	// msgLen is the amount of words in the message without the prefix.
