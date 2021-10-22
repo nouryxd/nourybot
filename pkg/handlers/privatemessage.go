@@ -9,7 +9,7 @@ import (
 // PrivateMessage checks messages for correctness and forwards
 // commands to the command handler.
 func PrivateMessage(message twitch.PrivateMessage, nb *bot.Bot) {
-	log.Info("fn PrivateMessage")
+	// log.Info("fn PrivateMessage")
 	// log.Info(message)
 
 	// roomId is the Twitch UserID of the channel the message

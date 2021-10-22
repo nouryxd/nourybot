@@ -38,7 +38,7 @@ var (
 // More information:
 // https://gist.github.com/pajlada/57464e519ba8d195a97ddcd0755f9715
 func CheckMessage(text string) (bool, string) {
-	log.Info("fn CheckMessage")
+	// log.Info("fn CheckMessage")
 
 	// {"message": "AHAHAHAHA LUL"}
 	reqBody, err := json.Marshal(map[string]string{

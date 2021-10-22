@@ -36,7 +36,7 @@ func EmoteLookup(emote string) (string, error) {
 	var responseObject emoteLookupResponse
 	json.Unmarshal(body, &responseObject)
 
-	log.Info(responseObject.Tier)
+	// log.Info(responseObject.Tier)
 
 	// Emote not found
 	if responseObject.Error != "" {

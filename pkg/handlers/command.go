@@ -7,13 +7,12 @@ import (
 	"github.com/lyx0/nourybot/cmd/bot"
 	"github.com/lyx0/nourybot/pkg/commands"
 	"github.com/lyx0/nourybot/pkg/utils"
-	"github.com/sirupsen/logrus"
 )
 
 // Command contains all the logic for routing mesasges containing commands
 // and will forward the messages to the specific command handlers.
 func Command(message twitch.PrivateMessage, nb *bot.Bot) {
-	logrus.Info("fn Command")
+	// logrus.Info("fn Command")
 
 	utils.CommandUsed()
 
