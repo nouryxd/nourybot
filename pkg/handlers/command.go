@@ -241,6 +241,29 @@ func Command(message twitch.PrivateMessage, nb *bot.Bot) {
 		commands.RandomFox(target, nb)
 		return
 
+	case "rq":
+		if msgLen == 1 {
+			nb.Send(target, "Usage: ()rq [channel] [user]")
+			return
+		} else if msgLen == 2 {
+			commands.RandomQuote(target, target, cmdParams[1], nb)
+			return
+		} else {
+			commands.RandomQuote(target, cmdParams[1], cmdParams[2], nb)
+			return
+		}
+
+	case "randomquote":
+		if msgLen == 1 {
+			nb.Send(target, "Usage: ()randomquote [channel] [user]")
+			return
+		} else if msgLen == 2 {
+			commands.RandomQuote(target, target, cmdParams[1], nb)
+			return
+		} else {
+			commands.RandomQuote(target, cmdParams[1], cmdParams[2], nb)
+			return
+		}
 	case "randomxkcd":
 		commands.RandomXkcd(target, nb)
 		return
