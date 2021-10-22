@@ -16,14 +16,14 @@ type randomQuoteApiResponse struct {
 	Error   string `json:"Error"`
 }
 
-var (
-	randomQuoteBaseUrl = "https://api.ivr.fi/logs/rq"
-)
+var ()
 
 // FirstLine returns the first line a given user has sent in a
 // given channel.
 func RandomQuote(channel string, username string) (string, error) {
-	resp, err := http.Get(fmt.Sprintf("%s/%s/%s", randomQuoteBaseUrl, channel, username))
+	baseUrl := "https://api.ivr.fi/logs/rq"
+
+	resp, err := http.Get(fmt.Sprintf("%s/%s/%s", baseUrl, channel, username))
 	if err != nil {
 		log.Error(err)
 		return "Something went wrong FeelsBadMan", err

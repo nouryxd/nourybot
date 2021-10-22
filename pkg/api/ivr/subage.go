@@ -30,13 +30,11 @@ type subStreak struct {
 	Months int `json:"months"`
 }
 
-var (
-	subageBaseUrl = "https://api.ivr.fi/twitch/subage"
-)
-
 // Subage returns the length a given user has been subscribed to a given channel.
 func Subage(username string, channel string) (string, error) {
-	resp, err := http.Get(fmt.Sprintf("%s/%s/%s", subageBaseUrl, username, channel))
+	baseUrl := "https://api.ivr.fi/twitch/subage"
+
+	resp, err := http.Get(fmt.Sprintf("%s/%s/%s", baseUrl, username, channel))
 	if err != nil {
 		log.Error(err)
 		return "Something went wrong FeelsBadMan", err

@@ -16,14 +16,12 @@ type firstLineApiResponse struct {
 	Error   string `json:"error"`
 }
 
-var (
-	firstLineBaseUrl = "https://api.ivr.fi/logs/firstmessage"
-)
-
 // FirstLine returns the first line a given user has sent in a
 // given channel.
 func FirstLine(channel string, username string) (string, error) {
-	resp, err := http.Get(fmt.Sprintf("%s/%s/%s", firstLineBaseUrl, channel, username))
+	baseUrl := "https://api.ivr.fi/logs/firstmessage"
+
+	resp, err := http.Get(fmt.Sprintf("%s/%s/%s", baseUrl, channel, username))
 	if err != nil {
 		log.Error(err)
 		return "Something went wrong FeelsBadMan", err

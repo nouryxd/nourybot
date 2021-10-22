@@ -15,12 +15,10 @@ type pfpApiResponse struct {
 	Error string `json:"error"`
 }
 
-var (
-	baseUrl = "https://api.ivr.fi/twitch/resolve"
-)
-
 // ProfilePicture returns a link to a given users profilepicture.
 func ProfilePicture(username string) (string, error) {
+	baseUrl := "https://api.ivr.fi/twitch/resolve"
+
 	resp, err := http.Get(fmt.Sprintf("%s/%s", baseUrl, username))
 	if err != nil {
 		log.Error(err)

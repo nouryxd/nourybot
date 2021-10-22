@@ -17,7 +17,9 @@ type uidApiResponse struct {
 
 // Userid returns the userID of a given user
 func Userid(username string) string {
-	resp, err := http.Get(fmt.Sprintf("https://api.ivr.fi/twitch/resolve/%s", username))
+	baseUrl := "https://api.ivr.fi/twitch/resolve"
+
+	resp, err := http.Get(fmt.Sprintf("%s/%s", baseUrl, username))
 	if err != nil {
 		log.Error(err)
 	}
