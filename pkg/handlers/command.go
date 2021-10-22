@@ -79,6 +79,12 @@ func Command(message twitch.PrivateMessage, nb *bot.Bot) {
 		commands.EightBall(target, nb)
 		return
 
+	case "emote":
+		commands.EmoteLookup(target, cmdParams[1], nb)
+
+	case "emotelookup":
+		commands.EmoteLookup(target, cmdParams[1], nb)
+
 	case "ffzemotes":
 		commands.FfzEmotes(target, nb)
 		return
