@@ -73,7 +73,7 @@ func CheckMessage(text string) (bool, string) {
 	// Bad message
 	if responseObject.Banned {
 		return true, fmt.Sprintf("Banphrased, reason: %s", reason)
-	} else {
+	} else if !responseObject.Banned {
 		// Good message
 		return false, "okay"
 	}
