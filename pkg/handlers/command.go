@@ -194,6 +194,7 @@ func Command(message twitch.PrivateMessage, nb *bot.Bot) {
 	case "help":
 		commands.Help(target, nb)
 	case "nourybot":
+
 		commands.Help(target, nb)
 
 	case "num":

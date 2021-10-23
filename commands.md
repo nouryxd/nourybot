@@ -4,7 +4,7 @@ nourybot commands
 	Ask the magic 8ball for guidance
 
 	
-#### Bot/Botinfo: 
+#### Bot/Botinfo/Nourybot/Help: 
 	Returns information about the bot
   
 #### Botstatus:
@@ -56,9 +56,7 @@ nourybot commands
 	
 #### Godoc/Godocs:
 	Returns the godocs.io search for a given word
-
-#### Help: 
-    Returns information about the bot.
+	
 #### Ping:
 	Returns a Pong
 
