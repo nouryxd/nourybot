@@ -39,6 +39,7 @@ type currencyResponse struct {
 
 // https://api.frankfurter.app/latest?amount=10&from=gbp&to=usd
 
+// Currency returns the exchange rate for a given given amount to another.
 func Currency(currAmount string, currFrom string, currTo string) (string, error) {
 	baseUrl := "https://api.frankfurter.app"
 	currFromUpper := strings.ToUpper(currFrom)
