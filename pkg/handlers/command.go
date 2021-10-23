@@ -70,6 +70,9 @@ func Command(message twitch.PrivateMessage, nb *bot.Bot) {
 		commands.Color(message, nb)
 		return
 
+		// ()currency 10 gbp to usd
+	case "currency":
+		commands.Currency(target, cmdParams[1], cmdParams[2], cmdParams[4], nb)
 	case "echo":
 		commands.Echo(target, message.Message[7:len(message.Message)], nb)
 		return
