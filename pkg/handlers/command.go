@@ -35,7 +35,16 @@ func Command(message twitch.PrivateMessage, nb *bot.Bot) {
 	case "":
 		if msgLen == 1 {
 			nb.Send(target, "xd")
+			return
 		}
+
+	case "bot":
+		commands.Help(target, nb)
+		return
+
+	case "botinfo":
+		commands.Help(target, nb)
+		return
 
 	case "botstatus":
 		if msgLen == 1 {
@@ -72,6 +81,10 @@ func Command(message twitch.PrivateMessage, nb *bot.Bot) {
 
 	case "color":
 		commands.Color(message, nb)
+		return
+
+	case "commands":
+		commands.CommandsList(target, nb)
 		return
 
 	case "mycolor":
@@ -179,6 +192,8 @@ func Command(message twitch.PrivateMessage, nb *bot.Bot) {
 		}
 
 	case "help":
+		commands.Help(target, nb)
+	case "nourybot":
 		commands.Help(target, nb)
 
 	case "num":
@@ -302,6 +317,7 @@ func Command(message twitch.PrivateMessage, nb *bot.Bot) {
 	case "robo":
 		commands.RoboHash(target, message, nb)
 		return
+
 	case "robohash":
 		commands.RoboHash(target, message, nb)
 		return
