@@ -13,4 +13,5 @@ func Currency(target string, currAmount string, currFrom string, currTo string, 
 		logrus.Info(err)
 	}
 	nb.Send(target, reply)
+	// logrus.Info(target, reply)
 }
