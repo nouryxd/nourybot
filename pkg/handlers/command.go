@@ -273,6 +273,13 @@ func Command(message twitch.PrivateMessage, nb *bot.Bot) {
 		commands.RandomXkcd(target, nb)
 		return
 
+	case "robohash":
+		commands.RoboHash(target, message, nb)
+		return
+	case "hash":
+		commands.RoboHash(target, message, nb)
+		return
+
 	case "subage":
 		if msgLen < 3 {
 			nb.Send(target, "Usage: ()subage [user] [streamer]")
