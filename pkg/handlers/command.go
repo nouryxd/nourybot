@@ -53,6 +53,7 @@ func Command(message twitch.PrivateMessage, nb *bot.Bot) {
 		}
 		commands.Bttv(target, cmdParams[1], nb)
 		return
+
 	case "bttvemotes":
 		commands.BttvEmotes(target, nb)
 		return
@@ -176,6 +177,9 @@ func Command(message twitch.PrivateMessage, nb *bot.Bot) {
 			commands.Godocs(target, message.Message[9:len(message.Message)], nb)
 			return
 		}
+
+	case "help":
+		commands.Help(target, nb)
 
 	case "num":
 		if msgLen == 1 {
