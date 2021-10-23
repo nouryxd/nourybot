@@ -10,14 +10,13 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
-// reply, err := api.Currency(currAmount, currFrom, currTo)
-
 type currencyResponse struct {
 	Amount int                `json:"amount"`
 	Base   string             `json:"base"`
 	Rates  map[string]float32 `json:"rates"`
 }
 
+// Idk if i ever need it again so it stays for now
 // type rates map[string]interface{}
 // type rates struct {
 // 	AUD float32 `json:"AUD"`
@@ -40,10 +39,12 @@ type currencyResponse struct {
 
 // https://api.frankfurter.app/latest?amount=10&from=gbp&to=usd
 
-// Really messy code but works right now
 func Currency(currAmount string, currFrom string, currTo string) (string, error) {
 	baseUrl := "https://api.frankfurter.app"
-	response, err := http.Get(fmt.Sprintf("%s/latest?amount=%s&from=%s&to=%s", baseUrl, currAmount, strings.ToUpper(currFrom), strings.ToUpper(currTo)))
+	currFromUpper := strings.ToUpper(currFrom)
+	currToUpper := strings.ToUpper(currTo)
+
+	response, err := http.Get(fmt.Sprintf("%s/latest?amount=%s&from=%s&to=%s", baseUrl, currAmount, currFromUpper, currToUpper))
 	if err != nil {
 		log.Error(err)
 	}
@@ -59,8 +60,9 @@ func Currency(currAmount string, currFrom string, currTo string) (string, error)
 	// log.Info(responseObject.Amount)
 	// log.Info(responseObject.Base)
 	// log.Info(responseObject.Rates[strings.ToUpper(currTo)])
-	if responseObject.Rates[strings.ToUpper(currTo)] != 0 {
-		return fmt.Sprintf("%s%s are %v%s", currAmount, currFrom, responseObject.Rates[strings.ToUpper(currTo)], currTo), nil
+
+	if responseObject.Rates[currToUpper] != 0 {
+		return fmt.Sprintf("%s %s = %.2f %s", currAmount, currFromUpper, responseObject.Rates[currToUpper], currToUpper), nil
 	}
 	return "Something went wrong FeelsBadMan", nil
 }

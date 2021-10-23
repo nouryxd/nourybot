@@ -72,6 +72,10 @@ func Command(message twitch.PrivateMessage, nb *bot.Bot) {
 
 		// ()currency 10 gbp to usd
 	case "currency":
+		if msgLen <= 4 {
+			nb.Send(target, "Usage: ()currency 10 usd to eur, only 3 letter codes work.")
+			return
+		}
 		commands.Currency(target, cmdParams[1], cmdParams[2], cmdParams[4], nb)
 	case "echo":
 		commands.Echo(target, message.Message[7:len(message.Message)], nb)
