@@ -273,10 +273,10 @@ func Command(message twitch.PrivateMessage, nb *bot.Bot) {
 		commands.RandomXkcd(target, nb)
 		return
 
-	case "robohash":
+	case "robo":
 		commands.RoboHash(target, message, nb)
 		return
-	case "hash":
+	case "robohash":
 		commands.RoboHash(target, message, nb)
 		return
 
