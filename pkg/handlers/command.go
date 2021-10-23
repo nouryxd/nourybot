@@ -46,6 +46,13 @@ func Command(message twitch.PrivateMessage, nb *bot.Bot) {
 			return
 		}
 
+	case "bttv":
+		if msgLen == 1 {
+			nb.Send(target, "Usage: ()bttv [emote]")
+			return
+		}
+		commands.Bttv(target, cmdParams[1], nb)
+		return
 	case "bttvemotes":
 		commands.BttvEmotes(target, nb)
 		return
@@ -92,6 +99,12 @@ func Command(message twitch.PrivateMessage, nb *bot.Bot) {
 	case "emotelookup":
 		commands.EmoteLookup(target, cmdParams[1], nb)
 
+	case "ffz":
+		if msgLen == 1 {
+			nb.Send(target, "Usage: ()ffz [emote]")
+			return
+		}
+		commands.Ffz(target, cmdParams[1], nb)
 	case "ffzemotes":
 		commands.FfzEmotes(target, nb)
 		return
@@ -277,6 +290,7 @@ func Command(message twitch.PrivateMessage, nb *bot.Bot) {
 			commands.RandomQuote(target, cmdParams[1], cmdParams[2], nb)
 			return
 		}
+
 	case "randomxkcd":
 		commands.RandomXkcd(target, nb)
 		return
