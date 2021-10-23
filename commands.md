@@ -52,7 +52,7 @@ nourybot commands
 
 #### Number/num:
 	Returns a fact about a given number, or if none is given a random number.
-    API used: http://numbersapi.com/#42
+    API used: http://numbersapi.com/
 	
 #### Godoc/Godocs:
 	Returns the godocs.io search for a given word
