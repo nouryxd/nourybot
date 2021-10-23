@@ -1,4 +1,4 @@
-nourybot-go commands
+nourybot commands
 
 ##### 8ball:
 	Ask the magic 8ball for guidance
@@ -57,6 +57,8 @@ nourybot-go commands
 #### Godoc/Godocs:
 	Returns the godocs.io search for a given word
 
+#### Help: 
+    Returns information about the bot.
 #### Ping:
 	Returns a Pong
 
