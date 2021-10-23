@@ -5,7 +5,6 @@ import (
 
 	"github.com/lyx0/nourybot/cmd/bot"
 	"github.com/lyx0/nourybot/pkg/api/ivr"
-	"github.com/sirupsen/logrus"
 )
 
 func RandomQuote(channel string, target string, username string, nb *bot.Bot) {
@@ -16,6 +15,5 @@ func RandomQuote(channel string, target string, username string, nb *bot.Bot) {
 		return
 	}
 
-	logrus.Info(ivrResponse)
 	nb.Send(channel, ivrResponse)
 }

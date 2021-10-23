@@ -8,7 +8,6 @@ import (
 )
 
 func EmoteLookup(channel string, emote string, nb *bot.Bot) {
-
 	reply, err := ivr.EmoteLookup(emote)
 
 	if err != nil {

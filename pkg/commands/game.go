@@ -17,6 +17,5 @@ func Game(channel string, name string, nb *bot.Bot) {
 	}
 
 	reply := fmt.Sprintf("@%s was last seen playing: %s", name, game)
-
 	nb.Send(channel, reply)
 }

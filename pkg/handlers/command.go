@@ -290,10 +290,10 @@ func Command(message twitch.PrivateMessage, nb *bot.Bot) {
 
 	case "subage":
 		if msgLen < 3 {
-			nb.Send(target, "Usage: ()subage [user] [streamer]")
+			nb.Send(target, "Usage: ()subage [streamer] [user]")
 			return
 		} else {
-			commands.Subage(target, cmdParams[1], cmdParams[2], nb)
+			commands.Subage(target, cmdParams[2], cmdParams[1], nb)
 			return
 		}
 

@@ -9,6 +9,6 @@ import (
 
 func RoboHash(target string, message twitch.PrivateMessage, nb *bot.Bot) {
 	reply := fmt.Sprintf("https://robohash.org/%s", message.ID)
-	nb.Send(target, reply)
 
+	nb.Send(target, reply)
 }

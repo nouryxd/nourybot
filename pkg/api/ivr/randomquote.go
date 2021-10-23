@@ -16,8 +16,6 @@ type randomQuoteApiResponse struct {
 	Error   string `json:"Error"`
 }
 
-var ()
-
 // FirstLine returns the first line a given user has sent in a
 // given channel.
 func RandomQuote(channel string, username string) (string, error) {
