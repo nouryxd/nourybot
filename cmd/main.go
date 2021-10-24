@@ -30,7 +30,7 @@ func main() {
 		}
 
 		// Don't act on bots own messages.
-		if message.Tags["user-id"] == "596581605" {
+		if message.Tags["user-id"] == conf.BotUserId {
 			return
 		}
 
