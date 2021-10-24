@@ -37,6 +37,13 @@ func Command(message twitch.PrivateMessage, nb *bot.Bot) {
 			nb.Send(target, "xd")
 			return
 		}
+	case "7tv":
+		if msgLen == 1 {
+			nb.Send(target, "Usage: ()7tv [emote]")
+			return
+		}
+		commands.SevenTV(target, cmdParams[1], nb)
+		return
 
 	case "bot":
 		commands.Help(target, nb)
