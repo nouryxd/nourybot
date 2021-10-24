@@ -15,6 +15,7 @@ func RandomNumber() string {
 	if err != nil {
 		log.Error(err)
 	}
+
 	responseData, err := ioutil.ReadAll(response.Body)
 	if err != nil {
 		log.Error(err)
@@ -27,12 +28,15 @@ func RandomNumber() string {
 // API used: http://numbersapi.com
 func Number(number string) string {
 	response, err := http.Get(fmt.Sprint("http://numbersapi.com/" + string(number)))
+
 	if err != nil {
 		log.Error(err)
 	}
+
 	responseData, err := ioutil.ReadAll(response.Body)
 	if err != nil {
 		log.Error(err)
 	}
+
 	return string(responseData)
 }

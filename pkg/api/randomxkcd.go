@@ -19,6 +19,7 @@ type XkcdResponse struct {
 // RandomXkcd returns a link to a random Xkcd comic.
 func RandomXkcd() string {
 	comicNum := fmt.Sprint(utils.GenerateRandomNumber(2468))
+
 	response, err := http.Get(fmt.Sprint("http://xkcd.com/" + comicNum + "/info.0.json"))
 	if err != nil {
 		log.Error(err)
@@ -31,6 +32,5 @@ func RandomXkcd() string {
 	json.Unmarshal(responseData, &responseObject)
 
 	reply := fmt.Sprint("Random Xkcd #", responseObject.Num, " Title: ", responseObject.SafeTitle, " ", responseObject.Img)
-
 	return reply
 }
