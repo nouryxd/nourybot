@@ -13,7 +13,7 @@ type randomQuoteApiResponse struct {
 	User    string `json:"user"`
 	Message string `json:"message"`
 	Time    string `json:"time"`
-	Error   string `json:"Error"`
+	Error   string `json:"error"`
 }
 
 // FirstLine returns the first line a given user has sent in a
