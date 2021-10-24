@@ -7,7 +7,7 @@ import (
 	"github.com/lyx0/nourybot/pkg/api/ivr"
 )
 
-func Followage(channel string, streamer string, username string, nb *bot.Bot) {
+func Followage(channel, streamer, username string, nb *bot.Bot) {
 	ivrResponse, err := ivr.Followage(streamer, username)
 
 	if err != nil {

@@ -5,7 +5,7 @@ import (
 	"github.com/lyx0/nourybot/pkg/api/ivr"
 )
 
-func Userid(channel string, target string, nb *bot.Bot) {
+func Userid(channel, target string, nb *bot.Bot) {
 	reply := ivr.Userid(target)
 
 	nb.Send(channel, reply)

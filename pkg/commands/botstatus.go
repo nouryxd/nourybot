@@ -8,7 +8,7 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
-func BotStatus(channel string, name string, nb *bot.Bot) {
+func BotStatus(channel, name string, nb *bot.Bot) {
 	resp, err := aiden.ApiCall(fmt.Sprintf("api/v1/twitch/botStatus/%s?includeLimits=1", name))
 
 	if err != nil {

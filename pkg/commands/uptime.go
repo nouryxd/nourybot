@@ -8,7 +8,7 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
-func Uptime(channel string, name string, nb *bot.Bot) {
+func Uptime(channel, name string, nb *bot.Bot) {
 	resp, err := aiden.ApiCall(fmt.Sprintf("api/v1/twitch/channel/%s/uptime", name))
 
 	if err != nil {

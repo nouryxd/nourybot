@@ -7,7 +7,7 @@ import (
 	"github.com/lyx0/nourybot/pkg/api/ivr"
 )
 
-func Subage(channel string, username string, streamer string, nb *bot.Bot) {
+func Subage(channel, username, streamer string, nb *bot.Bot) {
 	ivrResponse, err := ivr.Subage(username, streamer)
 
 	if err != nil {

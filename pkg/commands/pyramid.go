@@ -8,7 +8,7 @@ import (
 	"github.com/lyx0/nourybot/cmd/bot"
 )
 
-func Pyramid(channel string, size string, emote string, nb *bot.Bot) {
+func Pyramid(channel, size, emote string, nb *bot.Bot) {
 	if size[0] == '.' || size[0] == '/' {
 		nb.Send(channel, ":tf:")
 		return

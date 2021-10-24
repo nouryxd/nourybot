@@ -8,7 +8,7 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
-func Title(channel string, target string, nb *bot.Bot) {
+func Title(channel, target string, nb *bot.Bot) {
 	title, err := aiden.ApiCall(fmt.Sprintf("api/v1/twitch/channel/%s/title", target))
 
 	if err != nil {

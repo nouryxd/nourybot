@@ -11,7 +11,7 @@ func RandomNumber(channel string, nb *bot.Bot) {
 	nb.Send(channel, string(reply))
 }
 
-func Number(channel string, number string, nb *bot.Bot) {
+func Number(channel, number string, nb *bot.Bot) {
 	reply := api.Number(number)
 
 	nb.Send(channel, string(reply))

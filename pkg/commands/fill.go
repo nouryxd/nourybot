@@ -7,7 +7,7 @@ import (
 	"github.com/lyx0/nourybot/cmd/bot"
 )
 
-func Fill(channel string, emote string, nb *bot.Bot) {
+func Fill(channel, emote string, nb *bot.Bot) {
 	if emote[0] == '.' || emote[0] == '/' {
 		nb.Send(channel, ":tf:")
 		return

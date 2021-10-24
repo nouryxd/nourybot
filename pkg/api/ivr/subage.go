@@ -31,7 +31,7 @@ type subStreak struct {
 }
 
 // Subage returns the length a given user has been subscribed to a given channel.
-func Subage(username string, channel string) (string, error) {
+func Subage(username, channel string) (string, error) {
 	baseUrl := "https://api.ivr.fi/twitch/subage"
 
 	resp, err := http.Get(fmt.Sprintf("%s/%s/%s", baseUrl, username, channel))

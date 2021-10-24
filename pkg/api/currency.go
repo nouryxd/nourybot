@@ -17,7 +17,7 @@ type currencyResponse struct {
 }
 
 // Currency returns the exchange rate for a given given amount to another.
-func Currency(currAmount string, currFrom string, currTo string) (string, error) {
+func Currency(currAmount, currFrom, currTo string) (string, error) {
 	baseUrl := "https://api.frankfurter.app"
 	currFromUpper := strings.ToUpper(currFrom)
 	currToUpper := strings.ToUpper(currTo)

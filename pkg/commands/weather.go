@@ -8,7 +8,7 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
-func Weather(channel string, location string, nb *bot.Bot) {
+func Weather(channel, location string, nb *bot.Bot) {
 	reply, err := aiden.ApiCall(fmt.Sprintf("api/v1/misc/weather/%s", location))
 
 	if err != nil {

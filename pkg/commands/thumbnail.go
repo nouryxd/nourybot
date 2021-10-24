@@ -7,7 +7,7 @@ import (
 	"github.com/lyx0/nourybot/pkg/utils"
 )
 
-func Thumbnail(channel string, target string, nb *bot.Bot) {
+func Thumbnail(channel, target string, nb *bot.Bot) {
 	imageHeight := utils.GenerateRandomNumberRange(1040, 1080)
 	imageWidth := utils.GenerateRandomNumberRange(1890, 1920)
 

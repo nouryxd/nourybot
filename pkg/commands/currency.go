@@ -6,7 +6,7 @@ import (
 	"github.com/sirupsen/logrus"
 )
 
-func Currency(target string, currAmount string, currFrom string, currTo string, nb *bot.Bot) {
+func Currency(target, currAmount, currFrom, currTo string, nb *bot.Bot) {
 	reply, err := api.Currency(currAmount, currFrom, currTo)
 	if err != nil {
 		logrus.Info(err)

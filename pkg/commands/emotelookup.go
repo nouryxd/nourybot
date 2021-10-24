@@ -7,7 +7,7 @@ import (
 	"github.com/lyx0/nourybot/pkg/api/ivr"
 )
 
-func EmoteLookup(channel string, emote string, nb *bot.Bot) {
+func EmoteLookup(channel, emote string, nb *bot.Bot) {
 	reply, err := ivr.EmoteLookup(emote)
 
 	if err != nil {

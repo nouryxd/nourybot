@@ -7,7 +7,7 @@ import (
 	"github.com/lyx0/nourybot/pkg/api/ivr"
 )
 
-func RandomQuote(channel string, target string, username string, nb *bot.Bot) {
+func RandomQuote(channel, target, username string, nb *bot.Bot) {
 	ivrResponse, err := ivr.RandomQuote(target, username)
 
 	if err != nil {

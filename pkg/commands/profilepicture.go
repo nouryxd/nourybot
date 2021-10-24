@@ -7,7 +7,7 @@ import (
 	"github.com/lyx0/nourybot/pkg/api/ivr"
 )
 
-func ProfilePicture(channel string, target string, nb *bot.Bot) {
+func ProfilePicture(channel, target string, nb *bot.Bot) {
 	reply, err := ivr.ProfilePicture(target)
 
 	if err != nil {

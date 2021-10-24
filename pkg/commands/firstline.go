@@ -7,7 +7,7 @@ import (
 	"github.com/lyx0/nourybot/pkg/api/ivr"
 )
 
-func Firstline(channel string, streamer string, username string, nb *bot.Bot) {
+func Firstline(channel, streamer, username string, nb *bot.Bot) {
 	ivrResponse, err := ivr.FirstLine(streamer, username)
 
 	if err != nil {

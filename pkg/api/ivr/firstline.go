@@ -18,7 +18,7 @@ type firstLineApiResponse struct {
 
 // FirstLine returns the first line a given user has sent in a
 // given channel.
-func FirstLine(channel string, username string) (string, error) {
+func FirstLine(channel, username string) (string, error) {
 	baseUrl := "https://api.ivr.fi/logs/firstmessage"
 
 	resp, err := http.Get(fmt.Sprintf("%s/%s/%s", baseUrl, channel, username))
