@@ -35,4 +35,46 @@ func Connect() {
 	}
 	fmt.Println(databases)
 
+	// Interact with data
+	type Channel struct {
+		Name string `bson:"name,omitempty"`
+	}
+
+	/*
+		Get my collection instance
+	*/
+	collection := client.Database("nourybot").Collection("channels")
+
+	/*
+		Insert channel
+	*/
+	chnl := []interface{}{
+		bson.D{{"channel", "nouryqt"}},
+		bson.D{{"channel", "nourybot"}},
+	}
+
+	res, insertErr := collection.InsertMany(ctx, chnl)
+	if insertErr != nil {
+		log.Fatal(insertErr)
+	}
+	log.Info(res)
+
+	/*
+		Iterate a cursor
+	*/
+
+	cur, currErr := collection.Find(ctx, bson.D{})
+
+	if currErr != nil {
+		panic(currErr)
+	}
+	defer cur.Close(ctx)
+
+	var channels []Channel
+	if err = cur.All(ctx, &channels); err != nil {
+		panic(err)
+	}
+
+	log.Info(channels)
+
 }
