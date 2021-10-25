@@ -38,7 +38,7 @@ func main() {
 		handlers.PrivateMessage(message, nb)
 	})
 
-	nb.TwitchClient.Join("nouryqt", "nourybot")
+	nb.TwitchClient.Join("nouryqt", "nourybot", "pajlada")
 	nb.Send("nourybot", "HeyGuys")
 	nb.TwitchClient.Connect()
 }

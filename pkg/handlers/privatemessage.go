@@ -10,7 +10,7 @@ import (
 // commands to the command handler.
 func PrivateMessage(message twitch.PrivateMessage, nb *bot.Bot) {
 	// log.Info("fn PrivateMessage")
-	log.Info(message.Raw)
+	// log.Info(message.Raw)
 
 	// roomId is the Twitch UserID of the channel the message
 	// was sent in.
@@ -42,6 +42,6 @@ func PrivateMessage(message twitch.PrivateMessage, nb *bot.Bot) {
 	}
 
 	// Message was no command
-	// log.Info(message)
+	log.Infof("[#%s]:%s: %s", message.Channel, message.User.DisplayName, message.Message)
 
 }
