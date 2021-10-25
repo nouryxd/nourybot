@@ -11,6 +11,7 @@ type Config struct {
 	Username  string
 	Oauth     string
 	BotUserId string
+	MongoURI  string
 }
 
 func LoadConfig() *Config {
@@ -24,6 +25,7 @@ func LoadConfig() *Config {
 		Username:  os.Getenv("TWITCH_USER"),
 		Oauth:     os.Getenv("TWITCH_PASS"),
 		BotUserId: os.Getenv("BOT_USER_ID"),
+		MongoURI:  os.Getenv("MONGO_URI"),
 	}
 
 	log.Info("Config loaded succesfully")
