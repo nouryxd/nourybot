@@ -51,5 +51,8 @@ func (b *Bot) Send(target, text string) {
 		b.TwitchClient.Say(target, text)
 		return
 	}
+}
 
+func (b *Bot) SkipChecking(target, text string) {
+	b.TwitchClient.Say(target, text)
 }
