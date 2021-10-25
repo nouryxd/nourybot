@@ -24,7 +24,7 @@ func PrivateMessage(message twitch.PrivateMessage, nb *bot.Bot) {
 
 	// Thing for #pajlada
 	if message.Channel == "pajlada" && message.Message == "pajaS 🚨 ALERT" && message.User.Name == "pajbot" && message.Action {
-		log.Info(message.Message)
+		// log.Info(message.Message)
 		nb.SkipChecking("pajlada", "/me PAJAS 🚨 pajaAAAAAAAAAAA")
 		return
 	}
