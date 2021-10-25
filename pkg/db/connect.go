@@ -48,33 +48,47 @@ func Connect() {
 	/*
 		Insert channel
 	*/
-	chnl := []interface{}{
-		bson.D{{"channel", "nouryqt"}},
-		bson.D{{"channel", "nourybot"}},
-	}
+	// chnl := []interface{}{
+	// 	bson.D{{"name", "nouryqt"}},
+	// 	bson.D{{"name", "nourybot"}},
+	// }
 
-	res, insertErr := collection.InsertMany(ctx, chnl)
-	if insertErr != nil {
-		log.Fatal(insertErr)
-	}
-	log.Info(res)
+	// res, insertErr := collection.InsertMany(ctx, chnl)
+	// if insertErr != nil {
+	// 	log.Fatal(insertErr)
+	// }
+	// log.Info(res)
 
 	/*
 		Iterate a cursor
 	*/
 
-	cur, currErr := collection.Find(ctx, bson.D{})
+	// var result bson.M
+	// err = collection.FindOne(ctx, bson.D{{}}).Decode(&result)
+	// if err != nil {
+	// 	if err == mongo.ErrNoDocuments {
+	// 		return
+	// 	}
+
+	// 	panic(err)
+	// }
+	// log.Info(result["name"])
+
+	//------------------------------
+	cur, currErr := collection.Find(ctx, bson.D{{}})
 
 	if currErr != nil {
 		panic(currErr)
 	}
 	defer cur.Close(ctx)
 
-	var channels []Channel
-	if err = cur.All(ctx, &channels); err != nil {
+	var results []bson.M
+	if err = cur.All(ctx, &results); err != nil {
 		panic(err)
 	}
 
-	log.Info(channels)
-
+	for _, result := range results {
+		fmt.Println(result["name"])
+	}
+	//------------------------------
 }
