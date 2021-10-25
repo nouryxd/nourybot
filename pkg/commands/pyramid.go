@@ -31,8 +31,8 @@ func Pyramid(channel, size, emote string, nb *bot.Bot) {
 		return
 	}
 
-	if pyramidSize > 20 {
-		nb.Send(channel, "Max pyramid size is 20")
+	if pyramidSize > 3 {
+		nb.Send(channel, "Max pyramid size is 3")
 		return
 	}
 

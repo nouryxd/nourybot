@@ -70,9 +70,9 @@ func Command(message twitch.PrivateMessage, nb *bot.Bot) {
 		commands.Bttv(target, cmdParams[1], nb)
 		return
 
-	case "bttvemotes":
-		commands.BttvEmotes(target, nb)
-		return
+	// case "bttvemotes":
+	// 	commands.BttvEmotes(target, nb)
+	// 	return
 
 	case "cf":
 		commands.Coinflip(target, nb)
@@ -126,9 +126,10 @@ func Command(message twitch.PrivateMessage, nb *bot.Bot) {
 			return
 		}
 		commands.Ffz(target, cmdParams[1], nb)
-	case "ffzemotes":
-		commands.FfzEmotes(target, nb)
-		return
+
+	// case "ffzemotes":
+	// 	commands.FfzEmotes(target, nb)
+	// 	return
 
 	case "fill":
 		if msgLen == 1 {
@@ -200,8 +201,8 @@ func Command(message twitch.PrivateMessage, nb *bot.Bot) {
 
 	case "help":
 		commands.Help(target, nb)
-	case "nourybot":
 
+	case "nourybot":
 		commands.Help(target, nb)
 
 	case "num":
@@ -253,14 +254,14 @@ func Command(message twitch.PrivateMessage, nb *bot.Bot) {
 		commands.ProfilePicture(target, cmdParams[1], nb)
 		return
 
-	case "pyramid":
-		if msgLen != 3 {
-			nb.Send(target, "Usage: ()pyramid [size] [emote]")
-		} else if utils.ElevatedPrivsMessage(message) {
-			commands.Pyramid(target, cmdParams[1], cmdParams[2], nb)
-		} else {
-			nb.Send(target, "Pleb's can't pyramid FeelsBadMan")
-		}
+	// case "pyramid":
+	// 	if msgLen != 3 {
+	// 		nb.Send(target, "Usage: ()pyramid [size] [emote]")
+	// 	} else if utils.ElevatedPrivsMessage(message) {
+	// 		commands.Pyramid(target, cmdParams[1], cmdParams[2], nb)
+	// 	} else {
+	// 		nb.Send(target, "Pleb's can't pyramid FeelsBadMan")
+	// 	}
 
 	case "randomcat":
 		commands.RandomCat(target, nb)

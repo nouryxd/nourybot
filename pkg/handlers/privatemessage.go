@@ -10,7 +10,7 @@ import (
 // commands to the command handler.
 func PrivateMessage(message twitch.PrivateMessage, nb *bot.Bot) {
 	// log.Info("fn PrivateMessage")
-	// log.Info(message)
+	log.Info(message.Raw)
 
 	// roomId is the Twitch UserID of the channel the message
 	// was sent in.
@@ -19,6 +19,12 @@ func PrivateMessage(message twitch.PrivateMessage, nb *bot.Bot) {
 	// The message has no room-id so something went wrong.
 	if roomId == "" {
 		log.Errorf("Missing room-id in message tag", roomId)
+		return
+	}
+
+	if message.Channel == "nourybot" && message.Message == "pajaS 🚨 ALERT" && message.User.Name == "nouryqt" {
+		log.Info(message.Message)
+		nb.SkipChecking("nourybot", "XD test")
 		return
 	}
 
