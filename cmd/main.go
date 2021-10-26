@@ -7,15 +7,12 @@ import (
 	"github.com/gempir/go-twitch-irc/v2"
 	"github.com/lyx0/nourybot/cmd/bot"
 	"github.com/lyx0/nourybot/pkg/config"
-	"github.com/lyx0/nourybot/pkg/db"
 	"github.com/lyx0/nourybot/pkg/handlers"
 )
 
 var nb *bot.Bot
 
 func main() {
-
-	db.Connect()
 
 	conf := config.LoadConfig()
 
