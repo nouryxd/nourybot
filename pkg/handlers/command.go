@@ -218,6 +218,14 @@ func Command(message twitch.PrivateMessage, nb *bot.Bot) {
 		} else {
 			commands.Number(target, cmdParams[1], nb)
 		}
+	case "osrs":
+		if msgLen == 1 {
+			nb.Send(target, "Usage: ()osrs [term]")
+			return
+		} else {
+			commands.Osrs(target, message.Message[7:len(message.Message)], nb)
+			return
+		}
 
 	case "ping":
 		commands.Ping(target, nb)
