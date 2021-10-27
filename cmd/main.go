@@ -7,6 +7,7 @@ import (
 	"github.com/gempir/go-twitch-irc/v2"
 	"github.com/lyx0/nourybot/cmd/bot"
 	"github.com/lyx0/nourybot/pkg/config"
+	"github.com/lyx0/nourybot/pkg/db"
 	"github.com/lyx0/nourybot/pkg/handlers"
 )
 
@@ -15,6 +16,9 @@ var nb *bot.Bot
 func main() {
 
 	conf := config.LoadConfig()
+
+	// db.InsertInitialData()
+	db.ListChannels()
 
 	nb = &bot.Bot{
 		TwitchClient: twitch.NewClient(conf.Username, conf.Oauth),

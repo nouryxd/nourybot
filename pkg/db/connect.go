@@ -24,7 +24,7 @@ func Connect() *mongo.Client {
 	if err != nil {
 		log.Fatal(err)
 	}
-	defer client.Disconnect(ctx)
+	// defer client.Disconnect(ctx)
 
 	databases, err := client.ListDatabaseNames(ctx, bson.M{})
 	if err != nil {
@@ -55,8 +55,8 @@ func InsertInitialData() {
 		Insert channel
 	*/
 	chnl := []interface{}{
-		bson.D{{"name", "nouryqt"}, {"connect", true}},
-		bson.D{{"name", "nourybot"}, {"connect", true}},
+		bson.D{{Key: "name", Value: "nouryqt"}, {Key: "connect", Value: true}},
+		bson.D{{Key: "name", Value: "nourybot"}, {Key: "connect", Value: true}},
 	}
 
 	res, insertErr := collection.InsertMany(ctx, chnl)
@@ -72,7 +72,9 @@ func ListChannels() {
 
 	collection := client.Database("nourybot").Collection("channels")
 	ctx, _ := context.WithTimeout(context.Background(), 10*time.Second)
-	cur, currErr := collection.Find(ctx, bson.D{})
+	defer client.Disconnect(ctx)
+
+	cur, currErr := collection.Find(ctx, bson.D{{Key: "connect", Value: true}})
 
 	if currErr != nil {
 		panic(currErr)
@@ -82,6 +84,10 @@ func ListChannels() {
 	var channels []channel
 	if err := cur.All(ctx, &channels); err != nil {
 		panic(err)
+	}
+
+	for _, ch := range channels {
+		fmt.Printf("%v", ch.Name)
 	}
 
 }
