@@ -68,7 +68,7 @@ func InsertInitialData() {
 
 }
 
-func ListChannels(nb *bot.Bot) {
+func JoinChannels(nb *bot.Bot) {
 	client := Connect()
 
 	collection := client.Database("nourybot").Collection("channels")
