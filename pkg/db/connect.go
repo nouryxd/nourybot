@@ -1,5 +1,101 @@
 package db
 
+import (
+	"context"
+	"fmt"
+	"time"
+
+	"github.com/lyx0/nourybot/pkg/config"
+	log "github.com/sirupsen/logrus"
+	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/mongo"
+	"go.mongodb.org/mongo-driver/mongo/options"
+)
+
+func Connect() *mongo.Client {
+	conf := config.LoadConfig()
+
+	client, err := mongo.NewClient(options.Client().ApplyURI(conf.MongoURI))
+	if err != nil {
+		log.Fatal(err)
+	}
+	ctx, _ := context.WithTimeout(context.Background(), 10*time.Second)
+	err = client.Connect(ctx)
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer client.Disconnect(ctx)
+
+	databases, err := client.ListDatabaseNames(ctx, bson.M{})
+	if err != nil {
+		log.Fatal(err)
+	}
+	fmt.Println(databases)
+
+	return client
+}
+
+type channel struct {
+	Name    string `bson:"name,omitempty"`
+	Connect bool   `bson:"connect,omitempty"`
+}
+
+func InsertInitialData() {
+	// Interact with data
+
+	client := Connect()
+
+	ctx, _ := context.WithTimeout(context.Background(), 10*time.Second)
+	/*
+		Get my collection instance
+	*/
+	collection := client.Database("nourybot").Collection("channels")
+
+	/*
+		Insert channel
+	*/
+	chnl := []interface{}{
+		bson.D{{"name", "nouryqt"}, {"connect", true}},
+		bson.D{{"name", "nourybot"}, {"connect", true}},
+	}
+
+	res, insertErr := collection.InsertMany(ctx, chnl)
+	if insertErr != nil {
+		log.Error(insertErr)
+	}
+	log.Info(res)
+
+}
+
+func ListChannels() {
+	client := Connect()
+
+	collection := client.Database("nourybot").Collection("channels")
+	ctx, _ := context.WithTimeout(context.Background(), 10*time.Second)
+	cur, currErr := collection.Find(ctx, bson.D{})
+
+	if currErr != nil {
+		panic(currErr)
+	}
+	defer cur.Close(ctx)
+
+	var channels []channel
+	if err := cur.All(ctx, &channels); err != nil {
+		panic(err)
+	}
+
+}
+
+/*
+   List databases
+*/
+
+/*
+	Iterate a cursor
+*/
+
+// log.Info(channels)
+
 // import (
 // 	"context"
 // 	"fmt"
