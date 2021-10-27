@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/lyx0/nourybot/cmd/bot"
 	"github.com/lyx0/nourybot/pkg/config"
 	log "github.com/sirupsen/logrus"
 	"go.mongodb.org/mongo-driver/bson"
@@ -67,14 +68,14 @@ func InsertInitialData() {
 
 }
 
-func ListChannels() {
+func ListChannels(nb *bot.Bot) {
 	client := Connect()
 
 	collection := client.Database("nourybot").Collection("channels")
 	ctx, _ := context.WithTimeout(context.Background(), 10*time.Second)
 	defer client.Disconnect(ctx)
 
-	cur, currErr := collection.Find(ctx, bson.D{{Key: "connect", Value: true}})
+	cur, currErr := collection.Find(ctx, bson.D{})
 
 	if currErr != nil {
 		panic(currErr)
@@ -87,7 +88,9 @@ func ListChannels() {
 	}
 
 	for _, ch := range channels {
-		fmt.Printf("%v", ch.Name)
+		nb.TwitchClient.Join(ch.Name)
+		nb.TwitchClient.Say(ch.Name, "xd")
+		// fmt.Printf("%v\n", ch.Name)
 	}
 
 }

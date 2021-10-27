@@ -18,7 +18,6 @@ func main() {
 	conf := config.LoadConfig()
 
 	// db.InsertInitialData()
-	db.ListChannels()
 
 	nb = &bot.Bot{
 		TwitchClient: twitch.NewClient(conf.Username, conf.Oauth),
@@ -43,7 +42,8 @@ func main() {
 		handlers.PrivateMessage(message, nb)
 	})
 
-	nb.TwitchClient.Join("nouryqt", "nourybot")
-	nb.Send("nourybot", "HeyGuys")
+	// nb.TwitchClient.Join("nouryqt", "nourybot")
+	db.ListChannels(nb)
+	// nb.Send("nourybot", "HeyGuys")
 	nb.TwitchClient.Connect()
 }
