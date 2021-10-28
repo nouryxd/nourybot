@@ -10,8 +10,8 @@ import (
 )
 
 func InitialJoin(nb *bot.Bot) {
-
 	collection := nb.MongoClient.Database("nourybot").Collection("channels")
+
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 
