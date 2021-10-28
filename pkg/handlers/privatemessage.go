@@ -18,7 +18,7 @@ func PrivateMessage(message twitch.PrivateMessage, nb *bot.Bot) {
 
 	// The message has no room-id so something went wrong.
 	if roomId == "" {
-		log.Errorf("Missing room-id in message tag", roomId)
+		log.Error("Missing room-id in message tag", roomId)
 		return
 	}
 
