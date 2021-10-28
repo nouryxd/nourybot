@@ -16,10 +16,9 @@ type Channel struct {
 	Connect bool   `bson:"connect,omitempty"`
 }
 
-func Connect() *mongo.Client {
-	conf := config.LoadConfig()
+func Connect(cfg *config.Config) *mongo.Client {
 
-	client, err := mongo.NewClient(options.Client().ApplyURI(conf.MongoURI))
+	client, err := mongo.NewClient(options.Client().ApplyURI(cfg.MongoURI))
 	if err != nil {
 		log.Fatal(err)
 	}

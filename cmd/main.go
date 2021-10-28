@@ -21,7 +21,7 @@ func main() {
 
 	nb = &bot.Bot{
 		TwitchClient: twitch.NewClient(conf.Username, conf.Oauth),
-		MongoClient:  db.Connect(),
+		MongoClient:  db.Connect(conf),
 		Uptime:       time.Now(),
 	}
 

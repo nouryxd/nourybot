@@ -10,13 +10,12 @@ import (
 )
 
 func InitialJoin(nb *bot.Bot) {
-	client := Connect()
 
-	collection := client.Database("nourybot").Collection("channels")
+	collection := nb.MongoClient.Database("nourybot").Collection("channels")
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 
-	defer client.Disconnect(ctx)
+	defer nb.MongoClient.Disconnect(ctx)
 
 	cur, currErr := collection.Find(ctx, bson.D{})
 
