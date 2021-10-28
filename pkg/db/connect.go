@@ -11,11 +11,6 @@ import (
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
-type Channel struct {
-	Name    string `bson:"name,omitempty"`
-	Connect bool   `bson:"connect,omitempty"`
-}
-
 func Connect(cfg *config.Config) *mongo.Client {
 	client, err := mongo.NewClient(options.Client().ApplyURI(cfg.MongoURI))
 	if err != nil {
