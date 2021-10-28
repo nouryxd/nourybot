@@ -41,5 +41,5 @@ func InitialJoin(nb *bot.Bot) {
 		log.Infof("Joined: %s\n", ch.Name)
 	}
 	// It worked
-	nb.TwitchClient.Say("nourybot", fmt.Sprintf("Badabing Badaboom Pepepains Joined %v channel", channelCount))
+	nb.Send("nourybot", fmt.Sprintf("Badabing Badaboom Pepepains Joined %v channel", channelCount))
 }
