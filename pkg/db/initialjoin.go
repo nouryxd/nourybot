@@ -42,4 +42,5 @@ func InitialJoin(nb *bot.Bot) {
 	}
 	// It worked
 	nb.Send("nourybot", fmt.Sprintf("Badabing Badaboom Pepepains Joined %v channel", channelCount))
+	nb.Send("nouryqt", fmt.Sprintf("Badabing Badaboom Pepepains Joined %v channel", channelCount))
 }
