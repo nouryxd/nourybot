@@ -46,6 +46,10 @@ func Command(message twitch.PrivateMessage, nb *bot.Bot) {
 		commands.SevenTV(target, cmdParams[1], nb)
 		return
 
+	case "8ball":
+		commands.EightBall(target, nb)
+		return
+
 	case "bot":
 		commands.Help(target, nb)
 		return
@@ -75,6 +79,10 @@ func Command(message twitch.PrivateMessage, nb *bot.Bot) {
 	// 	commands.BttvEmotes(target, nb)
 	// 	return
 
+	case "cat":
+		commands.RandomCat(target, nb)
+		return
+
 	case "cf":
 		commands.Coinflip(target, nb)
 		return
@@ -95,8 +103,12 @@ func Command(message twitch.PrivateMessage, nb *bot.Bot) {
 		commands.CommandsList(target, nb)
 		return
 
-	case "mycolor":
-		commands.Color(message, nb)
+	case "dog":
+		commands.RandomDog(target, nb)
+		return
+
+	case "duck":
+		commands.RandomDuck(target, nb)
 		return
 
 	case "currency":
@@ -109,10 +121,6 @@ func Command(message twitch.PrivateMessage, nb *bot.Bot) {
 
 	case "echo":
 		commands.Echo(target, message.Message[7:len(message.Message)], nb)
-		return
-
-	case "8ball":
-		commands.EightBall(target, nb)
 		return
 
 	case "emote":
@@ -140,22 +148,6 @@ func Command(message twitch.PrivateMessage, nb *bot.Bot) {
 			commands.Fill(target, message.Message[7:len(message.Message)], nb)
 			return
 		}
-
-	case "join":
-		if msgLen == 1 || message.User.ID != "31437432" {
-			nb.Send(target, "You are not allowed to do this")
-			return
-		}
-		db.AddChannel(target, cmdParams[1], nb)
-		return
-
-	case "part":
-		if msgLen == 1 || message.User.ID != "31437432" {
-			nb.Send(target, "You are not allowed to do this")
-			return
-		}
-		db.PartChannel(target, cmdParams[1], nb)
-		return
 
 	case "firstline":
 		if msgLen == 1 {
@@ -190,6 +182,10 @@ func Command(message twitch.PrivateMessage, nb *bot.Bot) {
 			return
 		}
 
+	case "fox":
+		commands.RandomFox(target, nb)
+		return
+
 	case "game":
 		if msgLen == 1 {
 			nb.Send(target, "Usage: ()game [channel]")
@@ -219,6 +215,18 @@ func Command(message twitch.PrivateMessage, nb *bot.Bot) {
 	case "help":
 		commands.Help(target, nb)
 
+	case "join":
+		if msgLen == 1 || message.User.ID != "31437432" {
+			nb.Send(target, "You are not allowed to do this")
+			return
+		}
+		db.AddChannel(target, cmdParams[1], nb)
+		return
+
+	case "mycolor":
+		commands.Color(message, nb)
+		return
+
 	case "nourybot":
 		commands.Help(target, nb)
 
@@ -234,6 +242,7 @@ func Command(message twitch.PrivateMessage, nb *bot.Bot) {
 			commands.RandomNumber(target, nb)
 		} else {
 			commands.Number(target, cmdParams[1], nb)
+
 		}
 	case "osrs":
 		if msgLen == 1 {
@@ -243,6 +252,14 @@ func Command(message twitch.PrivateMessage, nb *bot.Bot) {
 			commands.Osrs(target, message.Message[7:len(message.Message)], nb)
 			return
 		}
+
+	case "part":
+		if msgLen == 1 || message.User.ID != "31437432" {
+			nb.Send(target, "You are not allowed to do this")
+			return
+		}
+		db.PartChannel(target, cmdParams[1], nb)
+		return
 
 	case "ping":
 		commands.Ping(target, nb)
@@ -292,28 +309,12 @@ func Command(message twitch.PrivateMessage, nb *bot.Bot) {
 		commands.RandomCat(target, nb)
 		return
 
-	case "cat":
-		commands.RandomCat(target, nb)
-		return
-
 	case "randomdog":
-		commands.RandomDog(target, nb)
-		return
-
-	case "dog":
 		commands.RandomDog(target, nb)
 		return
 
 	case "randomduck":
 		commands.RandomDuck(target, nb)
-		return
-
-	case "duck":
-		commands.RandomDuck(target, nb)
-		return
-
-	case "fox":
-		commands.RandomFox(target, nb)
 		return
 
 	case "randomfox":
