@@ -32,3 +32,9 @@ func LoadConfig() *Config {
 
 	return cfg
 }
+
+// Only for tests
+func LoadConfigTest() {
+	os.Setenv("TEST_VALUE", "xDLUL420")
+	// defer os.Unsetenv("TEST_VALUE")
+}
