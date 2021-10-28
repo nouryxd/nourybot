@@ -144,6 +144,11 @@ func Command(message twitch.PrivateMessage, nb *bot.Bot) {
 	case "join":
 		db.AddChannel(cmdParams[1])
 		nb.Send(message.Channel, "Joined")
+		return
+
+	case "part":
+		db.PartChannel(cmdParams[1])
+		nb.Send(message.Channel, "Parted")
 
 	case "firstline":
 		if msgLen == 1 {
