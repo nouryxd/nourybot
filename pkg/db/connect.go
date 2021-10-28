@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/lyx0/nourybot/cmd/bot"
 	"github.com/lyx0/nourybot/pkg/config"
 	log "github.com/sirupsen/logrus"
 	"go.mongodb.org/mongo-driver/bson"
@@ -39,60 +38,6 @@ func Connect() *mongo.Client {
 type channel struct {
 	Name    string `bson:"name,omitempty"`
 	Connect bool   `bson:"connect,omitempty"`
-}
-
-func InsertInitialData() {
-	// Interact with data
-
-	client := Connect()
-
-	ctx, _ := context.WithTimeout(context.Background(), 10*time.Second)
-	/*
-		Get my collection instance
-	*/
-	collection := client.Database("nourybot").Collection("channels")
-
-	/*
-		Insert channel
-	*/
-	chnl := []interface{}{
-		bson.D{{Key: "name", Value: "nouryqt"}, {Key: "connect", Value: true}},
-		bson.D{{Key: "name", Value: "nourybot"}, {Key: "connect", Value: true}},
-	}
-
-	res, insertErr := collection.InsertMany(ctx, chnl)
-	if insertErr != nil {
-		log.Error(insertErr)
-	}
-	log.Info(res)
-
-}
-
-func JoinChannels(nb *bot.Bot) {
-	client := Connect()
-
-	collection := client.Database("nourybot").Collection("channels")
-	ctx, _ := context.WithTimeout(context.Background(), 10*time.Second)
-	defer client.Disconnect(ctx)
-
-	cur, currErr := collection.Find(ctx, bson.D{})
-
-	if currErr != nil {
-		panic(currErr)
-	}
-	defer cur.Close(ctx)
-
-	var channels []channel
-	if err := cur.All(ctx, &channels); err != nil {
-		panic(err)
-	}
-
-	for _, ch := range channels {
-		nb.TwitchClient.Join(ch.Name)
-		nb.TwitchClient.Say(ch.Name, "xd")
-		// fmt.Printf("%v\n", ch.Name)
-	}
-
 }
 
 /*
