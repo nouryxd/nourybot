@@ -15,7 +15,7 @@ func InitialJoin(nb *bot.Bot) {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 
-	defer nb.MongoClient.Disconnect(ctx)
+	// defer nb.MongoClient.Disconnect(ctx)
 
 	cur, currErr := collection.Find(ctx, bson.D{})
 
