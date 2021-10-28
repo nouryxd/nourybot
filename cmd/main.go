@@ -43,7 +43,7 @@ func main() {
 	})
 
 	// nb.TwitchClient.Join("nouryqt", "nourybot")
-	db.JoinChannels(nb)
+	db.InitialJoin(nb)
 	// nb.Send("nourybot", "HeyGuys")
 	nb.TwitchClient.Connect()
 }
