@@ -142,13 +142,22 @@ func Command(message twitch.PrivateMessage, nb *bot.Bot) {
 		}
 
 	case "join":
+		if msgLen == 1 || message.User.ID != "31437432" {
+			nb.Send(target, "You are not allowed to do this")
+			return
+		}
 		db.AddChannel(cmdParams[1], nb.MongoClient)
 		nb.Send(message.Channel, "Joined")
 		return
 
 	case "part":
+		if msgLen == 1 || message.User.ID != "31437432" {
+			nb.Send(target, "You are not allowed to do this")
+			return
+		}
 		db.PartChannel(cmdParams[1], nb.MongoClient)
 		nb.Send(message.Channel, "Parted")
+		return
 
 	case "firstline":
 		if msgLen == 1 {
