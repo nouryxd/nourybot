@@ -12,7 +12,9 @@ func InitialJoin(nb *bot.Bot) {
 	client := Connect()
 
 	collection := client.Database("nourybot").Collection("channels")
-	ctx, _ := context.WithTimeout(context.Background(), 10*time.Second)
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+
 	defer client.Disconnect(ctx)
 
 	cur, currErr := collection.Find(ctx, bson.D{})

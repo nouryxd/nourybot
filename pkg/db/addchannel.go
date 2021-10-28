@@ -13,7 +13,9 @@ func AddChannel(channelName string) {
 
 	client := Connect()
 
-	ctx, _ := context.WithTimeout(context.Background(), 10*time.Second)
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+
 	/*
 		Get my collection instance
 	*/
