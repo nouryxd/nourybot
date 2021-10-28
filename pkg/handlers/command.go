@@ -146,8 +146,7 @@ func Command(message twitch.PrivateMessage, nb *bot.Bot) {
 			nb.Send(target, "You are not allowed to do this")
 			return
 		}
-		db.AddChannel(cmdParams[1], nb.MongoClient)
-		nb.Send(message.Channel, "Joined")
+		db.AddChannel(target, cmdParams[1], nb)
 		return
 
 	case "part":
@@ -155,8 +154,7 @@ func Command(message twitch.PrivateMessage, nb *bot.Bot) {
 			nb.Send(target, "You are not allowed to do this")
 			return
 		}
-		db.PartChannel(cmdParams[1], nb.MongoClient)
-		nb.Send(message.Channel, "Parted")
+		db.PartChannel(target, cmdParams[1], nb)
 		return
 
 	case "firstline":
