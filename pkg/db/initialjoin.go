@@ -2,6 +2,7 @@ package db
 
 import (
 	"context"
+	"fmt"
 	"time"
 
 	"github.com/lyx0/nourybot/cmd/bot"
@@ -31,10 +32,14 @@ func InitialJoin(nb *bot.Bot) {
 		panic(err)
 	}
 
+	channelCount := 0
+
 	for _, ch := range channels {
 		nb.TwitchClient.Join(ch.Name)
 		// nb.TwitchClient.Say(ch.Name, "xd")
+		channelCount++
 		log.Infof("Joined: %s\n", ch.Name)
 	}
-
+	// It worked
+	nb.TwitchClient.Say("nourybot", fmt.Sprintf("Badabing Badaboom Pepepains Joined %v channel", channelCount))
 }
