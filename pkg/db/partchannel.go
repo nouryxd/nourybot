@@ -5,12 +5,11 @@ import (
 	"time"
 
 	log "github.com/sirupsen/logrus"
+	"go.mongodb.org/mongo-driver/mongo"
 )
 
-func PartChannel(channelName string) {
+func PartChannel(channelName string, mongoClient *mongo.Client) {
 	// Interact with data
-
-	client := Connect()
 
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
@@ -18,7 +17,7 @@ func PartChannel(channelName string) {
 	/*
 		Get my collection instance
 	*/
-	collection := client.Database("nourybot").Collection("channels")
+	collection := mongoClient.Database("nourybot").Collection("channels")
 
 	// Channel
 	chnl := Channel{channelName, true}

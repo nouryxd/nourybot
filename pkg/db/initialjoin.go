@@ -32,8 +32,8 @@ func InitialJoin(nb *bot.Bot) {
 
 	for _, ch := range channels {
 		nb.TwitchClient.Join(ch.Name)
-		log.Infof("Joined: %s\n", ch.Name)
 		nb.TwitchClient.Say(ch.Name, "xd")
+		log.Infof("Joined: %s\n", ch.Name)
 	}
 
 }

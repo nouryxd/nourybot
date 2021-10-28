@@ -142,12 +142,12 @@ func Command(message twitch.PrivateMessage, nb *bot.Bot) {
 		}
 
 	case "join":
-		db.AddChannel(cmdParams[1])
+		db.AddChannel(cmdParams[1], nb.MongoClient)
 		nb.Send(message.Channel, "Joined")
 		return
 
 	case "part":
-		db.PartChannel(cmdParams[1])
+		db.PartChannel(cmdParams[1], nb.MongoClient)
 		nb.Send(message.Channel, "Parted")
 
 	case "firstline":
