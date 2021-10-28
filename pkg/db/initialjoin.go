@@ -5,6 +5,7 @@ import (
 	"time"
 
 	"github.com/lyx0/nourybot/cmd/bot"
+	log "github.com/sirupsen/logrus"
 	"go.mongodb.org/mongo-driver/bson"
 )
 
@@ -24,15 +25,15 @@ func InitialJoin(nb *bot.Bot) {
 	}
 	defer cur.Close(ctx)
 
-	var channels []channel
+	var channels []Channel
 	if err := cur.All(ctx, &channels); err != nil {
 		panic(err)
 	}
 
 	for _, ch := range channels {
 		nb.TwitchClient.Join(ch.Name)
+		log.Infof("Joined: %s\n", ch.Name)
 		nb.TwitchClient.Say(ch.Name, "xd")
-		// fmt.Printf("%v\n", ch.Name)
 	}
 
 }

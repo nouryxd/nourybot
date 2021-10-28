@@ -6,6 +6,7 @@ import (
 	"github.com/gempir/go-twitch-irc/v2"
 	"github.com/lyx0/nourybot/cmd/bot"
 	"github.com/lyx0/nourybot/pkg/commands"
+	"github.com/lyx0/nourybot/pkg/db"
 	"github.com/lyx0/nourybot/pkg/utils"
 )
 
@@ -139,6 +140,10 @@ func Command(message twitch.PrivateMessage, nb *bot.Bot) {
 			commands.Fill(target, message.Message[7:len(message.Message)], nb)
 			return
 		}
+
+	case "join":
+		db.AddChannel(cmdParams[1])
+		nb.Send(message.Channel, "Joined")
 
 	case "firstline":
 		if msgLen == 1 {

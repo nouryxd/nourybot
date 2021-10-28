@@ -2,7 +2,6 @@ package db
 
 import (
 	"context"
-	"fmt"
 	"time"
 
 	"github.com/lyx0/nourybot/pkg/config"
@@ -11,6 +10,11 @@ import (
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
+
+type Channel struct {
+	Name    string `bson:"name,omitempty"`
+	Connect bool   `bson:"connect,omitempty"`
+}
 
 func Connect() *mongo.Client {
 	conf := config.LoadConfig()
@@ -29,18 +33,21 @@ func Connect() *mongo.Client {
 	}
 	// defer client.Disconnect(ctx)
 
+	err = client.Ping(context.TODO(), nil)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	log.Info("Connected to MongoDB!")
+
 	databases, err := client.ListDatabaseNames(ctx, bson.M{})
 	if err != nil {
 		log.Fatal(err)
 	}
-	fmt.Println(databases)
+	_ = databases
+	// log.Info(databases)
 
 	return client
-}
-
-type channel struct {
-	Name    string `bson:"name,omitempty"`
-	Connect bool   `bson:"connect,omitempty"`
 }
 
 /*
