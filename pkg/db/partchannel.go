@@ -9,6 +9,9 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
+// PartChannel takes in a target channel and querys the database for
+// its name. If the channel is found it deletes the channel and returns a
+// success message. If the channel couldn't be found it will return an error.
 func PartChannel(target, channelName string, nb *bot.Bot) {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()

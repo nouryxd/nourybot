@@ -9,6 +9,8 @@ import (
 	"go.mongodb.org/mongo-driver/bson"
 )
 
+// InitialJoin is called everytime the Bot starts and joins the
+// initial list of twitch channels it should be in.
 func InitialJoin(nb *bot.Bot) {
 	collection := nb.MongoClient.Database("nourybot").Collection("channels")
 
@@ -31,7 +33,7 @@ func InitialJoin(nb *bot.Bot) {
 
 	for _, ch := range channels {
 		nb.TwitchClient.Join(ch.Name)
-		nb.TwitchClient.Say(ch.Name, "xd")
+		// nb.TwitchClient.Say(ch.Name, "xd")
 		log.Infof("Joined: %s\n", ch.Name)
 	}
 

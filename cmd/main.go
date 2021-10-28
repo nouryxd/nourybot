@@ -17,8 +17,6 @@ func main() {
 
 	conf := config.LoadConfig()
 
-	// db.InsertInitialData()
-
 	nb = &bot.Bot{
 		TwitchClient: twitch.NewClient(conf.Username, conf.Oauth),
 		MongoClient:  db.Connect(conf),

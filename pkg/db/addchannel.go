@@ -9,6 +9,7 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
+// AddChannel adds a given channel name to the database.
 func AddChannel(target, channelName string, nb *bot.Bot) {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()

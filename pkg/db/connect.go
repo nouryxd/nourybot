@@ -11,6 +11,8 @@ import (
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
+// Connect connects the the MongoDB database through a supplied cfg
+// and returns a *mongo.Client
 func Connect(cfg *config.Config) *mongo.Client {
 	client, err := mongo.NewClient(options.Client().ApplyURI(cfg.MongoURI))
 	if err != nil {
