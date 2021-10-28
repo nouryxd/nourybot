@@ -19,15 +19,15 @@ func TestCommandsUsed(t *testing.T) {
 		}
 
 		// 127 + 53
-		request = mockCommandsUsed(53)
-		response = 180
+		// request = mockCommandsUsed(53)
+		// response = 180
 
-		got = request
-		want = response
+		// got = request
+		// want = response
 
-		if got != want {
-			t.Errorf("got %v, want %v", got, want)
-		}
+		// if got != want {
+		// 	t.Errorf("got %v, want %v", got, want)
+		// }
 	})
 }
 
