@@ -13,10 +13,6 @@ type Bot struct {
 	Uptime       time.Time
 }
 
-// type Channel struct {
-// 	Name string
-// }
-
 // Send checks the message against a banphrase api
 // and also splits the message into two if the message
 // is too long for a single twitch chat message.
