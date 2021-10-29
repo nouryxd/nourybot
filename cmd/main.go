@@ -18,7 +18,7 @@ var nb *bot.Bot
 func main() {
 
 	// No need to join every channel when on development mode.
-	runMode := flag.String("mode", "dev", "Mode in which to run. (dev/production")
+	runMode := flag.String("mode", "production", "Mode in which to run. (dev/production")
 	flag.Parse()
 
 	conf := config.LoadConfig()

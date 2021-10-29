@@ -9,4 +9,4 @@ WORKDIR /app
 
 RUN cd cmd && go build -o Nourybot
 
-CMD ["/app/cmd/Nourybot -mode production"]
+CMD ["/app/cmd/Nourybot"]
