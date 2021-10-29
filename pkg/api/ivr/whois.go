@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"net/http"
+	"strings"
 
 	log "github.com/sirupsen/logrus"
 )
@@ -50,7 +51,22 @@ func Whois(username string) string {
 	var responseObject whoisApiResponse
 	json.Unmarshal(body, &responseObject)
 
-	reply := fmt.Sprintf("User: %s, ID: %s, Color: %s, Partner: %v, Affiliate: %v, Staff: %v, Admin: %v, Bot: %v, Bio: %v", responseObject.DisplayName, responseObject.Id, responseObject.ChatColor, responseObject.Roles.IsPartner, responseObject.Roles.IsAffiliate, responseObject.Roles.IsStaff, responseObject.Roles.IsSiteAdmin, responseObject.Bot, responseObject.Bio)
+	// time string format 2011-05-19T00:28:28.310449Z
+	// discard everything after T
+	created := strings.Split(responseObject.CreatedAt, "T")
+
+	reply := fmt.Sprintf("User: %s, ID: %s, Created on: %s, Color: %s, Affiliate: %v, Partner: %v, Staff: %v, Admin: %v, Bot: %v, Bio: %v",
+		responseObject.DisplayName,
+		responseObject.Id,
+		created[0],
+		responseObject.ChatColor,
+		responseObject.Roles.IsAffiliate,
+		responseObject.Roles.IsPartner,
+		responseObject.Roles.IsStaff,
+		responseObject.Roles.IsSiteAdmin,
+		responseObject.Bot,
+		responseObject.Bio,
+	)
 
 	// User not found
 	if responseObject.Error != "" {

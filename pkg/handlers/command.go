@@ -433,9 +433,6 @@ func Command(message twitch.PrivateMessage, nb *bot.Bot) {
 		if msgLen == 1 {
 			nb.Send(target, "Usage: ()whois [user]")
 			return
-		} else if message.User.ID != "31437432" {
-			nb.Send(target, "You are not authorized to do that.")
-			return
 		} else {
 			commands.Whois(target, cmdParams[1], nb)
 			return
