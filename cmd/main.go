@@ -17,7 +17,8 @@ var nb *bot.Bot
 
 func main() {
 
-	// No need to join every channel when on development mode.
+	// runMode is either dev or production so that we don't join every channel
+	// everytime we do a small test.
 	runMode := flag.String("mode", "production", "Mode in which to run. (dev/production")
 	flag.Parse()
 
@@ -49,14 +50,15 @@ func main() {
 
 	// Depending on the mode we run in, join different channel.
 	if *runMode == "production" {
-		// Production, joining all regular channels
 		log.Info("[PRODUCTION]: Joining every channel.")
+
+		// Production, joining all regular channels
 		db.InitialJoin(nb)
 
 	} else if *runMode == "dev" {
-		// Development, only join my two channels
 		log.Info("[DEV]: Joining nouryqt and nourybot.")
 
+		// Development, only join my two channels
 		nb.TwitchClient.Join("nouryqt", "nourybot")
 		nb.Send("nourybot", "[DEV] Badabing Badaboom Pepepains")
 	}
