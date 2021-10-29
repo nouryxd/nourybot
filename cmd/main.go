@@ -10,7 +10,7 @@ import (
 	"github.com/lyx0/nourybot/pkg/config"
 	"github.com/lyx0/nourybot/pkg/db"
 	"github.com/lyx0/nourybot/pkg/handlers"
-	"github.com/sirupsen/logrus"
+	log "github.com/sirupsen/logrus"
 )
 
 var nb *bot.Bot
@@ -47,14 +47,15 @@ func main() {
 		handlers.PrivateMessage(message, nb)
 	})
 
+	// Depending on the mode we run in, join different channel.
 	if *runMode == "production" {
 		// Production, joining all regular channels
-		logrus.Info("[PRODUCTION]: Joining every channel.")
+		log.Info("[PRODUCTION]: Joining every channel.")
 		db.InitialJoin(nb)
 
 	} else if *runMode == "dev" {
 		// Development, only join my two channels
-		logrus.Info("[DEV]: Joining nouryqt and nourybot.")
+		log.Info("[DEV]: Joining nouryqt and nourybot.")
 
 		nb.TwitchClient.Join("nouryqt", "nourybot")
 		nb.Send("nourybot", "[DEV] Badabing Badaboom Pepepains")

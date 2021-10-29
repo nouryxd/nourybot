@@ -11,5 +11,8 @@ Near future abandoned project in development.
         docker run -d --rm nourybot
 
 ### Make:
-    For build and run: 
-        make xd
+    Development:
+        make dev
+
+    Production:
+        make prod

@@ -51,6 +51,7 @@ func (b *Bot) Send(target, text string) {
 	}
 }
 
+// SkipChecking sends the message without banphrase check
 func (b *Bot) SkipChecking(target, text string) {
 	b.TwitchClient.Say(target, text)
 }
