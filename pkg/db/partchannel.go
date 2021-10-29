@@ -30,6 +30,8 @@ func PartChannel(target, channelName string, nb *bot.Bot) {
 		log.Error(insertErr)
 		return
 	}
+
+	nb.TwitchClient.Depart(channelName)
 	nb.Send(target, fmt.Sprintf("Parted %s", channelName))
 
 	// log.Info(res)

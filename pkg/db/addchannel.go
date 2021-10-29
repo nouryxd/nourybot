@@ -26,6 +26,6 @@ func AddChannel(target, channelName string, nb *bot.Bot) {
 		log.Error(insertErr)
 		return
 	}
-
+	nb.TwitchClient.Join(channelName)
 	nb.Send(target, fmt.Sprintf("Joined %s", channelName))
 }
