@@ -6,6 +6,7 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
+// Eightball asks the magic 8ball for guidance.
 func EightBall(channel string, nb *bot.Bot) {
 	resp, err := aiden.ApiCall("api/v1/misc/8ball")
 

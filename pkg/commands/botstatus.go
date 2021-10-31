@@ -8,6 +8,7 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
+// Botstatus responds with if a given bot is verified/known and its ratelimits.
 func BotStatus(channel, name string, nb *bot.Bot) {
 	resp, err := aiden.ApiCall(fmt.Sprintf("api/v1/twitch/botStatus/%s?includeLimits=1", name))
 

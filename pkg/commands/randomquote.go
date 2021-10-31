@@ -7,6 +7,8 @@ import (
 	"github.com/lyx0/nourybot/pkg/api/ivr"
 )
 
+// RandomQuote calls the RandomQuote api and responds with a link for a
+// random quote image.
 func RandomQuote(channel, target, username string, nb *bot.Bot) {
 	ivrResponse, err := ivr.RandomQuote(target, username)
 

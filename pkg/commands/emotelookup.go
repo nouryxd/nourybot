@@ -7,6 +7,8 @@ import (
 	"github.com/lyx0/nourybot/pkg/api/ivr"
 )
 
+// EmoteLookup looks up a given emote and responds with the channel it is
+// associated with and its tier.
 func EmoteLookup(channel, emote string, nb *bot.Bot) {
 	reply, err := ivr.EmoteLookup(emote)
 

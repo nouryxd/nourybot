@@ -8,6 +8,7 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
+// Uptime responds with the time a given channel has been live.
 func Uptime(channel, name string, nb *bot.Bot) {
 	resp, err := aiden.ApiCall(fmt.Sprintf("api/v1/twitch/channel/%s/uptime", name))
 

@@ -8,6 +8,7 @@ import (
 	"github.com/lyx0/nourybot/pkg/utils"
 )
 
+// Ping responds with Pong and basic information about the bot.
 func Ping(target string, nb *bot.Bot) {
 	commandCount := fmt.Sprint(utils.GetCommandsUsed())
 	botUptime := humanize.Time(nb.Uptime)

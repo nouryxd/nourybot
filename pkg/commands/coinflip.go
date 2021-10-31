@@ -5,6 +5,7 @@ import (
 	"github.com/lyx0/nourybot/pkg/utils"
 )
 
+// Coinflip responds with Heads or Tails.
 func Coinflip(channel string, nb *bot.Bot) {
 	result := utils.GenerateRandomNumber(2)
 

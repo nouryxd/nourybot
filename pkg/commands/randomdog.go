@@ -5,6 +5,8 @@ import (
 	"github.com/lyx0/nourybot/pkg/api"
 )
 
+// RandomDog calls the RandomDog api and responds with a link for a
+// random dog image.
 func RandomDog(channel string, nb *bot.Bot) {
 	reply := api.RandomDog()
 

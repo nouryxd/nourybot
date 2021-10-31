@@ -7,6 +7,7 @@ import (
 	"github.com/lyx0/nourybot/pkg/api/ivr"
 )
 
+// ProfilePicture responds with a link to a given users Twitch Profilepicture.
 func ProfilePicture(channel, target string, nb *bot.Bot) {
 	reply, err := ivr.ProfilePicture(target)
 

@@ -7,6 +7,8 @@ import (
 	"github.com/lyx0/nourybot/cmd/bot"
 )
 
+// Fill repeats a given emote until the whole twitch message
+// is filled up with the emote and then sends it.
 func Fill(channel, emote string, nb *bot.Bot) {
 	if emote[0] == '.' || emote[0] == '/' {
 		nb.Send(channel, ":tf:")

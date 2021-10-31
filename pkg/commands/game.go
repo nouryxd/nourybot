@@ -8,6 +8,7 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
+// Game responds with the current game category a given stream is set to.
 func Game(channel, name string, nb *bot.Bot) {
 	game, err := aiden.ApiCall(fmt.Sprintf("api/v1/twitch/channel/%s/game", name))
 

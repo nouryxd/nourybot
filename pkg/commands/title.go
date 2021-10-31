@@ -8,6 +8,7 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
+// Title responds with the stream title for a given channel.
 func Title(channel, target string, nb *bot.Bot) {
 	title, err := aiden.ApiCall(fmt.Sprintf("api/v1/twitch/channel/%s/title", target))
 

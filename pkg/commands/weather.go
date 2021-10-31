@@ -8,6 +8,8 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
+// Weather calls the weather api for a given location and responds
+// with the current weather data.
 func Weather(channel, location string, nb *bot.Bot) {
 	reply, err := aiden.ApiCall(fmt.Sprintf("api/v1/misc/weather/%s", location))
 
