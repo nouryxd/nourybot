@@ -21,9 +21,9 @@ func (b *Bot) Send(target, text string) {
 		return
 	}
 
-	// if text[0] == '.' || text[0] == '/' {
-	// 	text = ". " + text
-	// }
+	if text[0] == '.' || text[0] == '/' || text[0] == '!' {
+		text = ":tf: " + text
+	}
 
 	// If a message is too long for a single twitch
 	// message, split it into two messages.
