@@ -125,9 +125,11 @@ func Command(message twitch.PrivateMessage, nb *bot.Bot) {
 
 	case "emote":
 		commands.EmoteLookup(target, cmdParams[1], nb)
+		return
 
 	case "emotelookup":
 		commands.EmoteLookup(target, cmdParams[1], nb)
+		return
 
 	case "ffz":
 		if msgLen == 1 {
@@ -135,6 +137,7 @@ func Command(message twitch.PrivateMessage, nb *bot.Bot) {
 			return
 		}
 		commands.Ffz(target, cmdParams[1], nb)
+		return
 
 	// case "ffzemotes":
 	// 	commands.FfzEmotes(target, nb)
@@ -214,6 +217,7 @@ func Command(message twitch.PrivateMessage, nb *bot.Bot) {
 
 	case "help":
 		commands.Help(target, nb)
+		return
 
 	case "join":
 		if msgLen == 1 || message.User.ID != "31437432" {
@@ -229,19 +233,24 @@ func Command(message twitch.PrivateMessage, nb *bot.Bot) {
 
 	case "nourybot":
 		commands.Help(target, nb)
+		return
 
 	case "num":
 		if msgLen == 1 {
 			commands.RandomNumber(target, nb)
+			return
 		} else {
 			commands.Number(target, cmdParams[1], nb)
+			return
 		}
 
 	case "number":
 		if msgLen == 1 {
 			commands.RandomNumber(target, nb)
+			return
 		} else {
 			commands.Number(target, cmdParams[1], nb)
+			return
 
 		}
 	case "osrs":
