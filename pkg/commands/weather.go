@@ -14,6 +14,7 @@ func Weather(channel, location string, nb *bot.Bot) {
 	if err != nil {
 		nb.Send(channel, "Something went wrong FeelsBadMan")
 		log.Error(err)
+		return
 	}
 
 	nb.Send(channel, reply)

@@ -14,6 +14,7 @@ func Game(channel, name string, nb *bot.Bot) {
 	if err != nil {
 		nb.Send(channel, "Something went wrong FeelsBadMan")
 		log.Error(err)
+		return
 	}
 
 	reply := fmt.Sprintf("@%s was last seen playing: %s", name, game)

@@ -14,6 +14,7 @@ func Title(channel, target string, nb *bot.Bot) {
 	if err != nil {
 		nb.Send(channel, "Something went wrong FeelsBadMan")
 		log.Error(err)
+		return
 	}
 
 	reply := fmt.Sprintf("%s title is: %s", target, title)

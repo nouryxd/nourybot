@@ -12,6 +12,7 @@ func Followage(channel, streamer, username string, nb *bot.Bot) {
 
 	if err != nil {
 		nb.Send(channel, fmt.Sprint(err))
+		return
 	}
 
 	nb.Send(channel, ivrResponse)
