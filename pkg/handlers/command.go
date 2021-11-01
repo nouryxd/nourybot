@@ -75,6 +75,14 @@ func Command(message twitch.PrivateMessage, nb *bot.Bot) {
 		commands.Bttv(target, cmdParams[1], nb)
 		return
 
+	case "channellist":
+		if message.User.ID != "31437432" {
+			nb.Send(target, "You are not allowed to do this")
+			return
+		}
+		commands.ChannelList(target, nb)
+		return
+
 	// case "bttvemotes":
 	// 	commands.BttvEmotes(target, nb)
 	// 	return
