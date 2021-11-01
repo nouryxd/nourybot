@@ -8,8 +8,8 @@ import (
 	"go.mongodb.org/mongo-driver/bson"
 )
 
-// InitialJoin is called everytime the Bot starts and joins the
-// initial list of twitch channels it should be in.
+// Listchannel reads the list of channel from the database and
+// whispers them to my own account.
 func ListChannel(nb *bot.Bot) {
 	collection := nb.MongoClient.Database("nourybot").Collection("channels")
 
