@@ -16,8 +16,6 @@ func ListChannel(nb *bot.Bot) {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 
-	// defer nb.MongoClient.Disconnect(ctx)
-
 	cur, currErr := collection.Find(ctx, bson.D{})
 
 	if currErr != nil {
@@ -32,12 +30,8 @@ func ListChannel(nb *bot.Bot) {
 
 	channelList := ""
 	for _, ch := range channels {
-		nb.TwitchClient.Join(ch.Name)
-		// nb.TwitchClient.Say(ch.Name, "xd")
 		channelList += ch.Name + " "
 	}
+
 	nb.TwitchClient.Whisper("nouryqt", channelList)
-	// It worked
-	// nb.Send("nourybot", fmt.Sprintf("Badabing Badaboom Pepepains Joined %v channel", channelCount))
-	// nb.Send("nouryqt", fmt.Sprintf("Badabing Badaboom Pepepains Joined %v channel", channelCount))
 }
