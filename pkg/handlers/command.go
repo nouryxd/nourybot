@@ -128,8 +128,13 @@ func Command(message twitch.PrivateMessage, nb *bot.Bot) {
 		return
 
 	case "echo":
-		commands.Echo(target, message.Message[7:len(message.Message)], nb)
-		return
+		if message.User.ID != "31437432" {
+			nb.Send(target, "You're not authorized to do this.")
+			return
+		} else {
+			commands.Echo(target, message.Message[7:len(message.Message)], nb)
+			return
+		}
 
 	case "emote":
 		commands.EmoteLookup(target, cmdParams[1], nb)
@@ -152,7 +157,10 @@ func Command(message twitch.PrivateMessage, nb *bot.Bot) {
 	// 	return
 
 	case "fill":
-		if msgLen == 1 {
+		if message.User.ID != "31437432" {
+			nb.Send(target, "You're not authorized to do this.")
+			return
+		} else if msgLen == 1 {
 			nb.Send(target, "Usage: ()fill [emote]")
 			return
 		} else {

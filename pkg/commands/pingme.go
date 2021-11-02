@@ -8,7 +8,7 @@ import (
 
 // Pingme pings a user.
 func Pingme(channel, user string, nb *bot.Bot) {
-	response := fmt.Sprintf("@%s", user)
+	response := fmt.Sprintf("🔔 @%s 🔔", user)
 
 	nb.Send(channel, response)
 }

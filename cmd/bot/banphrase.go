@@ -62,14 +62,10 @@ func CheckMessage(text string) (bool, string) {
 	var responseObject banphraseResponse
 	json.Unmarshal(body, &responseObject)
 
+	// Bad Message
+	//
 	// {"phrase": "No gyazo allowed"}
 	// reason := responseObject.BanphraseData.Name
-
-	// log.Info("Bancheck: ", responseObject.Banned)
-	// log.Info("Reason: ", reason)
-	// log.Info("Bancheck: ", responseObject.Banned)
-
-	// Bad message
 	if responseObject.Banned {
 		return true, "[Banphrased]"
 	} else if !responseObject.Banned {
