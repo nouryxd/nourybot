@@ -144,6 +144,14 @@ func Command(message twitch.PrivateMessage, nb *bot.Bot) {
 		commands.EmoteLookup(target, cmdParams[1], nb)
 		return
 
+	case "farm":
+		if target != "nouryqt" {
+			return
+		} else {
+			commands.Farm(target, nb)
+			return
+		}
+
 	case "ffz":
 		if msgLen == 1 {
 			nb.Send(target, "Usage: ()ffz [emote]")
