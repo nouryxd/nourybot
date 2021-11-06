@@ -474,6 +474,23 @@ func Command(message twitch.PrivateMessage, nb *bot.Bot) {
 
 	// Basically just personal commands for me to
 	// remember from here on.
+
+	case "arch":
+		if target == "nouryqt" || target == "nourybot" {
+			personal.Arch(target, nb)
+			return
+		} else {
+			return
+		}
+
+	case "arch2":
+		if target == "nouryqt" || target == "nourybot" {
+			personal.ArchTwo(target, nb)
+			return
+		} else {
+			return
+		}
+
 	case "farm":
 		if target == "nouryqt" || target == "nourybot" {
 			personal.Farm(target, nb)
@@ -537,5 +554,14 @@ func Command(message twitch.PrivateMessage, nb *bot.Bot) {
 		} else {
 			return
 		}
+
+	case "zneix":
+		if target == "nouryqt" || target == "nourybot" {
+			personal.Zneix(target, nb)
+			return
+		} else {
+			return
+		}
+
 	}
 }
