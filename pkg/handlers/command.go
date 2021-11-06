@@ -408,7 +408,7 @@ func Command(message twitch.PrivateMessage, nb *bot.Bot) {
 		}
 
 	case "streamlink":
-		if message.Channel == "nouryqt" || message.Channel == "nourybot" {
+		if target == "nouryqt" || target == "nourybot" {
 			commands.Streamlink(target, nb)
 			return
 		} else {
@@ -416,7 +416,7 @@ func Command(message twitch.PrivateMessage, nb *bot.Bot) {
 		}
 
 	case "streamlinkconfig":
-		if message.Channel == "nouryqt" || message.Channel == "nourybot" {
+		if target == "nouryqt" || target == "nourybot" {
 			commands.Streamlink(target, nb)
 			return
 		} else {
@@ -502,5 +502,21 @@ func Command(message twitch.PrivateMessage, nb *bot.Bot) {
 	case "xkcd":
 		commands.Xkcd(target, nb)
 		return
+
+	case "rave":
+		if target == "nouryqt" || target == "nourybot" {
+			commands.Rave(target, nb)
+			return
+		} else {
+			return
+		}
+
+	case "xset":
+		if target == "nouryqt" || target == "nourybot" {
+			commands.Xset(target, nb)
+			return
+		} else {
+			return
+		}
 	}
 }
