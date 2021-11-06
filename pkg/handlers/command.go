@@ -152,6 +152,14 @@ func Command(message twitch.PrivateMessage, nb *bot.Bot) {
 			return
 		}
 
+	case "farming":
+		if target != "nouryqt" {
+			return
+		} else {
+			commands.Farm(target, nb)
+			return
+		}
+
 	case "ffz":
 		if msgLen == 1 {
 			nb.Send(target, "Usage: ()ffz [emote]")
@@ -396,6 +404,22 @@ func Command(message twitch.PrivateMessage, nb *bot.Bot) {
 			return
 		} else {
 			commands.Subage(target, cmdParams[2], cmdParams[1], nb)
+			return
+		}
+
+	case "streamlink":
+		if message.Channel == "nouryqt" || message.Channel == "nourybot" {
+			commands.Streamlink(target, nb)
+			return
+		} else {
+			return
+		}
+
+	case "streamlinkconfig":
+		if message.Channel == "nouryqt" || message.Channel == "nourybot" {
+			commands.Streamlink(target, nb)
+			return
+		} else {
 			return
 		}
 
