@@ -4,11 +4,13 @@ import (
 	"time"
 
 	twitch "github.com/gempir/go-twitch-irc/v2"
+	"github.com/nicklaw5/helix"
 	"go.mongodb.org/mongo-driver/mongo"
 )
 
 type Bot struct {
 	TwitchClient *twitch.Client
+	HelixClient  *helix.Client
 	MongoClient  *mongo.Client
 	Uptime       time.Time
 }

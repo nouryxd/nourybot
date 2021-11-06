@@ -10,6 +10,7 @@ import (
 	"github.com/lyx0/nourybot/pkg/config"
 	"github.com/lyx0/nourybot/pkg/db"
 	"github.com/lyx0/nourybot/pkg/handlers"
+	"github.com/nicklaw5/helix"
 	log "github.com/sirupsen/logrus"
 )
 
@@ -24,8 +25,17 @@ func main() {
 
 	conf := config.LoadConfig()
 
+	helixClient, err := helix.NewClient(&helix.Options{
+		ClientID:     conf.ClientId,
+		ClientSecret: conf.ClientSecret,
+	})
+	if err != nil {
+		log.Fatalf("Error creating helix client: %s", err)
+	}
+
 	nb = &bot.Bot{
 		TwitchClient: twitch.NewClient(conf.Username, conf.Oauth),
+		HelixClient:  helixClient,
 		MongoClient:  db.Connect(conf),
 		Uptime:       time.Now(),
 	}

@@ -8,10 +8,12 @@ import (
 )
 
 type Config struct {
-	Username  string
-	Oauth     string
-	BotUserId string
-	MongoURI  string
+	Username     string
+	Oauth        string
+	ClientId     string
+	ClientSecret string
+	BotUserId    string
+	MongoURI     string
 }
 
 func LoadConfig() *Config {
@@ -22,10 +24,12 @@ func LoadConfig() *Config {
 	}
 
 	cfg := &Config{
-		Username:  os.Getenv("TWITCH_USER"),
-		Oauth:     os.Getenv("TWITCH_PASS"),
-		BotUserId: os.Getenv("BOT_USER_ID"),
-		MongoURI:  os.Getenv("MONGO_URI"),
+		Username:     os.Getenv("TWITCH_USER"),
+		Oauth:        os.Getenv("TWITCH_PASS"),
+		ClientId:     os.Getenv("CLIENT_ID"),
+		ClientSecret: os.Getenv("CLIENT_SECRET"),
+		BotUserId:    os.Getenv("BOT_USER_ID"),
+		MongoURI:     os.Getenv("MONGO_URI"),
 	}
 
 	log.Info("Config loaded succesfully")
