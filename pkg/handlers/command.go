@@ -144,22 +144,6 @@ func Command(message twitch.PrivateMessage, nb *bot.Bot) {
 		commands.EmoteLookup(target, cmdParams[1], nb)
 		return
 
-	case "farm":
-		if target != "nouryqt" {
-			return
-		} else {
-			commands.Farm(target, nb)
-			return
-		}
-
-	case "farming":
-		if target != "nouryqt" {
-			return
-		} else {
-			commands.Farm(target, nb)
-			return
-		}
-
 	case "ffz":
 		if msgLen == 1 {
 			nb.Send(target, "Usage: ()ffz [emote]")
@@ -407,22 +391,6 @@ func Command(message twitch.PrivateMessage, nb *bot.Bot) {
 			return
 		}
 
-	case "streamlink":
-		if target == "nouryqt" || target == "nourybot" {
-			commands.Streamlink(target, nb)
-			return
-		} else {
-			return
-		}
-
-	case "streamlinkconfig":
-		if target == "nouryqt" || target == "nourybot" {
-			commands.Streamlink(target, nb)
-			return
-		} else {
-			return
-		}
-
 	case "thumb":
 		if msgLen == 1 {
 			nb.Send(target, "Usage: ()thumb [channel]")
@@ -503,9 +471,51 @@ func Command(message twitch.PrivateMessage, nb *bot.Bot) {
 		commands.Xkcd(target, nb)
 		return
 
+	// Basically just personal commands for me to
+	// remember from here on.
+	case "farm":
+		if target == "nouryqt" || target == "nourybot" {
+			commands.Farm(target, nb)
+			return
+		} else {
+			return
+		}
+
+	case "justinfan":
+		if target == "nouryqt" || target == "nourybot" {
+			commands.Justinfan(target, nb)
+			return
+		} else {
+			return
+		}
+
+	case "farming":
+		if target == "nouryqt" || target == "nourybot" {
+			commands.Farm(target, nb)
+			return
+		} else {
+			return
+		}
+
 	case "rave":
 		if target == "nouryqt" || target == "nourybot" {
 			commands.Rave(target, nb)
+			return
+		} else {
+			return
+		}
+
+	case "streamlink":
+		if target == "nouryqt" || target == "nourybot" {
+			commands.Streamlink(target, nb)
+			return
+		} else {
+			return
+		}
+
+	case "streamlinkconfig":
+		if target == "nouryqt" || target == "nourybot" {
+			commands.Streamlink(target, nb)
 			return
 		} else {
 			return
