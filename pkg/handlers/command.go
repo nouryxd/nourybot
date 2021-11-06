@@ -6,6 +6,7 @@ import (
 	"github.com/gempir/go-twitch-irc/v2"
 	"github.com/lyx0/nourybot/cmd/bot"
 	"github.com/lyx0/nourybot/pkg/commands"
+	"github.com/lyx0/nourybot/pkg/commands/personal"
 	"github.com/lyx0/nourybot/pkg/db"
 	"github.com/lyx0/nourybot/pkg/utils"
 )
@@ -475,7 +476,7 @@ func Command(message twitch.PrivateMessage, nb *bot.Bot) {
 	// remember from here on.
 	case "farm":
 		if target == "nouryqt" || target == "nourybot" {
-			commands.Farm(target, nb)
+			personal.Farm(target, nb)
 			return
 		} else {
 			return
@@ -483,7 +484,7 @@ func Command(message twitch.PrivateMessage, nb *bot.Bot) {
 
 	case "justinfan":
 		if target == "nouryqt" || target == "nourybot" {
-			commands.Justinfan(target, nb)
+			personal.Justinfan(target, nb)
 			return
 		} else {
 			return
@@ -491,7 +492,7 @@ func Command(message twitch.PrivateMessage, nb *bot.Bot) {
 
 	case "farming":
 		if target == "nouryqt" || target == "nourybot" {
-			commands.Farm(target, nb)
+			personal.Farm(target, nb)
 			return
 		} else {
 			return
@@ -499,7 +500,15 @@ func Command(message twitch.PrivateMessage, nb *bot.Bot) {
 
 	case "rave":
 		if target == "nouryqt" || target == "nourybot" {
-			commands.Rave(target, nb)
+			personal.Rave(target, nb)
+			return
+		} else {
+			return
+		}
+
+	case "repeat":
+		if target == "nouryqt" || target == "nourybot" {
+			personal.Xset(target, nb)
 			return
 		} else {
 			return
@@ -507,7 +516,7 @@ func Command(message twitch.PrivateMessage, nb *bot.Bot) {
 
 	case "streamlink":
 		if target == "nouryqt" || target == "nourybot" {
-			commands.Streamlink(target, nb)
+			personal.Streamlink(target, nb)
 			return
 		} else {
 			return
@@ -515,7 +524,7 @@ func Command(message twitch.PrivateMessage, nb *bot.Bot) {
 
 	case "streamlinkconfig":
 		if target == "nouryqt" || target == "nourybot" {
-			commands.Streamlink(target, nb)
+			personal.Streamlink(target, nb)
 			return
 		} else {
 			return
@@ -523,7 +532,7 @@ func Command(message twitch.PrivateMessage, nb *bot.Bot) {
 
 	case "xset":
 		if target == "nouryqt" || target == "nourybot" {
-			commands.Xset(target, nb)
+			personal.Xset(target, nb)
 			return
 		} else {
 			return

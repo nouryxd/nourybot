@@ -1,4 +1,4 @@
-package commands
+package personal
 
 import "github.com/lyx0/nourybot/cmd/bot"
 
