@@ -14,8 +14,6 @@ import (
 // Command contains all the logic for routing mesasges containing commands
 // and will forward the messages to the specific command handlers.
 func Command(message twitch.PrivateMessage, nb *bot.Bot) {
-	// logrus.Info("fn Command")
-
 	utils.CommandUsed()
 
 	// commandName is the actual command name without the prefix.
@@ -33,7 +31,7 @@ func Command(message twitch.PrivateMessage, nb *bot.Bot) {
 	// target channel
 	target := message.Channel
 
-	// Logs the message to the database if it invoked a command.
+	// Logs the message to the database since it invoked a command.
 	db.InsertCommand(nb, commandName, message.User.Name, message.Channel, message.User.ID, message.Message)
 
 	switch commandName {
@@ -42,6 +40,7 @@ func Command(message twitch.PrivateMessage, nb *bot.Bot) {
 			nb.Send(target, "xd")
 			return
 		}
+
 	case "7tv":
 		if msgLen == 1 {
 			nb.Send(target, "Usage: ()7tv [emote]")
@@ -133,7 +132,7 @@ func Command(message twitch.PrivateMessage, nb *bot.Bot) {
 
 	case "echo":
 		if message.User.ID != "31437432" {
-			nb.Send(target, "You're not authorized to do this.")
+			// nb.Send(target, "You're not authorized to do this.")
 			return
 		} else {
 			commands.Echo(target, message.Message[7:len(message.Message)], nb)
@@ -156,7 +155,7 @@ func Command(message twitch.PrivateMessage, nb *bot.Bot) {
 		commands.Ffz(target, cmdParams[1], nb)
 		return
 
-	// case "ffzemotes":
+	//  case "ffzemotes":
 	// 	commands.FfzEmotes(target, nb)
 	// 	return
 
@@ -475,8 +474,7 @@ func Command(message twitch.PrivateMessage, nb *bot.Bot) {
 		commands.Xkcd(target, nb)
 		return
 
-	// Basically just personal commands for me to
-	// remember from here on.
+	// Basically just personal commands for my own channel from here on.
 
 	case "arch":
 		if target == "nouryxd" || target == "nourybot" {

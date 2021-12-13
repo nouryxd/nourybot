@@ -31,7 +31,6 @@ func main() {
 	}
 
 	nb.TwitchClient.OnPrivateMessage(func(message twitch.PrivateMessage) {
-
 		// If channelID is missing something must have gone wrong.
 		channelID := message.Tags["room-id"]
 		if channelID == "" {

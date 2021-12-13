@@ -35,7 +35,6 @@ func PrivateMessage(message twitch.PrivateMessage, nb *bot.Bot) {
 	// Since our command prefix is () ignore every message
 	// that is less than 2
 	if len(message.Message) >= 2 {
-
 		// Message starts with (), pass it on to
 		// the command handler.
 		if message.Message[:2] == "()" {
