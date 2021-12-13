@@ -23,6 +23,7 @@ func PrivateMessage(message twitch.PrivateMessage, nb *bot.Bot) {
 		return
 	}
 
+	// General message logging. Not in use currently.
 	db.InsertMessage(nb, message.User.Name, message.Channel, message.User.ID, message.Message)
 
 	// Thing for #pajlada

@@ -8,21 +8,21 @@ import (
 	"github.com/sirupsen/logrus"
 )
 
-type logMessage struct {
+type logCommand struct {
 	LoginName string `json:"login_name"`
 	Channel   string `json:"channel"`
 	UserID    string `json:"user_id"`
 	Text      string `json:"message"`
 }
 
-func (l *logMessage) insert(nb *bot.Bot, name, channel, id, text string) error {
-	logrus.Info("logging message")
+func (l *logCommand) insert(nb *bot.Bot, name, channel, id, text string) error {
+	logrus.Info("logging command")
 	ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
 	defer cancel()
 
-	collection := nb.MongoClient.Database("nourybot").Collection("messageLogs")
+	collection := nb.MongoClient.Database("nourybot").Collection("commandLogs")
 
-	_, err := collection.InsertOne(ctx, &logMessage{
+	_, err := collection.InsertOne(ctx, &logCommand{
 		LoginName: name,
 		Channel:   channel,
 		UserID:    id,
@@ -35,8 +35,8 @@ func (l *logMessage) insert(nb *bot.Bot, name, channel, id, text string) error {
 	return nil
 }
 
-func InsertMessage(nb *bot.Bot, name, channel, id, text string) {
-	err := (&logMessage{}).insert(nb, name, channel, id, text)
+func InsertCommand(nb *bot.Bot, name, channel, id, text string) {
+	err := (&logCommand{}).insert(nb, name, channel, id, text)
 	if err != nil {
 		logrus.Info("failed to log message")
 	}
