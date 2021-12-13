@@ -9,13 +9,14 @@ import (
 )
 
 type logCommand struct {
-	LoginName string `json:"login_name"`
-	Channel   string `json:"channel"`
-	UserID    string `json:"user_id"`
-	Text      string `json:"message"`
+	CommandName string `json:"command_name"`
+	LoginName   string `json:"login_name"`
+	Channel     string `json:"channel"`
+	UserID      string `json:"user_id"`
+	Text        string `json:"message"`
 }
 
-func (l *logCommand) insert(nb *bot.Bot, name, channel, id, text string) error {
+func (l *logCommand) insert(nb *bot.Bot, commandName, name, channel, id, text string) error {
 	logrus.Info("logging command")
 	ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
 	defer cancel()
@@ -23,21 +24,22 @@ func (l *logCommand) insert(nb *bot.Bot, name, channel, id, text string) error {
 	collection := nb.MongoClient.Database("nourybot").Collection("commandLogs")
 
 	_, err := collection.InsertOne(ctx, &logCommand{
-		LoginName: name,
-		Channel:   channel,
-		UserID:    id,
-		Text:      text,
+		LoginName:   name,
+		Channel:     channel,
+		UserID:      id,
+		Text:        text,
+		CommandName: commandName,
 	})
 	if err != nil {
-		logrus.Info("failed to log message")
+		logrus.Info("failed to log command")
 		return err
 	}
 	return nil
 }
 
-func InsertCommand(nb *bot.Bot, name, channel, id, text string) {
-	err := (&logCommand{}).insert(nb, name, channel, id, text)
+func InsertCommand(nb *bot.Bot, commandName, name, channel, id, text string) {
+	err := (&logCommand{}).insert(nb, commandName, name, channel, id, text)
 	if err != nil {
-		logrus.Info("failed to log message")
+		logrus.Info("failed to log command")
 	}
 }

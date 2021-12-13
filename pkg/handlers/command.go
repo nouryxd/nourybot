@@ -18,9 +18,6 @@ func Command(message twitch.PrivateMessage, nb *bot.Bot) {
 
 	utils.CommandUsed()
 
-	// Adds the message to the database if it invoked a command.
-	db.InsertCommand(nb, message.User.Name, message.Channel, message.User.ID, message.Message)
-
 	// commandName is the actual command name without the prefix.
 	commandName := strings.ToLower(strings.SplitN(message.Message, " ", 3)[0][2:])
 
@@ -35,6 +32,9 @@ func Command(message twitch.PrivateMessage, nb *bot.Bot) {
 
 	// target channel
 	target := message.Channel
+
+	// Logs the message to the database if it invoked a command.
+	db.InsertCommand(nb, commandName, message.User.Name, message.Channel, message.User.ID, message.Message)
 
 	switch commandName {
 	case "":
