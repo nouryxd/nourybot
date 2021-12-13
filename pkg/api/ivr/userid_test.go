@@ -4,7 +4,7 @@ import "testing"
 
 func TestUserid(t *testing.T) {
 	t.Run("returns a link to a users profile picture", func(t *testing.T) {
-		request := Userid("nouryqt")
+		request := Userid("nouryxd")
 		response := "31437432"
 
 		got := request
