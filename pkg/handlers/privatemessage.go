@@ -3,7 +3,6 @@ package handlers
 import (
 	"github.com/gempir/go-twitch-irc/v2"
 	"github.com/lyx0/nourybot/cmd/bot"
-	"github.com/lyx0/nourybot/pkg/db"
 	log "github.com/sirupsen/logrus"
 )
 
@@ -24,7 +23,7 @@ func PrivateMessage(message twitch.PrivateMessage, nb *bot.Bot) {
 	}
 
 	// General message logging. Not in use currently.
-	db.InsertMessage(nb, message.User.Name, message.Channel, message.User.ID, message.Message)
+	// db.InsertMessage(nb, message.User.Name, message.Channel, message.User.ID, message.Message)
 
 	// Thing for #pajlada
 	if message.Channel == "pajlada" && message.Message == "pajaS 🚨 ALERT" && message.User.Name == "pajbot" && message.Action {
