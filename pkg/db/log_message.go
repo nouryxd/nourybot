@@ -35,6 +35,8 @@ func (l *logMessage) insert(nb *bot.Bot, name, channel, id, text string) error {
 	return nil
 }
 
+// InsertMessage is called on every message and logs message details
+// into the database.
 func InsertMessage(nb *bot.Bot, name, channel, id, text string) {
 	err := (&logMessage{}).insert(nb, name, channel, id, text)
 	if err != nil {

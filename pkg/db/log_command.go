@@ -37,6 +37,8 @@ func (l *logCommand) insert(nb *bot.Bot, commandName, name, channel, id, text st
 	return nil
 }
 
+// InsertCommand is called on every message that invokes a command
+// and inserts the message and command details into the database.
 func InsertCommand(nb *bot.Bot, commandName, name, channel, id, text string) {
 	err := (&logCommand{}).insert(nb, commandName, name, channel, id, text)
 	if err != nil {
