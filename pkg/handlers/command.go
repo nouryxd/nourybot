@@ -107,7 +107,7 @@ func Command(message twitch.PrivateMessage, nb *bot.Bot) {
 		return
 
 	case "color":
-		commands.Color(message, nb)
+		commands.Color(cmdParams[1], target, nb)
 		return
 
 	case "commands":
@@ -246,9 +246,9 @@ func Command(message twitch.PrivateMessage, nb *bot.Bot) {
 		db.AddChannel(target, cmdParams[1], nb)
 		return
 
-	case "mycolor":
-		commands.Color(message, nb)
-		return
+		//. 	case "mycolor":
+		//. 		commands.Color(message, nb)
+		//. 		return
 
 	case "nourybot":
 		commands.Help(target, nb)

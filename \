@@ -19,7 +19,7 @@ type colorApiResponse struct {
 }
 
 // Userid returns the userID of a given user
-func Color(username, target string, nb *bot.Bot) {
+func Color(username, target string, nb *bot.Bot) string {
 	baseUrl := "https://api.ivr.fi/twitch/resolve"
 
 	resp, err := http.Get(fmt.Sprintf("%s/%s", baseUrl, username))
@@ -47,7 +47,7 @@ func Color(username, target string, nb *bot.Bot) {
 
 	// User not found
 	if responseObject.Error != "" {
-		nb.Send(target, "Something went wrong... FeelsBadMan")
+		return fmt.Sprintf(responseObject.Error + " FeelsBadMan")
 	}
 	nb.Send(target, reply)
 }
