@@ -55,10 +55,10 @@ func main() {
 		db.InitialJoin(nb)
 
 	} else if *runMode == "dev" {
-		log.Info("[DEV]: Joining nouryxd and nourybot.")
+		log.Info("[DEV]: Joining whereismymnd and nourybot.")
 
 		// Development, only join my two channels
-		nb.TwitchClient.Join("nouryxd", "nourybot")
+		nb.TwitchClient.Join("whereismymnd", "nourybot")
 		nb.Send("nourybot", "[DEV] Badabing Badaboom Pepepains")
 	}
 

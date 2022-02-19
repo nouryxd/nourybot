@@ -33,5 +33,5 @@ func ListChannel(nb *bot.Bot) {
 		channelList += ch.Name + " "
 	}
 
-	nb.TwitchClient.Whisper("nouryxd", channelList)
+	nb.TwitchClient.Whisper("whereismymnd", channelList)
 }
