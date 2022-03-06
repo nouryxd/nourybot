@@ -4,7 +4,7 @@ import (
 	"context"
 	"time"
 
-	"github.com/lyx0/nourybot/pkg/config"
+	"github.com/lyx0/nourybot/internal/config"
 	log "github.com/sirupsen/logrus"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
