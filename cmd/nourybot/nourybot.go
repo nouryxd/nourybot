@@ -7,10 +7,12 @@ import (
 	"github.com/lyx0/nourybot/internal/bot"
 	"github.com/lyx0/nourybot/internal/config"
 	"github.com/lyx0/nourybot/internal/db"
+	"github.com/sirupsen/logrus"
 )
 
 func main() {
 	cfg := config.LoadConfig()
+	logrus.Info(cfg.Username, cfg.Oauth)
 
 	twitchClient := twitch.NewClient(cfg.Username, cfg.Oauth)
 	now := time.Now()
@@ -23,5 +25,10 @@ func main() {
 	}
 
 	nb.TwitchClient.Join("nourybot")
-	nb.TwitchClient.Connect()
+
+	err := nb.TwitchClient.Connect()
+	if err != nil {
+		panic(err)
+	}
+
 }

@@ -22,8 +22,8 @@ func LoadConfig() *Config {
 	}
 
 	cfg := &Config{
-		Username:  os.Getenv("TWITCH_USER"),
-		Oauth:     os.Getenv("TWITCH_PASS"),
+		Username:  os.Getenv("BOT_USERNAME"),
+		Oauth:     os.Getenv("BOT_PASS"),
 		BotUserId: os.Getenv("BOT_USER_ID"),
 		MongoURI:  os.Getenv("MONGO_URI"),
 	}
