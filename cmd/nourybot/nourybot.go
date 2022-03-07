@@ -26,6 +26,10 @@ func main() {
 
 	nb.TwitchClient.Join("nourybot")
 
+	nb.TwitchClient.OnConnect(func() {
+		nb.TwitchClient.Say("nourybot", "xd")
+	})
+
 	err := nb.TwitchClient.Connect()
 	if err != nil {
 		panic(err)
