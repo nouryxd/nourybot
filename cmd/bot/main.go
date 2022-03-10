@@ -25,6 +25,10 @@ func main() {
 		uptime:       now,
 	}
 
+	nb.twitchClient.OnPrivateMessage(func(message twitch.PrivateMessage) {
+		nb.onPrivateMessage(message)
+	})
+
 	nb.twitchClient.OnConnect(nb.onConnect)
 
 	err := nb.connect()
