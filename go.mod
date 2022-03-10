@@ -4,6 +4,7 @@ go 1.17
 
 require (
 	github.com/gempir/go-twitch-irc/v3 v3.0.0
+	github.com/go-sql-driver/mysql v1.6.0
 	github.com/joho/godotenv v1.4.0
 	github.com/sirupsen/logrus v1.8.1
 )
