@@ -12,12 +12,12 @@ type Config struct {
 	Username  string
 	BotUserId string
 	Oauth     string
-
 	// Admin
 	AdminUsername string
 	AdminUserId   string
 
 	// DB
+	MySQLURI string
 	MongoURI string
 }
 
@@ -39,6 +39,7 @@ func LoadConfig() *Config {
 		AdminUserId:   os.Getenv("ADMIN_USER_ID"),
 
 		// DB
+		MySQLURI: os.Getenv("MYSQL_URI"),
 		MongoURI: os.Getenv("MONGO_URI"),
 	}
 
