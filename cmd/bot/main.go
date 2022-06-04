@@ -44,6 +44,10 @@ func main() {
 		logger:       logger,
 	}
 
+	app.twitchClient.OnPrivateMessage(func(message twitch.PrivateMessage) {
+		app.handlePrivateMessage(message)
+	})
+
 	app.twitchClient.Join("nourylul")
 	app.twitchClient.Join("nourybot")
 
