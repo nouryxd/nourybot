@@ -34,7 +34,15 @@ func (app *application) handleCommand(message twitch.PrivateMessage) {
 	switch commandName {
 	case "":
 		if msgLen == 1 {
-			app.twitchClient.Say(target, "xd")
+			app.Send(target, "xd")
+			return
+		}
+	case "echo":
+		if msgLen < 2 {
+			app.Send(target, "Not enough arguments provided.")
+			return
+		} else {
+			app.Send(target, message.Message[7:len(message.Message)])
 			return
 		}
 	}
