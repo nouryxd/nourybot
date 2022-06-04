@@ -9,19 +9,19 @@ func (app *application) handlePrivateMessage(message twitch.PrivateMessage) {
 
 	// If there is no roomId something went wrong.
 	if roomId == "" {
-		app.logger.Print("Missing room-id in message tag ", roomId)
+		app.logger.Error("Missing room-id in message tag ", roomId)
 		return
 	}
 
 	if len(message.Message) >= 2 {
 		if message.Message[:2] == "()" {
 			// TODO: Command Handling
-			app.logger.Println("[Command detected]: ", message.Message)
+			app.logger.Infof("[Command detected]: ", message.Message)
 			return
 		}
 	}
 
 	// Message was no command so we just print it.
-	app.logger.Printf("[#%s]:%s: %s", message.Channel, message.User.DisplayName, message.Message)
+	app.logger.Infof("[#%s]:%s: %s", message.Channel, message.User.DisplayName, message.Message)
 
 }

@@ -2,11 +2,11 @@ package main
 
 import (
 	"flag"
-	"log"
 	"os"
 
 	"github.com/gempir/go-twitch-irc/v3"
 	"github.com/joho/godotenv"
+	"github.com/sirupsen/logrus"
 )
 
 type config struct {
@@ -18,7 +18,7 @@ type config struct {
 type application struct {
 	config       config
 	twitchClient *twitch.Client
-	logger       *log.Logger
+	logger       *logrus.Logger
 }
 
 func main() {
@@ -31,12 +31,12 @@ func main() {
 	flag.Parse()
 
 	// Initialize a new logger we attach to our application struct.
-	logger := log.New(os.Stdout, "", log.Ldate|log.Ltime)
+	lgr := logrus.New()
 
 	// Load the .env file and check for errors.
 	err := godotenv.Load()
 	if err != nil {
-		logger.Fatal("Error loading .env file")
+		lgr.Fatal("Error loading .env file")
 	}
 
 	// Load bot credentials from the .env file.
@@ -52,7 +52,7 @@ func main() {
 	app := &application{
 		config:       cfg,
 		twitchClient: twitchClient,
-		logger:       logger,
+		logger:       lgr,
 	}
 
 	// Received a PrivateMessage (normal chat message), pass it to
@@ -70,7 +70,7 @@ func main() {
 	// Successfully connected to Twitch so we log a message with the
 	// mode we are currently running in..
 	app.twitchClient.OnConnect(func() {
-		app.logger.Printf("Successfully connected to Twitch Servers in %s mode!", app.config.env)
+		app.logger.Infof("Successfully connected to Twitch Servers in %s mode!", app.config.env)
 	})
 
 	// Join test channels
