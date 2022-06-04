@@ -16,7 +16,8 @@ func (app *application) handlePrivateMessage(message twitch.PrivateMessage) {
 	if len(message.Message) >= 2 {
 		if message.Message[:2] == "()" {
 			// TODO: Command Handling
-			app.logger.Infof("[Command detected]: ", message.Message)
+			app.handleCommand(message)
+			// app.logger.Infof("[Command detected]: ", message.Message)
 			return
 		}
 	}
