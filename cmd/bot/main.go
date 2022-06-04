@@ -5,7 +5,7 @@ import (
 	"log"
 	"os"
 
-	"github.com/gempir/go-twitch-irc/v2"
+	"github.com/gempir/go-twitch-irc/v3"
 	"github.com/joho/godotenv"
 )
 
@@ -32,8 +32,8 @@ func main() {
 		log.Fatal("Error loading .env file")
 	}
 
-	cfg.botUsername = os.Getenv("TWITCH_USER")
-	cfg.botOauth = os.Getenv("TWITCH_OAUTH")
+	cfg.botUsername = os.Getenv("BOT_USER")
+	cfg.botOauth = os.Getenv("BOT_OAUTH")
 
 	logger := log.New(os.Stdout, "", log.Ldate|log.Ltime)
 
@@ -44,5 +44,14 @@ func main() {
 		logger:       logger,
 	}
 
-	app.twitchClient.Connect()
+	app.twitchClient.Join("nourylul")
+	app.twitchClient.Join("nourybot")
+
+	app.twitchClient.Say("nourylul", "xd")
+	app.twitchClient.Say("nourybot", "xd")
+
+	err = app.twitchClient.Connect()
+	if err != nil {
+		panic(err)
+	}
 }
