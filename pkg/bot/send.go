@@ -95,7 +95,7 @@ func (bot *Bot) Send(target, message string) {
 	messageBanned, banReason := bot.checkMessage(message)
 	if messageBanned {
 		// Bad message, replace message and log it.
-		bot.twitchClient.Say(target, "[BANPHRASED] monkaS")
+		bot.TwitchClient.Say(target, "[BANPHRASED] monkaS")
 		bot.logger.Info("Banned message detected: ", banReason)
 
 		return
@@ -107,13 +107,13 @@ func (bot *Bot) Send(target, message string) {
 			firstMessage := message[0:499]
 			secondMessage := message[499:]
 
-			bot.twitchClient.Say(target, firstMessage)
-			bot.twitchClient.Say(target, secondMessage)
+			bot.TwitchClient.Say(target, firstMessage)
+			bot.TwitchClient.Say(target, secondMessage)
 
 			return
 		}
 		// Message was fine.
-		bot.twitchClient.Say(target, message)
+		bot.TwitchClient.Say(target, message)
 		return
 	}
 }
