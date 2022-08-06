@@ -1,4 +1,4 @@
-package bot
+package main
 
 import (
 	"bytes"
@@ -6,6 +6,8 @@ import (
 	"fmt"
 	"io/ioutil"
 	"net/http"
+
+	"github.com/sirupsen/logrus"
 )
 
 // banphraseResponse is the data we receive back from
@@ -35,26 +37,26 @@ var (
 // returns true and a string with the reason if it was banned.
 // More information:
 // https://gist.github.com/pajlada/57464e519ba8d195a97ddcd0755f9715
-func (bot *Bot) checkMessage(text string) (bool, string) {
-
+func checkMessage(text string) (bool, string) {
+	var l *logrus.Logger
 	// {"message": "AHAHAHAHA LUL"}
 	reqBody, err := json.Marshal(map[string]string{
 		"message": text,
 	})
 	if err != nil {
-		bot.logger.Error(err)
+		l.Error(err)
 	}
 
 	resp, err := http.Post(banPhraseUrl, "application/json", bytes.NewBuffer(reqBody))
 	if err != nil {
-		bot.logger.Error(err)
+		l.Error(err)
 	}
 
 	defer resp.Body.Close()
 
 	body, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
-		bot.logger.Error(err)
+		l.Error(err)
 	}
 
 	var responseObject banphraseResponse
@@ -77,7 +79,7 @@ func (bot *Bot) checkMessage(text string) (bool, string) {
 
 // Send is used to send twitch replies and contains the necessary
 // safeguards and logic for that.
-func (bot *Bot) Send(target, message string) {
+func (app *Application) Send(target, message string) {
 	// Message we are trying to send is empty.
 	if len(message) == 0 {
 		return
@@ -92,11 +94,11 @@ func (bot *Bot) Send(target, message string) {
 	}
 
 	// check the message for bad words before we say it
-	messageBanned, banReason := bot.checkMessage(message)
+	messageBanned, banReason := checkMessage(message)
 	if messageBanned {
 		// Bad message, replace message and log it.
-		bot.TwitchClient.Say(target, "[BANPHRASED] monkaS")
-		bot.logger.Info("Banned message detected: ", banReason)
+		app.TwitchClient.Say(target, "[BANPHRASED] monkaS")
+		app.Logger.Info("Banned message detected: ", banReason)
 
 		return
 	} else {
@@ -107,13 +109,13 @@ func (bot *Bot) Send(target, message string) {
 			firstMessage := message[0:499]
 			secondMessage := message[499:]
 
-			bot.TwitchClient.Say(target, firstMessage)
-			bot.TwitchClient.Say(target, secondMessage)
+			app.TwitchClient.Say(target, firstMessage)
+			app.TwitchClient.Say(target, secondMessage)
 
 			return
 		}
 		// Message was fine.
-		bot.TwitchClient.Say(target, message)
+		app.TwitchClient.Say(target, message)
 		return
 	}
 }

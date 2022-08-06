@@ -1,13 +1,14 @@
-package bot
+package main
 
 import (
 	"strings"
 
 	"github.com/gempir/go-twitch-irc/v3"
+	"github.com/lyx0/nourybot/pkg/commands"
 )
 
-func (bot *Bot) handleCommand(message twitch.PrivateMessage) {
-	bot.logger.Info("[COMMAND HANDLER]", message)
+func (app *Application) handleCommand(message twitch.PrivateMessage) {
+	app.Logger.Info("[COMMAND HANDLER]", message)
 
 	// commandName is the actual name of the command without the prefix.
 	// e.g. `()ping` would be `ping`.
@@ -34,15 +35,16 @@ func (bot *Bot) handleCommand(message twitch.PrivateMessage) {
 	switch commandName {
 	case "":
 		if msgLen == 1 {
-			bot.Send(target, "xd")
+			app.Send(target, "xd")
 			return
 		}
 	case "echo":
 		if msgLen < 2 {
-			bot.Send(target, "Not enough arguments provided.")
+			app.Send(target, "Not enough arguments provided.")
 			return
 		} else {
-			bot.Send(target, message.Message[7:len(message.Message)])
+			commands.Echo(target, message.Message[7:len(message.Message)])
+			// bot.Send(target, message.Message[7:len(message.Message)])
 			return
 		}
 	}
