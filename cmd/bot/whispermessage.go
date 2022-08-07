@@ -8,5 +8,6 @@ func (app *Application) handleWhisperMessage(message twitch.WhisperMessage) {
 	app.Logger.Infow("Whisper Message received",
 		"message", message,
 		"message.User.DisplayName", message.User.DisplayName,
-		"message.Message", message.Message)
+		"message.Message", message.Message,
+	)
 }

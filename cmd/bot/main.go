@@ -15,10 +15,9 @@ type Application struct {
 func main() {
 	cfg := config.New()
 
+	tc := twitch.NewClient(cfg.TwitchUsername, cfg.TwitchOauth)
 	sugar := zap.NewExample().Sugar()
 	defer sugar.Sync()
-
-	tc := twitch.NewClient(cfg.TwitchUsername, cfg.TwitchOauth)
 
 	app := &Application{
 		TwitchClient: tc,
@@ -40,9 +39,10 @@ func main() {
 	// Successfully connected to Twitch so we log a message with the
 	// mode we are currently running in..
 	app.TwitchClient.OnConnect(func() {
-		sugar.Infow("Successfully connected to Twitch Servers",
+		app.Logger.Infow("Successfully connected to Twitch Servers",
 			"Bot username", cfg.TwitchUsername,
-			"Environment", cfg.Environment)
+			"Environment", cfg.Environment,
+		)
 
 		common.Send("nourylul", "xd", app.TwitchClient)
 	})

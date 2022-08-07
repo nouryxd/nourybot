@@ -37,8 +37,8 @@ func handleCommand(message twitch.PrivateMessage, tc *twitch.Client) {
 
 	sugar.Infow("Command received",
 		// "message", message,
+		"message.Channel", target,
 		"message.Message", message.Message,
-		"target", target,
 		"commandName", commandName,
 		"cmdParams", cmdParams,
 		"msgLen", msgLen,

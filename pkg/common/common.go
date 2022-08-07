@@ -93,7 +93,7 @@ func Send(target, message string, tc *twitch.Client) {
 	}
 
 	// Since messages starting with `.` or `/` are used for special actions
-	// (ban, whisper, timeout) and so on, we place a emote infront of it so
+	// (ban, whisper, timeout) and so on, we place an emote infront of it so
 	// the actions wouldn't execute. `!` and `$` are common bot prefixes so we
 	// don't allow them either.
 	if message[0] == '.' || message[0] == '/' || message[0] == '!' || message[0] == '$' {
@@ -106,13 +106,18 @@ func Send(target, message string, tc *twitch.Client) {
 		// Bad message, replace message and log it.
 		tc.Say(target, "[BANPHRASED] monkaS")
 		sugar.Infow("banned message detected",
-			"banReason", banReason)
+			"target channel", target,
+			"message", message,
+			"ban reason", banReason,
+		)
 
 		return
 	} else {
 		// In case the message we are trying to send is longer than the
-		// maximum allowed message length on twitch. We split the message
-		// in two parts.
+		// maximum allowed message length on twitch we split the message in two parts.
+		// Twitch has a maximum length for messages of 510 characters so to be safe
+		// we split and check at 500 characters.
+		// https://discuss.dev.twitch.tv/t/missing-client-side-message-length-check/21316
 		if len(message) > 500 {
 			firstMessage := message[0:499]
 			secondMessage := message[499:]
