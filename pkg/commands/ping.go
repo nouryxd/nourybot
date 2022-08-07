@@ -10,7 +10,8 @@ import (
 
 func Ping(target string, tc *twitch.Client) {
 	botUptime := humanize.Time(common.GetUptime())
+	commandsUsed := common.GetCommandsUsed()
 
-	reply := fmt.Sprintf("Pong! :) Last restart: %v", botUptime)
+	reply := fmt.Sprintf("Pong! :) Commands used: %v, Last restart: %v", commandsUsed, botUptime)
 	common.Send(target, reply, tc)
 }

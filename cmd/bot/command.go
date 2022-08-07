@@ -13,6 +13,9 @@ func handleCommand(message twitch.PrivateMessage, tc *twitch.Client) {
 	sugar := zap.NewExample().Sugar()
 	defer sugar.Sync()
 
+	// Increments the counter how many commands were used.
+	common.CommandUsed()
+
 	// commandName is the actual name of the command without the prefix.
 	// e.g. `()ping` would be `ping`.
 	commandName := strings.ToLower(strings.SplitN(message.Message, " ", 3)[0][2:])
@@ -50,6 +53,12 @@ func handleCommand(message twitch.PrivateMessage, tc *twitch.Client) {
 			common.Send(target, "xd", tc)
 			return
 		}
+	case "currency":
+		if msgLen < 4 {
+			common.Send(target, "Not enough arguments provided. Usage: ()currency 10 USD to EUR", tc)
+			return
+		}
+		commands.Currency(target, cmdParams[1], cmdParams[2], cmdParams[4], tc)
 	case "echo":
 		if msgLen < 2 {
 			common.Send(target, "Not enough arguments provided.", tc)
@@ -60,7 +69,7 @@ func handleCommand(message twitch.PrivateMessage, tc *twitch.Client) {
 		}
 	case "tweet":
 		if msgLen < 2 {
-			common.Send(target, "Not enough arguments provided. Usage: ()tweet <username>", tc)
+			common.Send(target, "Not enough arguments provided. Usage: ()tweet forsen", tc)
 			return
 		} else {
 			commands.Tweet(target, cmdParams[1], tc)
