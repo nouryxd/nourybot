@@ -8,12 +8,9 @@ import (
 	"go.uber.org/zap"
 )
 
-var (
-	basePath                 = "https://decapi.me/twitter/latest/"
-	twitterUserNotFoundError = "[Error] - [34] Sorry, that page does not exist."
-)
-
 func Tweet(username string) (string, error) {
+	var basePath = "https://decapi.me/twitter/latest/"
+
 	sugar := zap.NewExample().Sugar()
 	defer sugar.Sync()
 
