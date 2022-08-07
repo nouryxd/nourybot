@@ -53,6 +53,13 @@ func handleCommand(message twitch.PrivateMessage, tc *twitch.Client) {
 			common.Send(target, "xd", tc)
 			return
 		}
+	case "bttv": // Pretty spammy command so it's limited to my own channel until elevated messages are implemented.
+		if target == "nourylul" || target == "nourybot" {
+			commands.Bttv(target, tc)
+			return
+		} else {
+			return
+		}
 	case "currency":
 		if msgLen < 4 {
 			common.Send(target, "Not enough arguments provided. Usage: ()currency 10 USD to EUR", tc)
@@ -65,6 +72,13 @@ func handleCommand(message twitch.PrivateMessage, tc *twitch.Client) {
 			return
 		} else {
 			commands.Echo(target, message.Message[7:len(message.Message)], tc)
+			return
+		}
+	case "ffz": // Pretty spammy command so it's limited to my own channel until elevated messages are implemented.
+		if target == "nourylul" || target == "nourybot" {
+			commands.Ffz(target, tc)
+			return
+		} else {
 			return
 		}
 	case "tweet":
