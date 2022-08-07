@@ -58,5 +58,12 @@ func handleCommand(message twitch.PrivateMessage, tc *twitch.Client) {
 			commands.Echo(target, message.Message[7:len(message.Message)], tc)
 			return
 		}
+	case "tweet":
+		if msgLen < 2 {
+			common.Send(target, "Not enough arguments provided. Usage: ()tweet <username>", tc)
+			return
+		} else {
+			commands.Tweet(target, cmdParams[1], tc)
+		}
 	}
 }
