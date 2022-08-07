@@ -8,7 +8,7 @@ import (
 	"go.uber.org/zap"
 )
 
-func Bttv(username string) (string, error) {
+func Bttvemotes(username string) (string, error) {
 	var basePath = "https://decapi.me/bttv/emotes/"
 
 	sugar := zap.NewExample().Sugar()

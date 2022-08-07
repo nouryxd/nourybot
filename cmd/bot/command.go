@@ -53,9 +53,17 @@ func handleCommand(message twitch.PrivateMessage, tc *twitch.Client) {
 			common.Send(target, "xd", tc)
 			return
 		}
-	case "bttv": // Pretty spammy command so it's limited to my own channel until elevated messages are implemented.
+	case "bttv":
+		if msgLen < 2 {
+			common.Send(target, "Not enough arguments provided. Usage: ()bttv [emote name]", tc)
+			return
+		} else {
+			commands.Bttv(target, cmdParams[1], tc)
+			return
+		}
+	case "bttvemotes": // Pretty spammy command so it's limited to my own channel until elevated messages are implemented.
 		if target == "nourylul" || target == "nourybot" {
-			commands.Bttv(target, tc)
+			commands.Bttvemotes(target, tc)
 			return
 		} else {
 			return
@@ -66,19 +74,49 @@ func handleCommand(message twitch.PrivateMessage, tc *twitch.Client) {
 			return
 		}
 		commands.Currency(target, cmdParams[1], cmdParams[2], cmdParams[4], tc)
+		return
 	case "echo":
-		if msgLen < 2 {
+		if message.User.ID != "31437432" { // Limit to myself for now.
+			return
+		} else if msgLen < 2 {
 			common.Send(target, "Not enough arguments provided.", tc)
 			return
 		} else {
 			commands.Echo(target, message.Message[7:len(message.Message)], tc)
 			return
 		}
-	case "ffz": // Pretty spammy command so it's limited to my own channel until elevated messages are implemented.
-		if target == "nourylul" || target == "nourybot" {
-			commands.Ffz(target, tc)
+	case "ffz":
+		if msgLen < 2 {
+			common.Send(target, "Not enough arguments provided. Usage: ()ffz [emote name]", tc)
 			return
 		} else {
+			commands.Ffz(target, cmdParams[1], tc)
+			return
+		}
+	case "ffzemotes": // Pretty spammy command so it's limited to my own channel until elevated messages are implemented.
+		if target == "nourylul" || target == "nourybot" {
+			commands.Ffzemotes(target, tc)
+			return
+		} else {
+			return
+		}
+	case "ping":
+		commands.Ping(target, tc)
+		return
+	case "preview":
+		if msgLen < 2 {
+			common.Send(target, "Not enough arguments provided. Usage: ()preview forsen", tc)
+			return
+		} else {
+			commands.Preview(target, cmdParams[1], tc)
+			return
+		}
+	case "thumbnail":
+		if msgLen < 2 {
+			common.Send(target, "Not enough arguments provided. Usage: ()thumbnail forsen", tc)
+			return
+		} else {
+			commands.Preview(target, cmdParams[1], tc)
 			return
 		}
 	case "tweet":
@@ -88,7 +126,5 @@ func handleCommand(message twitch.PrivateMessage, tc *twitch.Client) {
 		} else {
 			commands.Tweet(target, cmdParams[1], tc)
 		}
-	case "ping":
-		commands.Ping(target, tc)
 	}
 }

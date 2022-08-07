@@ -8,7 +8,7 @@ import (
 	"go.uber.org/zap"
 )
 
-func Ffz(username string) (string, error) {
+func Ffzemotes(username string) (string, error) {
 	var basePath = "https://decapi.me/ffz/emotes/"
 
 	sugar := zap.NewExample().Sugar()

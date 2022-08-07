@@ -26,20 +26,17 @@ func main() {
 		Logger:       sugar,
 	}
 
-	// Received a PrivateMessage (normal chat message), pass it to
-	// the handler who checks for further action.
+	// Received a PrivateMessage (normal chat message).
 	app.TwitchClient.OnPrivateMessage(func(message twitch.PrivateMessage) {
 		app.handlePrivateMessage(message)
 	})
 
-	// Received a WhisperMessage (Twitch DM), pass it to
-	// the handler who checks for further action.
+	// Received a WhisperMessage (Twitch DM).
 	app.TwitchClient.OnWhisperMessage(func(message twitch.WhisperMessage) {
 		app.handleWhisperMessage(message)
 	})
 
-	// Successfully connected to Twitch so we log a message with the
-	// mode we are currently running in..
+	// Successfully connected to Twitch
 	app.TwitchClient.OnConnect(func() {
 		app.Logger.Infow("Successfully connected to Twitch Servers",
 			"Bot username", cfg.TwitchUsername,
