@@ -2,7 +2,7 @@ package decapi
 
 import (
 	"fmt"
-	"io/ioutil"
+	"io"
 	"net/http"
 
 	"go.uber.org/zap"
@@ -27,7 +27,7 @@ func Tweet(username string) (string, error) {
 
 	defer resp.Body.Close()
 
-	body, err := ioutil.ReadAll(resp.Body)
+	body, err := io.ReadAll(resp.Body)
 	if err != nil {
 		sugar.Error(err)
 		return "Something went wrong FeelsBadMan", err
