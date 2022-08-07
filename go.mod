@@ -5,7 +5,10 @@ go 1.17
 require (
 	github.com/gempir/go-twitch-irc/v3 v3.1.0
 	github.com/joho/godotenv v1.4.0
-	github.com/sirupsen/logrus v1.8.1
+	go.uber.org/zap v1.21.0
 )
 
-require golang.org/x/sys v0.0.0-20191026070338-33540a1f6037 // indirect
+require (
+	go.uber.org/atomic v1.9.0 // indirect
+	go.uber.org/multierr v1.8.0 // indirect
+)

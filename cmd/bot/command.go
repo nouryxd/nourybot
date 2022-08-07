@@ -6,17 +6,21 @@ import (
 	"github.com/gempir/go-twitch-irc/v3"
 	"github.com/lyx0/nourybot/pkg/commands"
 	"github.com/lyx0/nourybot/pkg/common"
-	"github.com/sirupsen/logrus"
+	"go.uber.org/zap"
 )
 
 func handleCommand(message twitch.PrivateMessage, tc *twitch.Client) {
-	logrus.Info("[COMMAND HANDLER]", message)
-	logrus.Info(message)
+	sugar := zap.NewExample().Sugar()
+	defer sugar.Sync()
+
+	//sugar.Infow("Command received",
+	//	"message", message)
 
 	// commandName is the actual name of the command without the prefix.
 	// e.g. `()ping` would be `ping`.
 	commandName := strings.ToLower(strings.SplitN(message.Message, " ", 3)[0][2:])
-	logrus.Info(commandName)
+	sugar.Infow("[handleCommand]",
+		"commandName", commandName)
 
 	// cmdParams are additional command parameters.
 	// e.g. `()weather san antonio`
@@ -31,7 +35,8 @@ func handleCommand(message twitch.PrivateMessage, tc *twitch.Client) {
 	// msgLen is the amount of words in a message without the prefix.
 	// Useful to check if enough cmdParams are provided.
 	msgLen := len(strings.SplitN(message.Message, " ", -2))
-	logrus.Info(msgLen)
+	// sugar.Infow("handleCommand",
+	//   "msgLen:", msgLen)
 
 	// target is the channelname the message originated from and
 	// where we are responding.
@@ -49,7 +54,6 @@ func handleCommand(message twitch.PrivateMessage, tc *twitch.Client) {
 			return
 		} else {
 			commands.Echo(target, message.Message[7:len(message.Message)], tc)
-			// bot.Send(target, message.Message[7:len(message.Message)])
 			return
 		}
 	}

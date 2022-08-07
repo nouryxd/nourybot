@@ -1,29 +1,38 @@
 package main
 
-import "github.com/gempir/go-twitch-irc/v3"
+import (
+	"github.com/gempir/go-twitch-irc/v3"
+	"go.uber.org/zap"
+)
 
 func (app *Application) handlePrivateMessage(message twitch.PrivateMessage) {
+	sugar := zap.NewExample().Sugar()
+	defer sugar.Sync()
 	// roomId is the Twitch UserID of the channel the
 	// message originated from.
 	roomId := message.Tags["room-id"]
 
 	// If there is no roomId something went wrong.
 	if roomId == "" {
-		app.Logger.Error("Missing room-id in message tag ", roomId)
+		sugar.Errorw("Missing room-id in message tag",
+			"roomId", roomId)
 		return
 	}
 
 	if len(message.Message) >= 2 {
 		if message.Message[:2] == "()" {
-			// TODO: Command Handling
-			app.Logger.Infof("[Command detected]: ", message.Message)
+			//	app.Logger.Infow("handlePrivateMessage",
+			//		"message.Message", message.Message)
+
 			handleCommand(message, app.TwitchClient)
-			// app.logger.Infof("[Command detected]: ", message.Message)
 			return
 		}
 	}
 
 	// Message was no command so we just print it.
-	app.Logger.Infof("[#%s]:%s: %s", message.Channel, message.User.DisplayName, message.Message)
+	app.Logger.Infow("Private Message received",
+		"message.Channel", message.Channel,
+		"message.User", message.User.DisplayName,
+		"message.Message", message.Message)
 
 }

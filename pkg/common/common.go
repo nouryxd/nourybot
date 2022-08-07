@@ -9,7 +9,7 @@ import (
 	"net/http"
 
 	"github.com/gempir/go-twitch-irc/v3"
-	"github.com/sirupsen/logrus"
+	"go.uber.org/zap"
 )
 
 // banphraseResponse is the data we receive back from
@@ -40,12 +40,15 @@ var (
 // More information:
 // https://gist.github.com/pajlada/57464e519ba8d195a97ddcd0755f9715
 func checkMessage(text string) (bool, string) {
+	sugar := zap.NewExample().Sugar()
+	defer sugar.Sync()
+
 	// {"message": "AHAHAHAHA LUL"}
 	reqBody, err := json.Marshal(map[string]string{
 		"message": text,
 	})
 	if err != nil {
-		log.Panic(err)
+		log.Fatal(err)
 	}
 
 	resp, err := http.Post(banPhraseUrl, "application/json", bytes.NewBuffer(reqBody))
@@ -81,11 +84,13 @@ func checkMessage(text string) (bool, string) {
 // Send is used to send twitch replies and contains the necessary
 // safeguards and logic for that.
 func Send(target, message string, tc *twitch.Client) {
+	sugar := zap.NewExample().Sugar()
+	defer sugar.Sync()
+
 	// Message we are trying to send is empty.
 	if len(message) == 0 {
 		return
 	}
-	fmt.Println(message)
 
 	// Since messages starting with `.` or `/` are used for special actions
 	// (ban, whisper, timeout) and so on, we place a emote infront of it so
@@ -100,7 +105,8 @@ func Send(target, message string, tc *twitch.Client) {
 	if messageBanned {
 		// Bad message, replace message and log it.
 		tc.Say(target, "[BANPHRASED] monkaS")
-		logrus.Info("Banned message detected: ", banReason)
+		sugar.Infow("banned message detected",
+			"banReason", banReason)
 
 		return
 	} else {
