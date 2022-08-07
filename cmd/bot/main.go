@@ -19,6 +19,8 @@ func main() {
 	sugar := zap.NewExample().Sugar()
 	defer sugar.Sync()
 
+	common.StartTime()
+
 	app := &Application{
 		TwitchClient: tc,
 		Logger:       sugar,

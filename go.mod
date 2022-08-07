@@ -3,6 +3,7 @@ module github.com/lyx0/nourybot
 go 1.19
 
 require (
+	github.com/dustin/go-humanize v1.0.0
 	github.com/gempir/go-twitch-irc/v3 v3.2.0
 	github.com/joho/godotenv v1.4.0
 	go.uber.org/zap v1.21.0

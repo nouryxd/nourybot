@@ -65,5 +65,7 @@ func handleCommand(message twitch.PrivateMessage, tc *twitch.Client) {
 		} else {
 			commands.Tweet(target, cmdParams[1], tc)
 		}
+	case "ping":
+		commands.Ping(target, tc)
 	}
 }
