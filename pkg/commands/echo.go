@@ -1,9 +1,10 @@
 package commands
 
-import "github.com/lyx0/nourybot/cmd/bot"
+import (
+	"github.com/gempir/go-twitch-irc/v3"
+	"github.com/lyx0/nourybot/pkg/common"
+)
 
-// Echo responds with the given message.
-func Echo(channel, message string, nb *bot.Bot) {
-
-	nb.Send(channel, message)
+func Echo(target, message string, tc *twitch.Client) {
+	common.Send(target, message, tc)
 }

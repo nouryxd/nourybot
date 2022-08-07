@@ -1,12 +1,11 @@
 build:
-	cd cmd && go build -o Nourybot
+	cd cmd/bot && go build -o Nourybot
 
 run:
-	cd cmd && ./Nourybot
+	cd cmd/bot && ./Nourybot
 
-dev:
-	cd cmd && go build -o Nourybot && ./Nourybot -mode dev
+xd:
+	cd cmd/bot && go build -o Nourybot && ./Nourybot
 
-prod:
-	cd cmd && go build -o Nourybot && ./Nourybot -mode production
-
+jq:
+	cd cmd/bot && go build -o Nourybot && ./Nourybot | jq

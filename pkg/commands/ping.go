@@ -3,17 +3,15 @@ package commands
 import (
 	"fmt"
 
-	"github.com/lyx0/nourybot/cmd/bot"
+	"github.com/gempir/go-twitch-irc/v3"
+	"github.com/lyx0/nourybot/pkg/common"
 	"github.com/lyx0/nourybot/pkg/humanize"
-	"github.com/lyx0/nourybot/pkg/utils"
 )
 
-// Ping responds with Pong and basic information about the bot.
-func Ping(target string, nb *bot.Bot) {
-	commandCount := fmt.Sprint(utils.GetCommandsUsed())
-	botUptime := humanize.Time(nb.Uptime)
+func Ping(target string, tc *twitch.Client) {
+	botUptime := humanize.Time(common.GetUptime())
+	commandsUsed := common.GetCommandsUsed()
 
-	reply := fmt.Sprintf("Pong! :) Commands used: %v, Last restart: %v", commandCount, botUptime)
-
-	nb.Send(target, reply)
+	reply := fmt.Sprintf("Pong! :) Commands used: %v, Last restart: %v", commandsUsed, botUptime)
+	common.Send(target, reply, tc)
 }
