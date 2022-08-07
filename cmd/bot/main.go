@@ -24,10 +24,10 @@ func main() {
 		TwitchClient: tc,
 		Logger:       sugar,
 	}
+
 	// Received a PrivateMessage (normal chat message), pass it to
 	// the handler who checks for further action.
 	app.TwitchClient.OnPrivateMessage(func(message twitch.PrivateMessage) {
-		//app.Logger.Infof("%s", message)
 		app.handlePrivateMessage(message)
 	})
 
