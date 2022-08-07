@@ -1,12 +1,14 @@
-package main
+package common
 
 import (
 	"bytes"
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
+	"log"
 	"net/http"
 
+	"github.com/gempir/go-twitch-irc/v3"
 	"github.com/sirupsen/logrus"
 )
 
@@ -38,25 +40,24 @@ var (
 // More information:
 // https://gist.github.com/pajlada/57464e519ba8d195a97ddcd0755f9715
 func checkMessage(text string) (bool, string) {
-	var l *logrus.Logger
 	// {"message": "AHAHAHAHA LUL"}
 	reqBody, err := json.Marshal(map[string]string{
 		"message": text,
 	})
 	if err != nil {
-		l.Error(err)
+		log.Panic(err)
 	}
 
 	resp, err := http.Post(banPhraseUrl, "application/json", bytes.NewBuffer(reqBody))
 	if err != nil {
-		l.Error(err)
+		log.Panic(err)
 	}
 
 	defer resp.Body.Close()
 
 	body, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
-		l.Error(err)
+		log.Panic(err)
 	}
 
 	var responseObject banphraseResponse
@@ -79,11 +80,12 @@ func checkMessage(text string) (bool, string) {
 
 // Send is used to send twitch replies and contains the necessary
 // safeguards and logic for that.
-func (app *Application) Send(target, message string) {
+func Send(target, message string, tc *twitch.Client) {
 	// Message we are trying to send is empty.
 	if len(message) == 0 {
 		return
 	}
+	fmt.Println(message)
 
 	// Since messages starting with `.` or `/` are used for special actions
 	// (ban, whisper, timeout) and so on, we place a emote infront of it so
@@ -97,8 +99,8 @@ func (app *Application) Send(target, message string) {
 	messageBanned, banReason := checkMessage(message)
 	if messageBanned {
 		// Bad message, replace message and log it.
-		app.TwitchClient.Say(target, "[BANPHRASED] monkaS")
-		app.Logger.Info("Banned message detected: ", banReason)
+		tc.Say(target, "[BANPHRASED] monkaS")
+		logrus.Info("Banned message detected: ", banReason)
 
 		return
 	} else {
@@ -109,13 +111,13 @@ func (app *Application) Send(target, message string) {
 			firstMessage := message[0:499]
 			secondMessage := message[499:]
 
-			app.TwitchClient.Say(target, firstMessage)
-			app.TwitchClient.Say(target, secondMessage)
+			tc.Say(target, firstMessage)
+			tc.Say(target, secondMessage)
 
 			return
 		}
 		// Message was fine.
-		app.TwitchClient.Say(target, message)
+		tc.Say(target, message)
 		return
 	}
 }
