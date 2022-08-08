@@ -55,7 +55,7 @@ func handleCommand(message twitch.PrivateMessage, tc *twitch.Client) {
 		}
 	case "bttv":
 		if msgLen < 2 {
-			common.Send(target, "Not enough arguments provided. Usage: ()bttv [emote name]", tc)
+			common.Send(target, "Not enough arguments provided. Usage: ()bttv <emote name>", tc)
 			return
 		} else {
 			commands.Bttv(target, cmdParams[1], tc)
@@ -68,6 +68,15 @@ func handleCommand(message twitch.PrivateMessage, tc *twitch.Client) {
 		} else {
 			return
 		}
+	case "coin":
+		commands.Coinflip(target, tc)
+		return
+	case "coinflip":
+		commands.Coinflip(target, tc)
+		return
+	case "cf":
+		commands.Coinflip(target, tc)
+		return
 	case "currency":
 		if msgLen < 4 {
 			common.Send(target, "Not enough arguments provided. Usage: ()currency 10 USD to EUR", tc)
@@ -105,7 +114,7 @@ func handleCommand(message twitch.PrivateMessage, tc *twitch.Client) {
 		return
 	case "preview":
 		if msgLen < 2 {
-			common.Send(target, "Not enough arguments provided. Usage: ()preview forsen", tc)
+			common.Send(target, "Not enough arguments provided. Usage: ()preview <username>", tc)
 			return
 		} else {
 			commands.Preview(target, cmdParams[1], tc)
@@ -113,7 +122,7 @@ func handleCommand(message twitch.PrivateMessage, tc *twitch.Client) {
 		}
 	case "thumbnail":
 		if msgLen < 2 {
-			common.Send(target, "Not enough arguments provided. Usage: ()thumbnail forsen", tc)
+			common.Send(target, "Not enough arguments provided. Usage: ()thumbnail <username>", tc)
 			return
 		} else {
 			commands.Preview(target, cmdParams[1], tc)
@@ -121,7 +130,7 @@ func handleCommand(message twitch.PrivateMessage, tc *twitch.Client) {
 		}
 	case "tweet":
 		if msgLen < 2 {
-			common.Send(target, "Not enough arguments provided. Usage: ()tweet forsen", tc)
+			common.Send(target, "Not enough arguments provided. Usage: ()tweet <username>", tc)
 			return
 		} else {
 			commands.Tweet(target, cmdParams[1], tc)
