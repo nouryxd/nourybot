@@ -10,6 +10,7 @@ import (
 	"github.com/gempir/go-twitch-irc/v3"
 	"github.com/joho/godotenv"
 	_ "github.com/lib/pq"
+	"github.com/lyx0/nourybot/internal/data"
 	"github.com/lyx0/nourybot/pkg/common"
 	"go.uber.org/zap"
 )
@@ -30,6 +31,7 @@ type Application struct {
 	TwitchClient *twitch.Client
 	Logger       *zap.SugaredLogger
 	Db           *sql.DB
+	models       data.Models
 }
 
 func main() {
@@ -69,6 +71,7 @@ func main() {
 		TwitchClient: tc,
 		Logger:       sugar,
 		Db:           db,
+		models:       data.NewModels(db),
 	}
 
 	// Received a PrivateMessage (normal chat message).
