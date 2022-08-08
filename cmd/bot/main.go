@@ -35,30 +35,36 @@ type Application struct {
 func main() {
 	var cfg config
 
+	// Initialize a new sugared logger that we'll pass on
+	// down through the application.
+	sugar := zap.NewExample().Sugar()
+	defer sugar.Sync()
+
 	err := godotenv.Load()
 	if err != nil {
 		log.Fatal("Error loading .env file")
 	}
 
+	// Twitch
 	cfg.twitchUsername = os.Getenv("TWITCH_USERNAME")
 	cfg.twitchOauth = os.Getenv("TWITCH_OAUTH")
+	tc := twitch.NewClient(cfg.twitchUsername, cfg.twitchOauth)
+
+	// Environment
 	cfg.environment = "Development"
+
+	// Database
 	cfg.db.dsn = os.Getenv("DB_DSN")
 	cfg.db.maxOpenConns = 25
 	cfg.db.maxIdleConns = 25
 	cfg.db.maxIdleTime = "15m"
 
-	tc := twitch.NewClient(cfg.twitchUsername, cfg.twitchOauth)
-	sugar := zap.NewExample().Sugar()
-	defer sugar.Sync()
-
-	// Start time
-	common.StartTime()
-
 	db, err := openDB(cfg)
 	if err != nil {
 		sugar.Fatal(err)
 	}
+
+	// Initialize Application
 	app := &Application{
 		TwitchClient: tc,
 		Logger:       sugar,
@@ -80,38 +86,52 @@ func main() {
 		app.Logger.Infow("Successfully connected to Twitch Servers",
 			"Bot username", cfg.twitchUsername,
 			"Environment", cfg.environment,
+			"Database Open Conns", cfg.db.maxOpenConns,
+			"Database Idle Conns", cfg.db.maxIdleConns,
+			"Database Idle Time", cfg.db.maxIdleTime,
+			"Database", db.Stats(),
 		)
+
+		// Start time
+		common.StartTime()
 
 		common.Send("nourylul", "xd", app.TwitchClient)
 	})
+
 	app.TwitchClient.Join("nourylul")
 
+	// Actually connect to chat.
 	err = app.TwitchClient.Connect()
 	if err != nil {
 		panic(err)
 	}
 }
 
+// openDB returns the sql.DB connection pool.
 func openDB(cfg config) (*sql.DB, error) {
+	// sql.Open() creates an empty connection pool with the provided DSN
 	db, err := sql.Open("postgres", cfg.db.dsn)
 	if err != nil {
 		return nil, err
 	}
 
+	// Set database restraints.
 	db.SetMaxOpenConns(cfg.db.maxOpenConns)
-
 	db.SetMaxIdleConns(cfg.db.maxIdleConns)
 
+	// Parse the maxIdleTime string into an actual duration and set it.
 	duration, err := time.ParseDuration(cfg.db.maxIdleTime)
 	if err != nil {
 		return nil, err
 	}
-
 	db.SetConnMaxIdleTime(duration)
 
+	// Create a new context with a 5 second timeout.
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
+	// db.PingContext() is needed to actually check if the
+	// connection to the database was successful.
 	err = db.PingContext(ctx)
 	if err != nil {
 		return nil, err
