@@ -1,15 +1,12 @@
 package commands
 
 import (
-	"fmt"
-
 	"github.com/gempir/go-twitch-irc/v3"
 	"github.com/lyx0/nourybot/pkg/common"
 )
 
 func Coinflip(target string, tc *twitch.Client) {
 	flip := common.GenerateRandomNumber(2)
-	fmt.Println(flip)
 
 	switch flip {
 	case 0:
