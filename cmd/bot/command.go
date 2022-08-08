@@ -9,7 +9,7 @@ import (
 	"go.uber.org/zap"
 )
 
-func handleCommand(message twitch.PrivateMessage, tc *twitch.Client) {
+func handleCommand(message twitch.PrivateMessage, app *Application) {
 	sugar := zap.NewExample().Sugar()
 	defer sugar.Sync()
 
@@ -50,62 +50,62 @@ func handleCommand(message twitch.PrivateMessage, tc *twitch.Client) {
 	switch commandName {
 	case "":
 		if msgLen == 1 {
-			common.Send(target, "xd", tc)
+			common.Send(target, "xd", app.TwitchClient)
 			return
 		}
 	case "bttv":
 		if msgLen < 2 {
-			common.Send(target, "Not enough arguments provided. Usage: ()bttv <emote name>", tc)
+			common.Send(target, "Not enough arguments provided. Usage: ()bttv <emote name>", app.TwitchClient)
 			return
 		} else {
-			commands.Bttv(target, cmdParams[1], tc)
+			commands.Bttv(target, cmdParams[1], app.TwitchClient)
 			return
 		}
 	case "bttvemotes": // Pretty spammy command so it's limited to my own channel until elevated messages are implemented.
 		if target == "nourylul" || target == "nourybot" {
-			commands.Bttvemotes(target, tc)
+			commands.Bttvemotes(target, app.TwitchClient)
 			return
 		} else {
 			return
 		}
 	case "coin":
-		commands.Coinflip(target, tc)
+		commands.Coinflip(target, app.TwitchClient)
 		return
 	case "coinflip":
-		commands.Coinflip(target, tc)
+		commands.Coinflip(target, app.TwitchClient)
 		return
 	case "cf":
-		commands.Coinflip(target, tc)
+		commands.Coinflip(target, app.TwitchClient)
 		return
 	case "currency":
 		if msgLen < 4 {
-			common.Send(target, "Not enough arguments provided. Usage: ()currency 10 USD to EUR", tc)
+			common.Send(target, "Not enough arguments provided. Usage: ()currency 10 USD to EUR", app.TwitchClient)
 			return
 		}
-		commands.Currency(target, cmdParams[1], cmdParams[2], cmdParams[4], tc)
+		commands.Currency(target, cmdParams[1], cmdParams[2], cmdParams[4], app.TwitchClient)
 		return
 	case "echo":
 		if message.User.ID != "31437432" { // Limit to myself for now.
 			return
 		} else if msgLen < 2 {
-			common.Send(target, "Not enough arguments provided.", tc)
+			common.Send(target, "Not enough arguments provided.", app.TwitchClient)
 			return
 		} else {
-			commands.Echo(target, message.Message[7:len(message.Message)], tc)
+			commands.Echo(target, message.Message[7:len(message.Message)], app.TwitchClient)
 			return
 		}
 
 	case "ffz":
 		if msgLen < 2 {
-			common.Send(target, "Not enough arguments provided. Usage: ()ffz <emote name>", tc)
+			common.Send(target, "Not enough arguments provided. Usage: ()ffz <emote name>", app.TwitchClient)
 			return
 		} else {
-			commands.Ffz(target, cmdParams[1], tc)
+			commands.Ffz(target, cmdParams[1], app.TwitchClient)
 			return
 		}
 	case "ffzemotes": // Pretty spammy command so it's limited to my own channel until elevated messages are implemented.
 		if target == "nourylul" || target == "nourybot" {
-			commands.Ffzemotes(target, tc)
+			commands.Ffzemotes(target, app.TwitchClient)
 			return
 		} else {
 			return
@@ -115,92 +115,92 @@ func handleCommand(message twitch.PrivateMessage, tc *twitch.Client) {
 		// ()followage channel username
 	case "followage":
 		if msgLen == 1 { // ()followage
-			commands.Followage(target, target, message.User.Name, tc)
+			commands.Followage(target, target, message.User.Name, app.TwitchClient)
 			return
 		} else if msgLen == 2 { // ()followage forsen
-			commands.Followage(target, target, cmdParams[1], tc)
+			commands.Followage(target, target, cmdParams[1], app.TwitchClient)
 			return
 		} else { // ()followage forsen pajlada
-			commands.Followage(target, cmdParams[1], cmdParams[2], tc)
+			commands.Followage(target, cmdParams[1], cmdParams[2], app.TwitchClient)
 			return
 		}
 	// First Line
 	case "firstline":
 		if msgLen == 1 {
-			common.Send(target, "Usage: ()firstline <channel> <user>", tc)
+			common.Send(target, "Usage: ()firstline <channel> <user>", app.TwitchClient)
 			return
 		} else if msgLen == 2 {
-			commands.FirstLine(target, target, cmdParams[1], tc)
+			commands.FirstLine(target, target, cmdParams[1], app.TwitchClient)
 			return
 		} else {
-			commands.FirstLine(target, cmdParams[1], cmdParams[2], tc)
+			commands.FirstLine(target, cmdParams[1], cmdParams[2], app.TwitchClient)
 			return
 		}
 	case "fl":
 		if msgLen == 1 {
-			common.Send(target, "Usage: ()firstline <channel> <user>", tc)
+			common.Send(target, "Usage: ()firstline <channel> <user>", app.TwitchClient)
 			return
 		} else if msgLen == 2 {
-			commands.FirstLine(target, target, cmdParams[1], tc)
+			commands.FirstLine(target, target, cmdParams[1], app.TwitchClient)
 			return
 		} else {
-			commands.FirstLine(target, cmdParams[1], cmdParams[2], tc)
+			commands.FirstLine(target, cmdParams[1], cmdParams[2], app.TwitchClient)
 			return
 		}
 
 	case "ping":
-		commands.Ping(target, tc)
+		commands.Ping(target, app.TwitchClient)
 		return
 	case "preview":
 		if msgLen < 2 {
-			common.Send(target, "Not enough arguments provided. Usage: ()preview <username>", tc)
+			common.Send(target, "Not enough arguments provided. Usage: ()preview <username>", app.TwitchClient)
 			return
 		} else {
-			commands.Preview(target, cmdParams[1], tc)
+			commands.Preview(target, cmdParams[1], app.TwitchClient)
 			return
 		}
 
 	case "thumbnail":
 		if msgLen < 2 {
-			common.Send(target, "Not enough arguments provided. Usage: ()thumbnail <username>", tc)
+			common.Send(target, "Not enough arguments provided. Usage: ()thumbnail <username>", app.TwitchClient)
 			return
 		} else {
-			commands.Preview(target, cmdParams[1], tc)
+			commands.Preview(target, cmdParams[1], app.TwitchClient)
 			return
 		}
 
 	// SevenTV
 	case "seventv":
 		if msgLen < 2 {
-			common.Send(target, "Not enough arguments provided. Usage: ()seventv <emote name>", tc)
+			common.Send(target, "Not enough arguments provided. Usage: ()seventv <emote name>", app.TwitchClient)
 			return
 		} else {
-			commands.Seventv(target, cmdParams[1], tc)
+			commands.Seventv(target, cmdParams[1], app.TwitchClient)
 			return
 		}
 	case "7tv":
 		if msgLen < 2 {
-			common.Send(target, "Not enough arguments provided. Usage: ()seventv <emote name>", tc)
+			common.Send(target, "Not enough arguments provided. Usage: ()seventv <emote name>", app.TwitchClient)
 			return
 		} else {
-			commands.Seventv(target, cmdParams[1], tc)
+			commands.Seventv(target, cmdParams[1], app.TwitchClient)
 			return
 		}
 	case "tweet":
 		if msgLen < 2 {
-			common.Send(target, "Not enough arguments provided. Usage: ()tweet <username>", tc)
+			common.Send(target, "Not enough arguments provided. Usage: ()tweet <username>", app.TwitchClient)
 			return
 		} else {
-			commands.Tweet(target, cmdParams[1], tc)
+			commands.Tweet(target, cmdParams[1], app.TwitchClient)
 		}
 	case "rxkcd":
-		commands.RandomXkcd(target, tc)
+		commands.RandomXkcd(target, app.TwitchClient)
 		return
 	case "randomxkcd":
-		commands.RandomXkcd(target, tc)
+		commands.RandomXkcd(target, app.TwitchClient)
 		return
 	case "xkcd":
-		commands.Xkcd(target, tc)
+		commands.Xkcd(target, app.TwitchClient)
 		return
 	}
 }

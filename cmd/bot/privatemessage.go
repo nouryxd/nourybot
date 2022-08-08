@@ -24,7 +24,7 @@ func (app *Application) handlePrivateMessage(message twitch.PrivateMessage) {
 	if len(message.Message) >= 2 {
 		// Strip the `()` prefix
 		if message.Message[:2] == "()" {
-			handleCommand(message, app.TwitchClient)
+			handleCommand(message, app)
 			return
 		}
 	}
