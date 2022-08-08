@@ -94,6 +94,7 @@ func handleCommand(message twitch.PrivateMessage, tc *twitch.Client) {
 			commands.Echo(target, message.Message[7:len(message.Message)], tc)
 			return
 		}
+
 	case "ffz":
 		if msgLen < 2 {
 			common.Send(target, "Not enough arguments provided. Usage: ()ffz <emote name>", tc)
@@ -109,6 +110,44 @@ func handleCommand(message twitch.PrivateMessage, tc *twitch.Client) {
 		} else {
 			return
 		}
+
+		// Followage
+		// ()followage channel username
+	case "followage":
+		if msgLen == 1 { // ()followage
+			commands.Followage(target, target, message.User.Name, tc)
+			return
+		} else if msgLen == 2 { // ()followage forsen
+			commands.Followage(target, target, cmdParams[1], tc)
+			return
+		} else { // ()followage forsen pajlada
+			commands.Followage(target, cmdParams[1], cmdParams[2], tc)
+			return
+		}
+	// First Line
+	case "firstline":
+		if msgLen == 1 {
+			common.Send(target, "Usage: ()firstline <channel> <user>", tc)
+			return
+		} else if msgLen == 2 {
+			commands.FirstLine(target, target, cmdParams[1], tc)
+			return
+		} else {
+			commands.FirstLine(target, cmdParams[1], cmdParams[2], tc)
+			return
+		}
+	case "fl":
+		if msgLen == 1 {
+			common.Send(target, "Usage: ()firstline <channel> <user>", tc)
+			return
+		} else if msgLen == 2 {
+			commands.FirstLine(target, target, cmdParams[1], tc)
+			return
+		} else {
+			commands.FirstLine(target, cmdParams[1], cmdParams[2], tc)
+			return
+		}
+
 	case "ping":
 		commands.Ping(target, tc)
 		return
@@ -120,6 +159,17 @@ func handleCommand(message twitch.PrivateMessage, tc *twitch.Client) {
 			commands.Preview(target, cmdParams[1], tc)
 			return
 		}
+
+	case "thumbnail":
+		if msgLen < 2 {
+			common.Send(target, "Not enough arguments provided. Usage: ()thumbnail <username>", tc)
+			return
+		} else {
+			commands.Preview(target, cmdParams[1], tc)
+			return
+		}
+
+	// SevenTV
 	case "seventv":
 		if msgLen < 2 {
 			common.Send(target, "Not enough arguments provided. Usage: ()seventv <emote name>", tc)
@@ -134,14 +184,6 @@ func handleCommand(message twitch.PrivateMessage, tc *twitch.Client) {
 			return
 		} else {
 			commands.Seventv(target, cmdParams[1], tc)
-			return
-		}
-	case "thumbnail":
-		if msgLen < 2 {
-			common.Send(target, "Not enough arguments provided. Usage: ()thumbnail <username>", tc)
-			return
-		} else {
-			commands.Preview(target, cmdParams[1], tc)
 			return
 		}
 	case "tweet":
