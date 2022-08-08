@@ -2,8 +2,8 @@ package commands
 
 import (
 	"github.com/gempir/go-twitch-irc/v3"
+	"github.com/lyx0/nourybot/pkg/commands/decapi"
 	"github.com/lyx0/nourybot/pkg/common"
-	"github.com/lyx0/nourybot/pkg/decapi"
 	"go.uber.org/zap"
 )
 
