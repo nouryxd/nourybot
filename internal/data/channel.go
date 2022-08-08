@@ -22,7 +22,7 @@ func (c ChannelModel) Insert(channel *Channel) error {
 	query := `
 	INSERT INTO channels (login, twitchid, announce)
 	VALUES ($1, $2, $3)
-	RETURNING id, created_at`
+	RETURNING id, joined_at`
 
 	args := []interface{}{channel.Login, channel.TwitchID, channel.Announce}
 

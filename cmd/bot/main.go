@@ -31,7 +31,7 @@ type Application struct {
 	TwitchClient *twitch.Client
 	Logger       *zap.SugaredLogger
 	Db           *sql.DB
-	models       data.Models
+	Models       data.Models
 }
 
 func main() {
@@ -71,7 +71,7 @@ func main() {
 		TwitchClient: tc,
 		Logger:       sugar,
 		Db:           db,
-		models:       data.NewModels(db),
+		Models:       data.NewModels(db),
 	}
 
 	// Received a PrivateMessage (normal chat message).
