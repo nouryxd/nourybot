@@ -96,7 +96,7 @@ func handleCommand(message twitch.PrivateMessage, tc *twitch.Client) {
 		}
 	case "ffz":
 		if msgLen < 2 {
-			common.Send(target, "Not enough arguments provided. Usage: ()ffz [emote name]", tc)
+			common.Send(target, "Not enough arguments provided. Usage: ()ffz <emote name>", tc)
 			return
 		} else {
 			commands.Ffz(target, cmdParams[1], tc)
@@ -120,6 +120,22 @@ func handleCommand(message twitch.PrivateMessage, tc *twitch.Client) {
 			commands.Preview(target, cmdParams[1], tc)
 			return
 		}
+	case "seventv":
+		if msgLen < 2 {
+			common.Send(target, "Not enough arguments provided. Usage: ()seventv <emote name>", tc)
+			return
+		} else {
+			commands.Seventv(target, cmdParams[1], tc)
+			return
+		}
+	case "7tv":
+		if msgLen < 2 {
+			common.Send(target, "Not enough arguments provided. Usage: ()seventv <emote name>", tc)
+			return
+		} else {
+			commands.Seventv(target, cmdParams[1], tc)
+			return
+		}
 	case "thumbnail":
 		if msgLen < 2 {
 			common.Send(target, "Not enough arguments provided. Usage: ()thumbnail <username>", tc)
@@ -135,5 +151,14 @@ func handleCommand(message twitch.PrivateMessage, tc *twitch.Client) {
 		} else {
 			commands.Tweet(target, cmdParams[1], tc)
 		}
+	case "rxkcd":
+		commands.RandomXkcd(target, tc)
+		return
+	case "randomxkcd":
+		commands.RandomXkcd(target, tc)
+		return
+	case "xkcd":
+		commands.Xkcd(target, tc)
+		return
 	}
 }
