@@ -8,7 +8,7 @@ import (
 
 type Channel struct {
 	ID       int       `json:"id"`
-	JoinedAt time.Time `json:"-"`
+	AddedAt  time.Time `json:"-"`
 	Login    string    `json:"login"`
 	TwitchID string    `json:"twitchid"`
 	Announce bool      `json:"announce"`
@@ -22,16 +22,16 @@ func (c ChannelModel) Insert(channel *Channel) error {
 	query := `
 	INSERT INTO channels (login, twitchid, announce)
 	VALUES ($1, $2, $3)
-	RETURNING id, joined_at`
+	RETURNING id, added_at`
 
 	args := []interface{}{channel.Login, channel.TwitchID, channel.Announce}
 
-	return c.DB.QueryRow(query, args...).Scan(&channel.ID, &channel.JoinedAt)
+	return c.DB.QueryRow(query, args...).Scan(&channel.ID, &channel.AddedAt)
 }
 
 func (c ChannelModel) Get(login string) (*Channel, error) {
 	query := `
-	SELECT id, joined_at, login, twitchid, announce
+	SELECT id, added_at, login, twitchid, announce
 	FROM channels
 	WHERE login = $1`
 
@@ -39,7 +39,7 @@ func (c ChannelModel) Get(login string) (*Channel, error) {
 
 	err := c.DB.QueryRow(query, login).Scan(
 		&channel.ID,
-		&channel.JoinedAt,
+		&channel.AddedAt,
 		&channel.Login,
 		&channel.TwitchID,
 		&channel.Announce,
