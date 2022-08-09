@@ -10,14 +10,12 @@ import (
 )
 
 func AddChannel(login string, message twitch.PrivateMessage, app *Application) {
-	fmt.Println(login)
 	userId, err := decapi.GetIdByLogin(login)
 	if err != nil {
 		app.Logger.Error(err)
 		return
 	}
 
-	fmt.Println(userId)
 	channel := &data.Channel{
 		Login:    login,
 		TwitchID: userId,
@@ -26,7 +24,7 @@ func AddChannel(login string, message twitch.PrivateMessage, app *Application) {
 
 	err = app.Models.Channels.Insert(channel)
 	if err != nil {
-		app.Logger.DPanic(err)
+		app.Logger.Error(err)
 	}
 
 	reply := fmt.Sprintf("Joined channel %s", login)
