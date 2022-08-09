@@ -1,6 +1,7 @@
 package data
 
 import (
+	"context"
 	"database/sql"
 	"errors"
 	"time"
@@ -72,6 +73,59 @@ func (c ChannelModel) Get(login string) (*Channel, error) {
 	}
 
 	return &channel, nil
+}
+
+// GetAll() returns a slice of all channels in the database.
+func (c ChannelModel) GetAll() ([]*Channel, error) {
+	query := `
+	SELECT id, added_at, login, twitchid
+	FROM channels
+	ORDER BY id`
+
+	// Create a context with 3 seconds timeout.
+	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+	defer cancel()
+
+	// Use QueryContext() the context and query. This returns a
+	// sql.Rows resultset containing our channels.
+	rows, err := c.DB.QueryContext(ctx, query)
+	if err != nil {
+		return nil, err
+	}
+
+	// Need to defer a call to rows.Close() to ensure the resultset
+	// is closed before GetAll() returns.
+	defer rows.Close()
+
+	// Initialize an empty slice to hold the data.
+	channels := []*Channel{}
+
+	// Iterate over the resultset.
+	for rows.Next() {
+		// Initialize an empty Channel struct where we put on
+		// a single channel value.
+		var channel Channel
+
+		// Scan the values onto the channel struct
+		err := rows.Scan(
+			&channel.ID,
+			&channel.AddedAt,
+			&channel.Login,
+			&channel.TwitchID,
+		)
+		if err != nil {
+			return nil, err
+		}
+		// Add the single movie struct onto the slice.
+		channels = append(channels, &channel)
+	}
+
+	// When rows.Next() finishes call rows.Err() to retrieve any errors.
+	if err = rows.Err(); err != nil {
+		return nil, err
+	}
+
+	return channels, nil
 }
 
 func (c ChannelModel) Delete(login string) error {

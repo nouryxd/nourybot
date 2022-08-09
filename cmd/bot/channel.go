@@ -34,6 +34,15 @@ func (app *Application) AddChannel(login string, message twitch.PrivateMessage) 
 	}
 }
 
+func (app *Application) GetAllChannels() {
+	channel, err := app.Models.Channels.GetAll()
+	if err != nil {
+		app.Logger.Error(err)
+	}
+	app.Logger.Infow("All channels:",
+		"channel", channel)
+}
+
 func (app *Application) DeleteChannel(login string, message twitch.PrivateMessage) {
 	err := app.Models.Channels.Delete(login)
 	if err != nil {

@@ -99,6 +99,7 @@ func main() {
 		common.StartTime()
 
 		common.Send("nourylul", "xd", app.TwitchClient)
+		app.GetAllChannels()
 	})
 
 	app.TwitchClient.Join("nourylul")
