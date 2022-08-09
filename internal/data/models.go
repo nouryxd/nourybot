@@ -23,6 +23,7 @@ type Models struct {
 	Users interface {
 		Insert(user *User) error
 		Get(login string) (*User, error)
+		SetLevel(login string, level int) error
 		Delete(login string) error
 	}
 }

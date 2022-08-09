@@ -54,3 +54,26 @@ func (app *Application) DeleteUser(login string, message twitch.PrivateMessage) 
 	reply := fmt.Sprintf("Deleted user %s", login)
 	common.Send(message.Channel, reply, app.TwitchClient)
 }
+
+func (app *Application) EditUserLevel(user, lvl string, message twitch.PrivateMessage) {
+
+	level, err := strconv.Atoi(lvl)
+	if err != nil {
+		app.Logger.Error(err)
+		common.Send(message.Channel, fmt.Sprintf("Something went wrong FeelsBadMan %s", ErrUserLevelNotInteger), app.TwitchClient)
+		return
+	}
+
+	err = app.Models.Users.SetLevel(user, level)
+
+	if err != nil {
+		common.Send(message.Channel, fmt.Sprintf("Something went wrong FeelsBadMan %s", ErrRecordNotFound), app.TwitchClient)
+		app.Logger.Error(err)
+		return
+	} else {
+		reply := fmt.Sprintf("Updated user %s to level %v", user, level)
+		common.Send(message.Channel, reply, app.TwitchClient)
+		return
+	}
+
+}

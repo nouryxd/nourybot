@@ -48,6 +48,33 @@ func (u UserModel) Insert(user *User) error {
 	return nil
 }
 
+func (u UserModel) SetLevel(login string, level int) error {
+	query := `
+	UPDATE users
+	SET level = $2
+	WHERE login = $1`
+
+	// err := u.DB.QueryRow(query, args...).Scan(&user)
+	result, err := u.DB.Exec(query, login, level)
+	if err != nil {
+		return err
+	}
+
+	// Check how many rows were affected.
+	rowsAffected, err := result.RowsAffected()
+	if err != nil {
+		return err
+	}
+
+	// We want atleast 1, if it is 0 the entry did not exist.
+	if rowsAffected == 0 {
+		return ErrRecordNotFound
+	}
+
+	return nil
+
+}
+
 func (u UserModel) Get(login string) (*User, error) {
 	query := `
 	SELECT id, added_at, login, twitchid, level
