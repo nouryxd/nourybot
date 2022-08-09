@@ -10,7 +10,7 @@ import (
 	"github.com/lyx0/nourybot/pkg/common"
 )
 
-func AddUser(login, lvl string, message twitch.PrivateMessage, app *Application) {
+func (app *Application) AddUser(login, lvl string, message twitch.PrivateMessage) {
 	userId, err := decapi.GetIdByLogin(login)
 	if err != nil {
 		app.Logger.Error(err)
@@ -43,7 +43,7 @@ func AddUser(login, lvl string, message twitch.PrivateMessage, app *Application)
 	}
 }
 
-func DeleteUser(login string, message twitch.PrivateMessage, app *Application) {
+func (app *Application) DeleteUser(login string, message twitch.PrivateMessage) {
 	err := app.Models.Users.Delete(login)
 	if err != nil {
 		common.Send(message.Channel, "Something went wrong FeelsBadMan", app.TwitchClient)

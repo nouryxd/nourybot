@@ -9,7 +9,7 @@ import (
 	"go.uber.org/zap"
 )
 
-func handleCommand(message twitch.PrivateMessage, app *Application) {
+func (app *Application) handleCommand(message twitch.PrivateMessage) {
 	sugar := zap.NewExample().Sugar()
 	defer sugar.Sync()
 
@@ -61,7 +61,7 @@ func handleCommand(message twitch.PrivateMessage, app *Application) {
 			return
 		} else {
 			// ()addchannel noemience
-			AddChannel(cmdParams[1], message, app)
+			app.AddChannel(cmdParams[1], message)
 			return
 		}
 	case "adduser":
@@ -72,18 +72,18 @@ func handleCommand(message twitch.PrivateMessage, app *Application) {
 			return
 		} else {
 			// ()adduser nourylul 1000
-			AddUser(cmdParams[1], cmdParams[2], message, app)
+			app.AddUser(cmdParams[1], cmdParams[2], message)
 			return
 		}
 	case "deletechannel":
 		if message.User.ID != "31437432" { // Limit to myself for now.
 			return
-		} else if msgLen < 3 {
+		} else if msgLen < 2 {
 			common.Send(target, "Not enough arguments provided.", app.TwitchClient)
 			return
 		} else {
 			// ()addchannel noemience
-			DeleteChannel(cmdParams[1], message, app)
+			app.DeleteChannel(cmdParams[1], message)
 			return
 		}
 	case "deleteuser":
@@ -94,7 +94,7 @@ func handleCommand(message twitch.PrivateMessage, app *Application) {
 			return
 		} else {
 			// ()addchannel noemience
-			DeleteUser(cmdParams[1], message, app)
+			app.DeleteUser(cmdParams[1], message)
 			return
 		}
 	case "bttv":
