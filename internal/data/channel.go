@@ -56,3 +56,29 @@ func (c ChannelModel) Get(login string) (*Channel, error) {
 
 	return &channel, nil
 }
+
+func (c ChannelModel) Delete(login string) error {
+	// Prepare the statement.
+	query := `
+	DELETE FROM channels
+	WHERE login = $1`
+
+	// Execute the query returning the number of affected rows.
+	result, err := c.DB.Exec(query, login)
+	if err != nil {
+		return err
+	}
+
+	// Check how many rows were affected.
+	rowsAffected, err := result.RowsAffected()
+	if err != nil {
+		return err
+	}
+
+	// We want atleast 1, if it is 0 the entry did not exist.
+	if rowsAffected == 0 {
+		return ErrRecordNotFound
+	}
+
+	return nil
+}

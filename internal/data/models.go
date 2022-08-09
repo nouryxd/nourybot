@@ -15,6 +15,7 @@ type Models struct {
 	Channels interface {
 		Insert(channel *Channel) error
 		Get(login string) (*Channel, error)
+		Delete(login string) error
 	}
 }
 

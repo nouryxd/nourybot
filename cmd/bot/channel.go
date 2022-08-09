@@ -29,5 +29,16 @@ func AddChannel(login string, message twitch.PrivateMessage, app *Application) {
 
 	reply := fmt.Sprintf("Joined channel %s", login)
 	common.Send(message.Channel, reply, app.TwitchClient)
+}
 
+func DeleteChannel(login string, message twitch.PrivateMessage, app *Application) {
+	err := app.Models.Channels.Delete(login)
+	if err != nil {
+		common.Send(message.Channel, "Something went wrong FeelsBadMan", app.TwitchClient)
+		app.Logger.Error(err)
+		return
+	}
+
+	reply := fmt.Sprintf("Deleted channel %s", login)
+	common.Send(message.Channel, reply, app.TwitchClient)
 }

@@ -64,6 +64,17 @@ func handleCommand(message twitch.PrivateMessage, app *Application) {
 			AddChannel(cmdParams[1], message, app)
 			return
 		}
+	case "deletechannel":
+		if message.User.ID != "31437432" { // Limit to myself for now.
+			return
+		} else if msgLen < 2 {
+			common.Send(target, "Not enough arguments provided.", app.TwitchClient)
+			return
+		} else {
+			// ()addchannel noemience
+			DeleteChannel(cmdParams[1], message, app)
+			return
+		}
 	case "bttv":
 		if msgLen < 2 {
 			common.Send(target, "Not enough arguments provided. Usage: ()bttv <emote name>", app.TwitchClient)
