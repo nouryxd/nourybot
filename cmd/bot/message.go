@@ -38,3 +38,13 @@ func (app *Application) handlePrivateMessage(message twitch.PrivateMessage) {
 	)
 
 }
+
+func (app *Application) handleWhisperMessage(message twitch.WhisperMessage) {
+	// Print the whisper message for now.
+	// TODO: Implement a basic whisper handler.
+	app.Logger.Infow("Whisper Message received",
+		"message", message,
+		"message.User.DisplayName", message.User.DisplayName,
+		"message.Message", message.Message,
+	)
+}
