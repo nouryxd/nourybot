@@ -64,7 +64,29 @@ func handleCommand(message twitch.PrivateMessage, app *Application) {
 			AddChannel(cmdParams[1], message, app)
 			return
 		}
+	case "adduser":
+		if message.User.ID != "31437432" { // Limit to myself for now.
+			return
+		} else if msgLen < 3 {
+			common.Send(target, "Not enough arguments provided.", app.TwitchClient)
+			return
+		} else {
+			// ()adduser nourylul 1000
+			AddUser(cmdParams[1], cmdParams[2], message, app)
+			return
+		}
 	case "deletechannel":
+		if message.User.ID != "31437432" { // Limit to myself for now.
+			return
+		} else if msgLen < 3 {
+			common.Send(target, "Not enough arguments provided.", app.TwitchClient)
+			return
+		} else {
+			// ()addchannel noemience
+			DeleteChannel(cmdParams[1], message, app)
+			return
+		}
+	case "deleteuser":
 		if message.User.ID != "31437432" { // Limit to myself for now.
 			return
 		} else if msgLen < 2 {
@@ -72,7 +94,7 @@ func handleCommand(message twitch.PrivateMessage, app *Application) {
 			return
 		} else {
 			// ()addchannel noemience
-			DeleteChannel(cmdParams[1], message, app)
+			DeleteUser(cmdParams[1], message, app)
 			return
 		}
 	case "bttv":

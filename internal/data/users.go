@@ -27,7 +27,7 @@ func (u UserModel) Insert(user *User) error {
 	RETURNING id, added_at;
 	`
 
-	args := []interface{}{user.Login, user.TwitchID, 100}
+	args := []interface{}{user.Login, user.TwitchID, user.Level}
 
 	// Execute the query returning the number of affected rows.
 	result, err := u.DB.Exec(query, args...)
@@ -42,7 +42,7 @@ func (u UserModel) Insert(user *User) error {
 	}
 
 	if rowsAffected == 0 {
-		return ErrRecordAlreadyExists
+		return ErrUserAlreadyExists
 	}
 
 	return nil

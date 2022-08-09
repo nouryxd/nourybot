@@ -8,6 +8,7 @@ import (
 var (
 	ErrRecordNotFound      = errors.New("record not found")
 	ErrRecordAlreadyExists = errors.New("channel already in database")
+	ErrUserAlreadyExists   = errors.New("user already in database")
 )
 
 // struct Models wraps the models, making them callable
@@ -18,9 +19,9 @@ type Models struct {
 		Get(login string) (*Channel, error)
 		Delete(login string) error
 	}
-	User interface {
-		Insert(channel *Channel) error
-		Get(login string) (*Channel, error)
+	Users interface {
+		Insert(user *User) error
+		Get(login string) (*User, error)
 		Delete(login string) error
 	}
 }
@@ -28,5 +29,6 @@ type Models struct {
 func NewModels(db *sql.DB) Models {
 	return Models{
 		Channels: ChannelModel{DB: db},
+		Users:    UserModel{DB: db},
 	}
 }
