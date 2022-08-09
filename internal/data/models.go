@@ -6,13 +6,19 @@ import (
 )
 
 var (
-	ErrRecordNotFound = errors.New("record not found")
+	ErrRecordNotFound      = errors.New("record not found")
+	ErrRecordAlreadyExists = errors.New("channel already in database")
 )
 
 // struct Models wraps the models, making them callable
 // as app.models.Channels.Get(login)
 type Models struct {
 	Channels interface {
+		Insert(channel *Channel) error
+		Get(login string) (*Channel, error)
+		Delete(login string) error
+	}
+	User interface {
 		Insert(channel *Channel) error
 		Get(login string) (*Channel, error)
 		Delete(login string) error
