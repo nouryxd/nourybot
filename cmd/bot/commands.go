@@ -8,13 +8,20 @@ import (
 )
 
 func (app *Application) AddCommand(name string, message twitch.PrivateMessage) {
-	// text1 := strings.Split(message.Message, name)
+	// prefixLength is the length of `()addcommand` plus +2 (for the space and zero based)
+	prefixLength := 14
 
-	text := message.Message[14+len(name) : len(message.Message)]
-	app.Logger.Infow("Message splits",
-		"Command Name:", name,
-		"Command Text:", text)
+	// Split the twitch message at the length of the prefix + the length of the name of the command.
+	//      prefixLength |name| text
+	//      0123456789012|4567|
+	// e.g. ()addcommand dank FeelsDankMan
+	//      |            snip ^           |
+	text := message.Message[prefixLength+len(name) : len(message.Message)]
 	err := app.Models.Commands.Insert(name, text)
+
+	//	app.Logger.Infow("Message splits",
+	//		"Command Name:", name,
+	//		"Command Text:", text)
 
 	if err != nil {
 		reply := fmt.Sprintf("Something went wrong FeelsBadMan %s", err)
