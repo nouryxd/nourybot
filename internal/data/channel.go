@@ -18,6 +18,33 @@ type ChannelModel struct {
 	DB *sql.DB
 }
 
+func (c ChannelModel) Get(login string) (*Channel, error) {
+	query := `
+	SELECT id, added_at, login, twitchid
+	FROM channels
+	WHERE login = $1`
+
+	var channel Channel
+
+	err := c.DB.QueryRow(query, login).Scan(
+		&channel.ID,
+		&channel.AddedAt,
+		&channel.Login,
+		&channel.TwitchID,
+	)
+
+	if err != nil {
+		switch {
+		case errors.Is(err, sql.ErrNoRows):
+			return nil, ErrRecordNotFound
+		default:
+			return nil, err
+		}
+	}
+
+	return &channel, nil
+}
+
 func (c ChannelModel) Insert(channel *Channel) error {
 	query := `
 	INSERT INTO channels(login, twitchid)
@@ -46,33 +73,6 @@ func (c ChannelModel) Insert(channel *Channel) error {
 	}
 
 	return nil
-}
-
-func (c ChannelModel) Get(login string) (*Channel, error) {
-	query := `
-	SELECT id, added_at, login, twitchid
-	FROM channels
-	WHERE login = $1`
-
-	var channel Channel
-
-	err := c.DB.QueryRow(query, login).Scan(
-		&channel.ID,
-		&channel.AddedAt,
-		&channel.Login,
-		&channel.TwitchID,
-	)
-
-	if err != nil {
-		switch {
-		case errors.Is(err, sql.ErrNoRows):
-			return nil, ErrRecordNotFound
-		default:
-			return nil, err
-		}
-	}
-
-	return &channel, nil
 }
 
 // GetAll() returns a slice of all channels in the database.
