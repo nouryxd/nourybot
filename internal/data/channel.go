@@ -69,7 +69,7 @@ func (c ChannelModel) Insert(channel *Channel) error {
 	}
 
 	if rowsAffected == 0 {
-		return ErrRecordAlreadyExists
+		return ErrChannelRecordAlreadyExists
 	}
 
 	return nil

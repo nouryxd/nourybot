@@ -6,9 +6,10 @@ import (
 )
 
 var (
-	ErrRecordNotFound      = errors.New("record not found")
-	ErrRecordAlreadyExists = errors.New("channel already in database")
-	ErrUserAlreadyExists   = errors.New("user already in database")
+	ErrRecordNotFound             = errors.New("record not found")
+	ErrChannelRecordAlreadyExists = errors.New("channel already in database")
+	ErrCommandRecordAlreadyExists = errors.New("command already exists")
+	ErrUserAlreadyExists          = errors.New("user already in database")
 )
 
 // struct Models wraps the models, making them callable

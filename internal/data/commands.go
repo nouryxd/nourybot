@@ -66,7 +66,7 @@ func (c CommandModel) Insert(name, text string) error {
 	}
 
 	if rowsAffected == 0 {
-		return ErrRecordAlreadyExists
+		return ErrCommandRecordAlreadyExists
 	}
 
 	return nil
