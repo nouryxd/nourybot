@@ -5,3 +5,9 @@ CREATE TABLE IF NOT EXISTS users (
    twitchid text NOT NULL,
    level integer NOT NULL
 );
+
+INSERT INTO users (added_at,login,twitchid,"level") VALUES
+	 (NOW(),'nourylul','31437432',1000),
+	 (NOW(),'nourybot','596581605',1000),
+	 (NOW(),'uudelleenkytkeytynyt','465178364',1000),
+	 (NOW(),'xnoury','197780373',500);
