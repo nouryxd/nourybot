@@ -73,6 +73,17 @@ func (app *Application) handleCommand(message twitch.PrivateMessage) {
 			app.AddChannel(cmdParams[1], message)
 			return
 		}
+	case "addcommand":
+		if userLevel < 1000 { // Limit to myself for now.
+			return
+		} else if msgLen < 3 {
+			common.Send(target, "Not enough arguments provided.", app.TwitchClient)
+			return
+		} else {
+			// ()addcommand dank FeelsDankMan xD
+			app.AddCommand(cmdParams[1], message)
+			return
+		}
 	case "adduser":
 		if userLevel < 1000 { // Limit to myself for now.
 			return

@@ -32,7 +32,6 @@ func (app *Application) AddChannel(login string, message twitch.PrivateMessage) 
 		common.Send(message.Channel, reply, app.TwitchClient)
 		return
 	}
-
 }
 
 func (app *Application) GetAllChannels() {
