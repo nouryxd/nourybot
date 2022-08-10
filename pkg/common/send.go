@@ -133,3 +133,48 @@ func Send(target, message string, tc *twitch.Client) {
 		return
 	}
 }
+
+// SendNoLimit does not check for the maximum message size.
+// Used in sending commands from the database since the command has to have
+// been gotten in there somehow. So it fits. Still checks for banphrases.
+func SendNoLimit(target, message string, tc *twitch.Client) {
+	sugar := zap.NewExample().Sugar()
+	defer sugar.Sync()
+
+	// Message we are trying to send is empty.
+	if len(message) == 0 {
+		return
+	}
+
+	// Since messages starting with `.` or `/` are used for special actions
+	// (ban, whisper, timeout) and so on, we place an emote infront of it so
+	// the actions wouldn't execute. `!` and `$` are common bot prefixes so we
+	// don't allow them either.
+	if message[0] == '.' || message[0] == '/' || message[0] == '!' || message[0] == '$' {
+		message = ":tf: " + message
+	}
+
+	// check the message for bad words before we say it
+	messageBanned, banReason := checkMessage(message)
+	if messageBanned {
+		// Bad message, replace message and log it.
+		tc.Say(target, "[BANPHRASED] monkaS")
+		sugar.Infow("banned message detected",
+			"target channel", target,
+			"message", message,
+			"ban reason", banReason,
+		)
+
+		return
+	} else {
+		// In case the message we are trying to send is longer than the
+		// maximum allowed message length on twitch we split the message in two parts.
+		// Twitch has a maximum length for messages of 510 characters so to be safe
+		// we split and check at 500 characters.
+		// https://discuss.dev.twitch.tv/t/missing-client-side-message-length-check/21316
+		// TODO: Make it so it splits at a space instead and not in the middle of a word.
+		// Message was fine.
+		tc.Say(target, message)
+		return
+	}
+}

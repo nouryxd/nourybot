@@ -15,7 +15,7 @@ func (app *Application) AddCommand(name string, message twitch.PrivateMessage) {
 	//      prefixLength |name| text
 	//      0123456789012|4567|
 	// e.g. ()addcommand dank FeelsDankMan
-	//      |            snip ^           |
+	//      |   part1    snip ^  part2   |
 	text := message.Message[prefixLength+len(name) : len(message.Message)]
 	err := app.Models.Commands.Insert(name, text)
 
@@ -33,4 +33,15 @@ func (app *Application) AddCommand(name string, message twitch.PrivateMessage) {
 		common.Send(message.Channel, reply, app.TwitchClient)
 		return
 	}
+}
+
+func (app *Application) GetCommand(name string) (string, error) {
+	command, err := app.Models.Commands.Get(name)
+
+	if err != nil {
+		return "", err
+	}
+
+	return command.Text, nil
+
 }

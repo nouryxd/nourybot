@@ -290,5 +290,12 @@ func (app *Application) handleCommand(message twitch.PrivateMessage) {
 	case "xkcd":
 		commands.Xkcd(target, app.TwitchClient)
 		return
+	default: // Check if the command exists in the database, if it doesnt ignore it
+		reply, err := app.GetCommand(commandName)
+		if err != nil {
+			return
+		}
+		common.SendNoLimit(message.Channel, reply, app.TwitchClient)
+		return
 	}
 }
