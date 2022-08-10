@@ -43,6 +43,21 @@ func (app *Application) AddUser(login, lvl string, message twitch.PrivateMessage
 	}
 }
 
+func (app *Application) DebugUser(login string, message twitch.PrivateMessage) {
+	user, err := app.Models.Users.Get(login)
+
+	if err != nil {
+		reply := fmt.Sprintf("Something went wrong FeelsBadMan %s", err)
+		common.Send(message.Channel, reply, app.TwitchClient)
+		return
+	} else {
+		reply := fmt.Sprintf("User %v: ID %v, Login: %s, TwitchID: %v, Level %v", login, user.ID, user.Login, user.TwitchID, user.Level)
+		common.Send(message.Channel, reply, app.TwitchClient)
+		app.TwitchClient.Whisper(message.User.Name, reply)
+		return
+	}
+}
+
 func (app *Application) DeleteUser(login string, message twitch.PrivateMessage) {
 	err := app.Models.Users.Delete(login)
 	if err != nil {

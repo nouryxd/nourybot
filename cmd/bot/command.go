@@ -87,6 +87,18 @@ func (app *Application) handleCommand(message twitch.PrivateMessage) {
 		} else {
 			return
 		}
+	case "debug": // ()edituser level nourylul 1000
+		if message.User.ID != "31437432" { // Limit to myself for now.
+			return
+		} else if msgLen < 3 {
+			common.Send(target, "Not enough arguments provided.", app.TwitchClient)
+			return
+		} else if cmdParams[1] == "user" {
+			app.DebugUser(cmdParams[2], message)
+			return
+		} else {
+			return
+		}
 	case "deletechannel":
 		if message.User.ID != "31437432" { // Limit to myself for now.
 			return
