@@ -18,6 +18,7 @@ type Models struct {
 		Insert(channel *Channel) error
 		Get(login string) (*Channel, error)
 		GetAll() ([]*Channel, error)
+		GetJoinable() ([]string, error)
 		Delete(login string) error
 	}
 	Users interface {

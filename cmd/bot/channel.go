@@ -38,6 +38,7 @@ func (app *Application) GetAllChannels() {
 	channel, err := app.Models.Channels.GetAll()
 	if err != nil {
 		app.Logger.Error(err)
+		return
 	}
 	app.Logger.Infow("All channels:",
 		"channel", channel)
@@ -53,4 +54,19 @@ func (app *Application) DeleteChannel(login string, message twitch.PrivateMessag
 
 	reply := fmt.Sprintf("Deleted channel %s", login)
 	common.Send(message.Channel, reply, app.TwitchClient)
+}
+
+func (app *Application) InitialJoin() {
+	channel, err := app.Models.Channels.GetJoinable()
+	if err != nil {
+		app.Logger.Error(err)
+		return
+	}
+
+	for _, v := range channel {
+		app.TwitchClient.Join(v)
+		app.Logger.Infow("Joining channel:",
+			"channel", v)
+	}
+
 }

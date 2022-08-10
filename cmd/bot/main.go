@@ -99,10 +99,9 @@ func main() {
 		common.StartTime()
 
 		common.Send("nourylul", "xd", app.TwitchClient)
-		app.GetAllChannels()
+		// app.GetAllChannels()
+		app.InitialJoin()
 	})
-
-	app.TwitchClient.Join("nourylul")
 
 	// Actually connect to chat.
 	err = app.TwitchClient.Connect()
