@@ -27,11 +27,17 @@ type Models struct {
 		SetLevel(login string, level int) error
 		Delete(login string) error
 	}
+	Commands interface {
+		Get(name string) (*Command, error)
+		Insert(name, text string) error
+		Delete(name string) error
+	}
 }
 
 func NewModels(db *sql.DB) Models {
 	return Models{
 		Channels: ChannelModel{DB: db},
 		Users:    UserModel{DB: db},
+		Commands: CommandModel{DB: db},
 	}
 }
