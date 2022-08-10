@@ -22,16 +22,17 @@ func (app *Application) AddChannel(login string, message twitch.PrivateMessage) 
 	}
 
 	err = app.Models.Channels.Insert(channel)
-
 	if err != nil {
 		reply := fmt.Sprintf("Something went wrong FeelsBadMan %s", err)
 		common.Send(message.Channel, reply, app.TwitchClient)
 		return
 	} else {
+		app.TwitchClient.Join(login)
 		reply := fmt.Sprintf("Added channel %s", login)
 		common.Send(message.Channel, reply, app.TwitchClient)
 		return
 	}
+
 }
 
 func (app *Application) GetAllChannels() {
@@ -51,6 +52,8 @@ func (app *Application) DeleteChannel(login string, message twitch.PrivateMessag
 		app.Logger.Error(err)
 		return
 	}
+
+	app.TwitchClient.Depart(login)
 
 	reply := fmt.Sprintf("Deleted channel %s", login)
 	common.Send(message.Channel, reply, app.TwitchClient)

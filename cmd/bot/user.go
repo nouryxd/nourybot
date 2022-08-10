@@ -92,3 +92,13 @@ func (app *Application) EditUserLevel(user, lvl string, message twitch.PrivateMe
 	}
 
 }
+
+func (app *Application) GetUserLevel(login string) int {
+	user, err := app.Models.Users.Get(login)
+
+	if err != nil {
+		return 0
+	} else {
+		return user.Level
+	}
+}

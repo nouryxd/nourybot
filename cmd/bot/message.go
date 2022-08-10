@@ -29,7 +29,6 @@ func (app *Application) handlePrivateMessage(message twitch.PrivateMessage) {
 		}
 	}
 
-	// Message was no command so we just print it.
 	// app.Logger.Infow("Private Message received",
 	// 	// "message", message,
 	// 	"message.Channel", message.Channel,

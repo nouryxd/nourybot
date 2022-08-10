@@ -38,9 +38,18 @@ func (app *Application) handleCommand(message twitch.PrivateMessage) {
 	// where we are responding.
 	target := message.Channel
 
+	// Userlevel is the level set for a user in the database.
+	// It is NOT same as twitch user/mod.
+	// 1000 = admin
+	// 500 = mod
+	// 100 = normal
+	// If the level returned is 0 then the user was not found in the database.
+	userLevel := app.GetUserLevel(message.User.Name)
+
 	sugar.Infow("Command received",
 		// "message", message,
 		"message.Channel", target,
+		"user level", userLevel,
 		"message.Message", message.Message,
 		"commandName", commandName,
 		"cmdParams", cmdParams,
@@ -54,7 +63,7 @@ func (app *Application) handleCommand(message twitch.PrivateMessage) {
 			return
 		}
 	case "addchannel":
-		if message.User.ID != "31437432" { // Limit to myself for now.
+		if userLevel < 1000 { // Limit to myself for now.
 			return
 		} else if msgLen < 2 {
 			common.Send(target, "Not enough arguments provided.", app.TwitchClient)
@@ -65,7 +74,7 @@ func (app *Application) handleCommand(message twitch.PrivateMessage) {
 			return
 		}
 	case "adduser":
-		if message.User.ID != "31437432" { // Limit to myself for now.
+		if userLevel < 1000 { // Limit to myself for now.
 			return
 		} else if msgLen < 3 {
 			common.Send(target, "Not enough arguments provided.", app.TwitchClient)
@@ -76,7 +85,7 @@ func (app *Application) handleCommand(message twitch.PrivateMessage) {
 			return
 		}
 	case "edituser": // ()edituser level nourylul 1000
-		if message.User.ID != "31437432" { // Limit to myself for now.
+		if userLevel < 1000 { // Limit to myself for now.
 			return
 		} else if msgLen < 4 {
 			common.Send(target, "Not enough arguments provided.", app.TwitchClient)
@@ -88,7 +97,7 @@ func (app *Application) handleCommand(message twitch.PrivateMessage) {
 			return
 		}
 	case "debug": // ()edituser level nourylul 1000
-		if message.User.ID != "31437432" { // Limit to myself for now.
+		if userLevel < 1000 { // Limit to myself for now.
 			return
 		} else if msgLen < 3 {
 			common.Send(target, "Not enough arguments provided.", app.TwitchClient)
@@ -100,7 +109,7 @@ func (app *Application) handleCommand(message twitch.PrivateMessage) {
 			return
 		}
 	case "deletechannel":
-		if message.User.ID != "31437432" { // Limit to myself for now.
+		if userLevel < 1000 { // Limit to myself for now.
 			return
 		} else if msgLen < 2 {
 			common.Send(target, "Not enough arguments provided.", app.TwitchClient)
@@ -111,7 +120,7 @@ func (app *Application) handleCommand(message twitch.PrivateMessage) {
 			return
 		}
 	case "deleteuser":
-		if message.User.ID != "31437432" { // Limit to myself for now.
+		if userLevel < 1000 { // Limit to myself for now.
 			return
 		} else if msgLen < 2 {
 			common.Send(target, "Not enough arguments provided.", app.TwitchClient)
@@ -153,7 +162,7 @@ func (app *Application) handleCommand(message twitch.PrivateMessage) {
 		commands.Currency(target, cmdParams[1], cmdParams[2], cmdParams[4], app.TwitchClient)
 		return
 	case "echo":
-		if message.User.ID != "31437432" { // Limit to myself for now.
+		if userLevel < 1000 { // Limit to myself for now.
 			return
 		} else if msgLen < 2 {
 			common.Send(target, "Not enough arguments provided.", app.TwitchClient)
