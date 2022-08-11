@@ -280,6 +280,7 @@ func (app *Application) handleCommand(message twitch.PrivateMessage) {
 			return
 		} else {
 			commands.Tweet(target, cmdParams[1], app.TwitchClient)
+			return
 		}
 	case "rxkcd":
 		commands.RandomXkcd(target, app.TwitchClient)
@@ -290,8 +291,11 @@ func (app *Application) handleCommand(message twitch.PrivateMessage) {
 	case "xkcd":
 		commands.Xkcd(target, app.TwitchClient)
 		return
-	default: // Check if the command exists in the database, if it doesnt ignore it
-		reply, err := app.GetCommand(commandName)
+
+	// Check if the commandName exists as the "name" of a command in the database.
+	// if it doesnt then ignore it.
+	default:
+		reply, err := app.GetCommand(commandName, message.User.Name)
 		if err != nil {
 			return
 		}
