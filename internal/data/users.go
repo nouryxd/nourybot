@@ -72,7 +72,6 @@ func (u UserModel) SetLevel(login string, level int) error {
 	}
 
 	return nil
-
 }
 
 func (u UserModel) Get(login string) (*User, error) {

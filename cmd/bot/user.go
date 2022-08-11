@@ -90,7 +90,6 @@ func (app *Application) EditUserLevel(user, lvl string, message twitch.PrivateMe
 		common.Send(message.Channel, reply, app.TwitchClient)
 		return
 	}
-
 }
 
 func (app *Application) GetUserLevel(login string) int {
