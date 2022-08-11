@@ -57,12 +57,43 @@ func main() {
 
 	// Received a PrivateMessage (normal chat message).
 	app.TwitchClient.OnPrivateMessage(func(message twitch.PrivateMessage) {
-		app.handlePrivateMessage(message)
+		// app.Logger.Infow("Private Message received",
+		// 	// "message", message,
+		// 	"message.Channel", message.Channel,
+		// 	"message.User", message.User.DisplayName,
+		// 	"message.Message", message.Message,
+		// )
+
+		// roomId is the Twitch UserID of the channel the message originated from.
+		// If there is no roomId something went really wrong.
+		roomId := message.Tags["room-id"]
+		if roomId == "" {
+			app.Logger.Errorw("Missing room-id in message tag",
+				"roomId", roomId,
+			)
+
+			return
+		}
+
+		// Message was shorter than our prefix is therefore it's irrelevant for us.
+		if len(message.Message) >= 2 {
+			// Check if the first 2 characters of the mesage were our prefix.
+			if message.Message[:2] == "()" {
+				app.handleCommand(message)
+				return
+			}
+		}
+
 	})
 
 	// Received a WhisperMessage (Twitch DM).
 	app.TwitchClient.OnWhisperMessage(func(message twitch.WhisperMessage) {
-		app.handleWhisperMessage(message)
+		// Print the whisper message for now.
+		app.Logger.Infow("Whisper Message received",
+			"message", message,
+			"message.User.DisplayName", message.User.DisplayName,
+			"message.Message", message.Message,
+		)
 	})
 
 	// Successfully connected to Twitch
