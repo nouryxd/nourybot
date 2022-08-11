@@ -83,5 +83,4 @@ func (app *Application) InitialJoin() {
 		app.Logger.Infow("Joining channel:",
 			"channel", v)
 	}
-
 }

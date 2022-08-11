@@ -10,6 +10,8 @@ import (
 	"github.com/lyx0/nourybot/pkg/common"
 )
 
+// AddUser takes in a login and level string. It calls GetIdByLogin to get the twitch id
+// of the login name and then adds the login name, twitch id and supplied level to the database.
 func (app *Application) AddUser(login, lvl string, message twitch.PrivateMessage) {
 	userId, err := decapi.GetIdByLogin(login)
 	if err != nil {
@@ -18,6 +20,8 @@ func (app *Application) AddUser(login, lvl string, message twitch.PrivateMessage
 		return
 	}
 
+	// Convert the level string to an integer. This is an easy check to see if
+	// the level supplied was a number only.
 	level, err := strconv.Atoi(lvl)
 	if err != nil {
 		app.Logger.Error(err)
@@ -25,6 +29,7 @@ func (app *Application) AddUser(login, lvl string, message twitch.PrivateMessage
 		return
 	}
 
+	// Create a user to hold our values to be inserted to the database.
 	user := &data.User{
 		Login:    login,
 		TwitchID: userId,
@@ -43,6 +48,8 @@ func (app *Application) AddUser(login, lvl string, message twitch.PrivateMessage
 	}
 }
 
+// DebugUser queries the database for a login name, if that name exists it returns the fields
+// and outputs them to twitch chat and a twitch whisper.
 func (app *Application) DebugUser(login string, message twitch.PrivateMessage) {
 	user, err := app.Models.Users.Get(login)
 
@@ -58,6 +65,8 @@ func (app *Application) DebugUser(login string, message twitch.PrivateMessage) {
 	}
 }
 
+// DeleteUser takes in a login string, queries the database for such a name and if an
+// entry for the name exists deletes the entry.
 func (app *Application) DeleteUser(login string, message twitch.PrivateMessage) {
 	err := app.Models.Users.Delete(login)
 	if err != nil {
@@ -70,8 +79,11 @@ func (app *Application) DeleteUser(login string, message twitch.PrivateMessage) 
 	common.Send(message.Channel, reply, app.TwitchClient)
 }
 
-func (app *Application) EditUserLevel(user, lvl string, message twitch.PrivateMessage) {
-
+// EditUserLevel takes in a login name and level string, then updates the database record
+// for the login name with the new level if such an entry exists.
+func (app *Application) EditUserLevel(login, lvl string, message twitch.PrivateMessage) {
+	// Convert the level string to an integer. This is an easy check to see if
+	// the level supplied was a number only.
 	level, err := strconv.Atoi(lvl)
 	if err != nil {
 		app.Logger.Error(err)
@@ -79,22 +91,23 @@ func (app *Application) EditUserLevel(user, lvl string, message twitch.PrivateMe
 		return
 	}
 
-	err = app.Models.Users.SetLevel(user, level)
-
+	err = app.Models.Users.SetLevel(login, level)
 	if err != nil {
 		common.Send(message.Channel, fmt.Sprintf("Something went wrong FeelsBadMan %s", ErrRecordNotFound), app.TwitchClient)
 		app.Logger.Error(err)
 		return
 	} else {
-		reply := fmt.Sprintf("Updated user %s to level %v", user, level)
+		reply := fmt.Sprintf("Updated user %s to level %v", login, level)
 		common.Send(message.Channel, reply, app.TwitchClient)
 		return
 	}
 }
 
+// GetUserLevel takes in a login name and queries the database for an entry
+// with such a name value. If there is one it returns the level value as an integer.
+// Returns 0 on an error which is the level for unregistered users.
 func (app *Application) GetUserLevel(login string) int {
 	user, err := app.Models.Users.Get(login)
-
 	if err != nil {
 		return 0
 	} else {
