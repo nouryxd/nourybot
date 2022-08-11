@@ -47,9 +47,9 @@ func (app *Application) handleCommand(message twitch.PrivateMessage) {
 
 	app.Logger.Infow("Command received",
 		// "message", message,
+		"message.Message", message.Message,
 		"message.Channel", target,
 		"user level", userLevel,
-		"message.Message", message.Message,
 		"commandName", commandName,
 		"cmdParams", cmdParams,
 		"msgLen", msgLen,

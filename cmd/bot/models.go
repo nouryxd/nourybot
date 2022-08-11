@@ -19,6 +19,7 @@ var (
 type config struct {
 	twitchUsername string
 	twitchOauth    string
+	commandPrefix  string
 	environment    string
 	db             struct {
 		dsn          string

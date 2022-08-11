@@ -33,7 +33,8 @@ func main() {
 	cfg.twitchOauth = os.Getenv("TWITCH_OAUTH")
 	tc := twitch.NewClient(cfg.twitchUsername, cfg.twitchOauth)
 
-	// Environment
+	// Basic configuration
+	cfg.commandPrefix = "()"
 	cfg.environment = "Development"
 
 	// Database
@@ -77,8 +78,10 @@ func main() {
 
 		// Message was shorter than our prefix is therefore it's irrelevant for us.
 		if len(message.Message) >= 2 {
+			// This bots prefix is "()" configured above at `cfg.commandPrefix`,
 			// Check if the first 2 characters of the mesage were our prefix.
-			if message.Message[:2] == "()" {
+			// if they were forward the message to the command handler.
+			if message.Message[:2] == cfg.commandPrefix {
 				app.handleCommand(message)
 				return
 			}
