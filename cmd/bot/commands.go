@@ -8,6 +8,10 @@ import (
 	"github.com/lyx0/nourybot/pkg/common"
 )
 
+// AddCommand takes in a name parameter and a twitch.PrivateMessage. It slices the
+// twitch.PrivateMessage after the name parameter and adds everything after to a text
+// value. Then it calls the app.Models.Commands.Insert method with both name, and text
+// values adding them to the database.
 func (app *Application) AddCommand(name string, message twitch.PrivateMessage) {
 	// prefixLength is the length of `()addcommand` plus +2 (for the space and zero based)
 	prefixLength := 14
@@ -36,6 +40,12 @@ func (app *Application) AddCommand(name string, message twitch.PrivateMessage) {
 	}
 }
 
+// GetCommand queries the database for a name. If an entry exists it checks
+// if the Command.Level is 0, if it is the command.Text value is returned.
+//
+// If the Command.Level is not 0 it queries the database for the level of the
+// user who sent the message. If the users level is equal or higher
+// the command.Text field is returned.
 func (app *Application) GetCommand(name, username string) (string, error) {
 	// Fetch the command from the database if it exists.
 	command, err := app.Models.Commands.Get(name)
@@ -66,6 +76,8 @@ func (app *Application) GetCommand(name, username string) (string, error) {
 
 }
 
+// EditCommandLevel takes in a name and level string and updates the entry with name
+// to the supplied level value.
 func (app *Application) EditCommandLevel(name, lvl string, message twitch.PrivateMessage) {
 	level, err := strconv.Atoi(lvl)
 	if err != nil {
@@ -87,6 +99,7 @@ func (app *Application) EditCommandLevel(name, lvl string, message twitch.Privat
 	}
 }
 
+// DeleteCommand takes in a name value and deletes the command from the database if it exists.
 func (app *Application) DeleteCommand(name string, message twitch.PrivateMessage) {
 	err := app.Models.Commands.Delete(name)
 	if err != nil {

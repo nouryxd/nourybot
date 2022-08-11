@@ -45,11 +45,12 @@ func (app *Application) handleCommand(message twitch.PrivateMessage) {
 	// If the level returned is 0 then the user was not found in the database.
 	userLevel := app.GetUserLevel(message.User.Name)
 
+	// Left in for debugging purposes.
 	app.Logger.Infow("Command received",
-		// "message", message,
+		// "message", message, // Pretty taxing
 		"message.Message", message.Message,
 		"message.Channel", target,
-		"user level", userLevel,
+		"userLevel", userLevel,
 		"commandName", commandName,
 		"cmdParams", cmdParams,
 		"msgLen", msgLen,

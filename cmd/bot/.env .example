@@ -1,0 +1,5 @@
+TWITCH_USERNAME=nourybot
+TWITCH_OAUTH=oauth:mycooloauthtoken42069
+TWITCH_COMMAND_PREFIX=()
+
+DB_DSN=postgres://username:password@localhost/nourybot?sslmode=disable

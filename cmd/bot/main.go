@@ -31,10 +31,10 @@ func main() {
 	// Twitch
 	cfg.twitchUsername = os.Getenv("TWITCH_USERNAME")
 	cfg.twitchOauth = os.Getenv("TWITCH_OAUTH")
+	cfg.commandPrefix = os.Getenv("TWITCH_COMMAND_PREFIX")
 	tc := twitch.NewClient(cfg.twitchUsername, cfg.twitchOauth)
 
-	// Basic configuration
-	cfg.commandPrefix = "()"
+	// Will be used someday Copesen
 	cfg.environment = "Development"
 
 	// Database
@@ -43,6 +43,7 @@ func main() {
 	cfg.db.maxIdleConns = 25
 	cfg.db.maxIdleTime = "15m"
 
+	// Establish database connection
 	db, err := openDB(cfg)
 	if err != nil {
 		sugar.Fatal(err)
@@ -113,9 +114,10 @@ func main() {
 		// Start time
 		common.StartTime()
 
-		common.Send("nourylul", "xd", app.TwitchClient)
-		// app.GetAllChannels()
+		// Join the channels in the database.
 		app.InitialJoin()
+
+		common.Send("nourylul", "xd", app.TwitchClient)
 	})
 
 	// Actually connect to chat.
