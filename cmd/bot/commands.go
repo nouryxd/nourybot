@@ -67,7 +67,6 @@ func (app *Application) GetCommand(name, username string) (string, error) {
 }
 
 func (app *Application) EditCommandLevel(name, lvl string, message twitch.PrivateMessage) {
-
 	level, err := strconv.Atoi(lvl)
 	if err != nil {
 		app.Logger.Error(err)
@@ -86,4 +85,16 @@ func (app *Application) EditCommandLevel(name, lvl string, message twitch.Privat
 		common.Send(message.Channel, reply, app.TwitchClient)
 		return
 	}
+}
+
+func (app *Application) DeleteCommand(name string, message twitch.PrivateMessage) {
+	err := app.Models.Commands.Delete(name)
+	if err != nil {
+		common.Send(message.Channel, "Something went wrong FeelsBadMan", app.TwitchClient)
+		app.Logger.Error(err)
+		return
+	}
+
+	reply := fmt.Sprintf("Deleted command %s", name)
+	common.Send(message.Channel, reply, app.TwitchClient)
 }
