@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"strconv"
 
 	"github.com/gempir/go-twitch-irc/v3"
 	"github.com/lyx0/nourybot/pkg/common"
@@ -43,18 +44,18 @@ func (app *Application) GetCommand(name, username string) (string, error) {
 		return "", err
 	}
 
-	// If the command has no permissions set just return the text.
+	// If the command has no level set just return the text.
 	// Otherwise check if the level is high enough.
-	if command.Permission == 0 {
+	if command.Level == 0 {
 		return command.Text, nil
 	} else {
 		// Get the user from the database to check if the userlevel is equal
-		// or higher than the command.Permission.
+		// or higher than the command.Level.
 		user, err := app.Models.Users.Get(username)
 		if err != nil {
 			return "", err
 		}
-		if user.Level >= command.Permission {
+		if user.Level >= command.Level {
 			// Userlevel is sufficient so return the command.Text
 			return command.Text, nil
 		}
@@ -63,4 +64,26 @@ func (app *Application) GetCommand(name, username string) (string, error) {
 	// Userlevel was not enough so return an empty string and error.
 	return "", ErrUserInsufficientLevel
 
+}
+
+func (app *Application) EditCommand(name, lvl string, message twitch.PrivateMessage) {
+
+	level, err := strconv.Atoi(lvl)
+	if err != nil {
+		app.Logger.Error(err)
+		common.Send(message.Channel, fmt.Sprintf("Something went wrong FeelsBadMan %s", ErrCommandLevelNotInteger), app.TwitchClient)
+		return
+	}
+
+	err = app.Models.Commands.SetLevel(name, level)
+
+	if err != nil {
+		common.Send(message.Channel, fmt.Sprintf("Something went wrong FeelsBadMan %s", ErrRecordNotFound), app.TwitchClient)
+		app.Logger.Error(err)
+		return
+	} else {
+		reply := fmt.Sprintf("Updated command %s to level %v", name, level)
+		common.Send(message.Channel, reply, app.TwitchClient)
+		return
+	}
 }

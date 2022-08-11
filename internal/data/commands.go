@@ -6,10 +6,10 @@ import (
 )
 
 type Command struct {
-	ID         int    `json:"id"`
-	Name       string `json:"name"`
-	Text       string `json:"text"`
-	Permission int    `json:"permission"`
+	ID    int    `json:"id"`
+	Name  string `json:"name"`
+	Text  string `json:"text"`
+	Level int    `json:"level"`
 }
 
 type CommandModel struct {
@@ -18,7 +18,7 @@ type CommandModel struct {
 
 func (c CommandModel) Get(name string) (*Command, error) {
 	query := `
-	SELECT id, name, text, permission
+	SELECT id, name, text, level
 	FROM commands
 	WHERE name = $1`
 
@@ -28,7 +28,7 @@ func (c CommandModel) Get(name string) (*Command, error) {
 		&command.ID,
 		&command.Name,
 		&command.Text,
-		&command.Permission,
+		&command.Level,
 	)
 
 	if err != nil {
@@ -43,10 +43,33 @@ func (c CommandModel) Get(name string) (*Command, error) {
 	return &command, nil
 }
 
+func (c CommandModel) SetLevel(name string, level int) error {
+	query := `
+	UPDATE commands
+	SET level = $2
+	WHERE name = $1`
+
+	result, err := c.DB.Exec(query, name, level)
+	if err != nil {
+		return err
+	}
+
+	rowsAffected, err := result.RowsAffected()
+	if err != nil {
+		return err
+	}
+
+	if rowsAffected == 0 {
+		return ErrRecordNotFound
+	}
+
+	return nil
+}
+
 func (c CommandModel) Insert(name, text string) error {
 	perms := 0
 	query := `
-	INSERT into commands(name, text, permission)
+	INSERT into commands(name, text, level)
 	VALUES ($1, $2, $3)
 	ON CONFLICT (name)
 	DO NOTHING

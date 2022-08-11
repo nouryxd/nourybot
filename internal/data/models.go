@@ -31,6 +31,7 @@ type Models struct {
 	Commands interface {
 		Get(name string) (*Command, error)
 		Insert(name, text string) error
+		SetLevel(name string, level int) error
 		Delete(name string) error
 	}
 }
