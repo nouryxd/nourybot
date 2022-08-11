@@ -6,14 +6,13 @@ import (
 	"github.com/gempir/go-twitch-irc/v3"
 	"github.com/lyx0/nourybot/pkg/commands"
 	"github.com/lyx0/nourybot/pkg/common"
-	"go.uber.org/zap"
 )
 
+// handleCommand takes in a twitch.PrivateMessage and then routes the message to
+// the function that is responsible for each command and knows how to deal with it accordingly.
 func (app *Application) handleCommand(message twitch.PrivateMessage) {
-	sugar := zap.NewExample().Sugar()
-	defer sugar.Sync()
 
-	// Increments the counter how many commands were used.
+	// Increments the counter how many commands have been used, called in the ping command.
 	common.CommandUsed()
 
 	// commandName is the actual name of the command without the prefix.
@@ -28,7 +27,6 @@ func (app *Application) handleCommand(message twitch.PrivateMessage) {
 	// maximum count of 500+10 just to be safe.
 	// https://discuss.dev.twitch.tv/t/missing-client-side-message-length-check/21316
 	cmdParams := strings.SplitN(message.Message, " ", 500)
-	_ = cmdParams
 
 	// msgLen is the amount of words in a message without the prefix.
 	// Useful to check if enough cmdParams are provided.
@@ -42,11 +40,12 @@ func (app *Application) handleCommand(message twitch.PrivateMessage) {
 	// It is NOT same as twitch user/mod.
 	// 1000 = admin
 	// 500 = mod
+	// 250 = vip
 	// 100 = normal
 	// If the level returned is 0 then the user was not found in the database.
 	userLevel := app.GetUserLevel(message.User.Name)
 
-	sugar.Infow("Command received",
+	app.Logger.Infow("Command received",
 		// "message", message,
 		"message.Channel", target,
 		"user level", userLevel,
@@ -56,6 +55,13 @@ func (app *Application) handleCommand(message twitch.PrivateMessage) {
 		"msgLen", msgLen,
 	)
 
+	// A `commandName` is every message starting with `()`.
+	// Hardcoded commands have a priority over database commands.
+	// Switch over the commandName and see if there is a hardcoded case for it.
+	// If there was no switch case satisfied, query the database if there is
+	// a `data.CommandModel.Name` equal to the `commandName`
+	// If there is return the `data.CommandModel.Text` entry.
+	// Otherwise we ignore the message.
 	switch commandName {
 	case "":
 		if msgLen == 1 {
@@ -244,7 +250,7 @@ func (app *Application) handleCommand(message twitch.PrivateMessage) {
 	// Add
 	// #####
 	case "addchannel":
-		if userLevel < 1000 { // Limit to myself for now.
+		if userLevel < 1000 {
 			return
 		} else if msgLen < 2 {
 			common.Send(target, "Not enough arguments provided.", app.TwitchClient)
@@ -255,7 +261,7 @@ func (app *Application) handleCommand(message twitch.PrivateMessage) {
 			return
 		}
 	case "addcommand":
-		if userLevel < 1000 { // Limit to myself for now.
+		if userLevel < 1000 {
 			return
 		} else if msgLen < 3 {
 			common.Send(target, "Not enough arguments provided.", app.TwitchClient)
@@ -266,7 +272,7 @@ func (app *Application) handleCommand(message twitch.PrivateMessage) {
 			return
 		}
 	case "adduser":
-		if userLevel < 1000 { // Limit to myself for now.
+		if userLevel < 1000 {
 			return
 		} else if msgLen < 3 {
 			common.Send(target, "Not enough arguments provided.", app.TwitchClient)
@@ -280,13 +286,14 @@ func (app *Application) handleCommand(message twitch.PrivateMessage) {
 	// ######
 	// Edit
 	// ######
-	case "edituser": // ()edituser level nourylul 1000
+	case "edituser":
 		if userLevel < 1000 { // Limit to myself for now.
 			return
 		} else if msgLen < 4 {
 			common.Send(target, "Not enough arguments provided.", app.TwitchClient)
 			return
 		} else if cmdParams[1] == "level" {
+			// ()edituser level nourylul 1000
 			app.EditUserLevel(cmdParams[2], cmdParams[3], message)
 			return
 		} else {
@@ -304,6 +311,7 @@ func (app *Application) handleCommand(message twitch.PrivateMessage) {
 		} else {
 			return
 		}
+
 	// ########
 	// Delete
 	// ########
@@ -325,7 +333,7 @@ func (app *Application) handleCommand(message twitch.PrivateMessage) {
 			common.Send(target, "Not enough arguments provided.", app.TwitchClient)
 			return
 		} else {
-			// ()deletechannel noemience
+			// ()deletecommand dank
 			app.DeleteCommand(cmdParams[1], message)
 			return
 		}
@@ -336,12 +344,12 @@ func (app *Application) handleCommand(message twitch.PrivateMessage) {
 			common.Send(target, "Not enough arguments provided.", app.TwitchClient)
 			return
 		} else {
-			// ()addchannel noemience
+			// ()deleteuser noemience
 			app.DeleteUser(cmdParams[1], message)
 			return
 		}
 
-	case "bttvemotes": // Pretty spammy command so it's limited to my own channel until elevated messages are implemented.
+	case "bttvemotes":
 		if userLevel < 1000 {
 			commands.Bttvemotes(target, app.TwitchClient)
 			return
@@ -349,7 +357,7 @@ func (app *Application) handleCommand(message twitch.PrivateMessage) {
 			return
 		}
 
-	case "ffzemotes": // Pretty spammy command so it's limited to my own channel until elevated messages are implemented.
+	case "ffzemotes":
 		if userLevel < 1000 {
 			commands.Ffzemotes(target, app.TwitchClient)
 			return
