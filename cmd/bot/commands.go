@@ -66,7 +66,7 @@ func (app *Application) GetCommand(name, username string) (string, error) {
 
 }
 
-func (app *Application) EditCommand(name, lvl string, message twitch.PrivateMessage) {
+func (app *Application) EditCommandLevel(name, lvl string, message twitch.PrivateMessage) {
 
 	level, err := strconv.Atoi(lvl)
 	if err != nil {

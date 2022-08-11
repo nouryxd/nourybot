@@ -114,7 +114,7 @@ func (app *Application) handleCommand(message twitch.PrivateMessage) {
 			common.Send(target, "Not enough arguments provided.", app.TwitchClient)
 			return
 		} else if cmdParams[1] == "level" {
-			app.EditCommand(cmdParams[2], cmdParams[3], message)
+			app.EditCommandLevel(cmdParams[2], cmdParams[3], message)
 			return
 		} else {
 			return
