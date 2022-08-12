@@ -18,6 +18,7 @@ type UserModel struct {
 	DB *sql.DB
 }
 
+// Insert inserts a user model into the database.
 func (u UserModel) Insert(user *User) error {
 	query := `
 	INSERT INTO users(login, twitchid, level)
@@ -48,6 +49,8 @@ func (u UserModel) Insert(user *User) error {
 	return nil
 }
 
+// Setlevel searches the database for a record with the provided login value
+// and if that exists sets the level to the supplied level value.
 func (u UserModel) SetLevel(login string, level int) error {
 	query := `
 	UPDATE users
@@ -74,6 +77,7 @@ func (u UserModel) SetLevel(login string, level int) error {
 	return nil
 }
 
+// Get searches the database for a login name and returns the user struct on success.
 func (u UserModel) Get(login string) (*User, error) {
 	query := `
 	SELECT id, added_at, login, twitchid, level
@@ -102,6 +106,8 @@ func (u UserModel) Get(login string) (*User, error) {
 	return &user, nil
 }
 
+// Delete searches the database for a value with the supplied login name and if
+// one exists deletes the record, returning any errors that might occur.
 func (u UserModel) Delete(login string) error {
 	// Prepare the statement.
 	query := `
