@@ -9,9 +9,9 @@ import (
 	"github.com/lyx0/nourybot/pkg/common"
 )
 
-// AddChannel takes in a channel name, then queries `GetIdByLogin` for the
+// AddChannel takes in a channel name, then calls GetIdByLogin for the
 // channels ID and inserts both the name and id value into the database.
-// If there was no error thrown the `app.TwitchClient` joins the channel afterwards.
+// If there is no error thrown the TwitchClient joins the channel afterwards.
 func (app *Application) AddChannel(login string, message twitch.PrivateMessage) {
 	userId, err := decapi.GetIdByLogin(login)
 	if err != nil {
@@ -20,7 +20,7 @@ func (app *Application) AddChannel(login string, message twitch.PrivateMessage) 
 	}
 
 	// Initialize a new channel struct holding the values that will be
-	// passed into the `app.Models.Channels.Insert()` method.
+	// passed into the app.Models.Channels.Insert() method.
 	channel := &data.Channel{
 		Login:    login,
 		TwitchID: userId,
@@ -67,17 +67,17 @@ func (app *Application) DeleteChannel(login string, message twitch.PrivateMessag
 	common.Send(message.Channel, reply, app.TwitchClient)
 }
 
-// InitialJoin is called on startup and gets all the channels from the database
-// so that the `app.TwitchClient` then joins each.
+// InitialJoin is called on startup and queries the database for a list of
+// channels which the TwitchClient then joins.
 func (app *Application) InitialJoin() {
-	// GetJoinable returns a `[]string` containing the channel names.
+	// GetJoinable returns a slice of channel names.
 	channel, err := app.Models.Channels.GetJoinable()
 	if err != nil {
 		app.Logger.Error(err)
 		return
 	}
 
-	// Iterate over the `[]string` and join each.
+	// Iterate over the slice of channels and join each.
 	for _, v := range channel {
 		app.TwitchClient.Join(v)
 		app.Logger.Infow("Joining channel:",

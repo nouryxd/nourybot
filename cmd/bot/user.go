@@ -10,8 +10,8 @@ import (
 	"github.com/lyx0/nourybot/pkg/common"
 )
 
-// AddUser takes in a login and level string. It calls GetIdByLogin to get the twitch id
-// of the login name and then adds the login name, twitch id and supplied level to the database.
+// AddUser calls GetIdByLogin to get the twitch id of the login name and then adds
+// the login name, twitch id and supplied level to the database.
 func (app *Application) AddUser(login, lvl string, message twitch.PrivateMessage) {
 	userId, err := decapi.GetIdByLogin(login)
 	if err != nil {
@@ -65,8 +65,8 @@ func (app *Application) DebugUser(login string, message twitch.PrivateMessage) {
 	}
 }
 
-// DeleteUser takes in a login string, queries the database for such a name and if an
-// entry for the name exists deletes the entry.
+// DeleteUser takes in a login string, queries the database for an entry with
+// that login name and tries to delete that entry in the database.
 func (app *Application) DeleteUser(login string, message twitch.PrivateMessage) {
 	err := app.Models.Users.Delete(login)
 	if err != nil {
@@ -79,8 +79,8 @@ func (app *Application) DeleteUser(login string, message twitch.PrivateMessage) 
 	common.Send(message.Channel, reply, app.TwitchClient)
 }
 
-// EditUserLevel takes in a login name and level string, then updates the database record
-// for the login name with the new level if such an entry exists.
+// EditUserLevel tries to update the database record for the supplied
+// login name with the new level.
 func (app *Application) EditUserLevel(login, lvl string, message twitch.PrivateMessage) {
 	// Convert the level string to an integer. This is an easy check to see if
 	// the level supplied was a number only.

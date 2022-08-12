@@ -33,7 +33,6 @@ func (app *Application) AddCommand(name string, message twitch.PrivateMessage) {
 		common.Send(message.Channel, reply, app.TwitchClient)
 		return
 	} else {
-
 		reply := fmt.Sprintf("Successfully added command: %s", name)
 		common.Send(message.Channel, reply, app.TwitchClient)
 		return
@@ -73,7 +72,6 @@ func (app *Application) GetCommand(name, username string) (string, error) {
 
 	// Userlevel was not enough so return an empty string and error.
 	return "", ErrUserInsufficientLevel
-
 }
 
 // EditCommandLevel takes in a name and level string and updates the entry with name

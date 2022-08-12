@@ -33,7 +33,7 @@ func (app *Application) handleCommand(message twitch.PrivateMessage) {
 	msgLen := len(strings.SplitN(message.Message, " ", -2))
 
 	// target is the channelname the message originated from and
-	// where we are responding.
+	// where the TwitchClient should send the response
 	target := message.Channel
 
 	// Userlevel is the level set for a user in the database.
@@ -45,7 +45,6 @@ func (app *Application) handleCommand(message twitch.PrivateMessage) {
 	// If the level returned is 0 then the user was not found in the database.
 	userLevel := app.GetUserLevel(message.User.Name)
 
-	// Left in for debugging purposes.
 	app.Logger.Infow("Command received",
 		// "message", message, // Pretty taxing
 		"message.Message", message.Message,
@@ -60,8 +59,8 @@ func (app *Application) handleCommand(message twitch.PrivateMessage) {
 	// Hardcoded commands have a priority over database commands.
 	// Switch over the commandName and see if there is a hardcoded case for it.
 	// If there was no switch case satisfied, query the database if there is
-	// a `data.CommandModel.Name` equal to the `commandName`
-	// If there is return the `data.CommandModel.Text` entry.
+	// a data.CommandModel.Name equal to the `commandName`
+	// If there is return the data.CommandModel.Text entry.
 	// Otherwise we ignore the message.
 	switch commandName {
 	case "":
@@ -149,6 +148,7 @@ func (app *Application) handleCommand(message twitch.PrivateMessage) {
 			return
 		}
 
+	// ()pinG
 	case "ping":
 		commands.Ping(target, app.TwitchClient)
 		return
@@ -232,6 +232,7 @@ func (app *Application) handleCommand(message twitch.PrivateMessage) {
 			return
 		}
 
+	// ()echo <message>
 	case "echo":
 		if userLevel < 250 { // Limit to myself for now.
 			return
@@ -244,7 +245,7 @@ func (app *Application) handleCommand(message twitch.PrivateMessage) {
 		}
 
 	//###################
-	// 1000- Admin only
+	// 1000 - Admin only
 	//###################
 
 	// #####
@@ -367,7 +368,6 @@ func (app *Application) handleCommand(message twitch.PrivateMessage) {
 		}
 
 	// ##################
-	// Database Command
 	// Check if the commandName exists as the "name" of a command in the database.
 	// if it doesnt then ignore it.
 	// ##################
