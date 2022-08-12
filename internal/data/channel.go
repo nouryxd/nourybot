@@ -18,6 +18,9 @@ type ChannelModel struct {
 	DB *sql.DB
 }
 
+// Get takes the login name for a channel and queries the database for an
+// existing entry with that login value. If it exists it returns a
+// pointer to a Channel.
 func (c ChannelModel) Get(login string) (*Channel, error) {
 	query := `
 	SELECT id, added_at, login, twitchid
@@ -45,6 +48,7 @@ func (c ChannelModel) Get(login string) (*Channel, error) {
 	return &channel, nil
 }
 
+// Insert takes in a channel struct and inserts it into the database.
 func (c ChannelModel) Insert(channel *Channel) error {
 	query := `
 	INSERT INTO channels(login, twitchid)
@@ -75,7 +79,7 @@ func (c ChannelModel) Insert(channel *Channel) error {
 	return nil
 }
 
-// GetAll() returns a slice of all channels in the database.
+// GetAll() returns a pointer to a slice of all channels (`[]*Channel`) in the database.
 func (c ChannelModel) GetAll() ([]*Channel, error) {
 	query := `
 	SELECT id, added_at, login, twitchid
@@ -128,7 +132,7 @@ func (c ChannelModel) GetAll() ([]*Channel, error) {
 	return channels, nil
 }
 
-// GetAll() returns a slice of all channels in the database.
+// GetJoinable() returns a slice of channel names (Channel.Login) in the database.
 func (c ChannelModel) GetJoinable() ([]string, error) {
 	query := `
 	SELECT login
@@ -178,6 +182,8 @@ func (c ChannelModel) GetJoinable() ([]string, error) {
 	return channels, nil
 }
 
+// Delete takes in a login name and queries the database and if there is an
+// entry with that login name deletes the entry.
 func (c ChannelModel) Delete(login string) error {
 	// Prepare the statement.
 	query := `

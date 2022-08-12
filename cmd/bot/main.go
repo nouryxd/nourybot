@@ -73,7 +73,6 @@ func main() {
 			app.Logger.Errorw("Missing room-id in message tag",
 				"roomId", roomId,
 			)
-
 			return
 		}
 
@@ -87,7 +86,6 @@ func main() {
 				return
 			}
 		}
-
 	})
 
 	// Received a WhisperMessage (Twitch DM).
