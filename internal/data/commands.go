@@ -16,6 +16,7 @@ type CommandModel struct {
 	DB *sql.DB
 }
 
+// Get tries to find a command in the database with the provided name.
 func (c CommandModel) Get(name string) (*Command, error) {
 	query := `
 	SELECT id, name, text, level
@@ -43,6 +44,8 @@ func (c CommandModel) Get(name string) (*Command, error) {
 	return &command, nil
 }
 
+// SetLevel queries the database for an entry with the provided name,
+// if there is one it updates the entrys level with the provided level.
 func (c CommandModel) SetLevel(name string, level int) error {
 	query := `
 	UPDATE commands
@@ -66,6 +69,7 @@ func (c CommandModel) SetLevel(name string, level int) error {
 	return nil
 }
 
+// Insert adds a command into the database.
 func (c CommandModel) Insert(name, text string) error {
 	perms := 0
 	query := `
@@ -95,6 +99,8 @@ func (c CommandModel) Insert(name, text string) error {
 	return nil
 }
 
+// Delete takes in a command name and queries the database for an entry with
+// the same name and tries to delete that entry.
 func (c CommandModel) Delete(name string) error {
 	// Prepare the statement.
 	query := `
