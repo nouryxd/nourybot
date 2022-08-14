@@ -80,7 +80,7 @@ func (app *Application) InitialJoin() {
 	// Iterate over the slice of channels and join each.
 	for _, v := range channel {
 		app.TwitchClient.Join(v)
-		app.Logger.Infow("Joining channel:",
+		app.Logger.Infow("Joining channel",
 			"channel", v)
 	}
 }

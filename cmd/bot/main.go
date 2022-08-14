@@ -59,12 +59,12 @@ func main() {
 
 	// Received a PrivateMessage (normal chat message).
 	app.TwitchClient.OnPrivateMessage(func(message twitch.PrivateMessage) {
-		// app.Logger.Infow("Private Message received",
-		// 	// "message", message,
-		// 	"message.Channel", message.Channel,
-		// 	"message.User", message.User.DisplayName,
-		// 	"message.Message", message.Message,
-		// )
+		//	app.Logger.Infow("Private Message received",
+		//		// "message", message,
+		//		"message.Channel", message.Channel,
+		//		"message.User", message.User.DisplayName,
+		//		"message.Message", message.Message,
+		//	)
 
 		// roomId is the Twitch UserID of the channel the message originated from.
 		// If there is no roomId something went really wrong.

@@ -45,15 +45,15 @@ func (app *Application) handleCommand(message twitch.PrivateMessage) {
 	// If the level returned is 0 then the user was not found in the database.
 	userLevel := app.GetUserLevel(message.User.Name)
 
-	app.Logger.Infow("Command received",
-		// "message", message, // Pretty taxing
-		"message.Message", message.Message,
-		"message.Channel", target,
-		"userLevel", userLevel,
-		"commandName", commandName,
-		"cmdParams", cmdParams,
-		"msgLen", msgLen,
-	)
+	//	app.Logger.Infow("Command received",
+	//		// "message", message, // Pretty taxing
+	//		"message.Message", message.Message,
+	//		"message.Channel", target,
+	//		"userLevel", userLevel,
+	//		"commandName", commandName,
+	//		"cmdParams", cmdParams,
+	//		"msgLen", msgLen,
+	//	)
 
 	// A `commandName` is every message starting with `()`.
 	// Hardcoded commands have a priority over database commands.
@@ -148,7 +148,7 @@ func (app *Application) handleCommand(message twitch.PrivateMessage) {
 			return
 		}
 
-	// ()pinG
+	// ()ping
 	case "ping":
 		commands.Ping(target, app.TwitchClient)
 		return
@@ -219,6 +219,7 @@ func (app *Application) handleCommand(message twitch.PrivateMessage) {
 	//#################
 	// 250 - VIP only
 	//#################
+	// ()debug user <username>
 	case "debug":
 		if userLevel < 250 {
 			return
@@ -301,7 +302,7 @@ func (app *Application) handleCommand(message twitch.PrivateMessage) {
 		} else {
 			return
 		}
-	case "editcommand": // ()editcommand level nourylul 1000
+	case "editcommand": // ()editcommand level dankwave 1000
 		if userLevel < 1000 {
 			return
 		} else if msgLen < 4 {

@@ -58,7 +58,7 @@ func (app *Application) DebugUser(login string, message twitch.PrivateMessage) {
 		common.Send(message.Channel, reply, app.TwitchClient)
 		return
 	} else {
-		reply := fmt.Sprintf("User %v: ID %v, Login: %s, TwitchID: %v, Level %v", login, user.ID, user.Login, user.TwitchID, user.Level)
+		reply := fmt.Sprintf("User %v: ID %v, Login: %s, TwitchID: %v, Level: %v", login, user.ID, user.Login, user.TwitchID, user.Level)
 		common.Send(message.Channel, reply, app.TwitchClient)
 		app.TwitchClient.Whisper(message.User.Name, reply)
 		return
