@@ -1,383 +1,127 @@
 package main
 
 import (
-	"strings"
+	"fmt"
+	"strconv"
 
 	"github.com/gempir/go-twitch-irc/v3"
-	"github.com/lyx0/nourybot/pkg/commands"
 	"github.com/lyx0/nourybot/pkg/common"
 )
 
-// handleCommand takes in a twitch.PrivateMessage and then routes the message to
-// the function that is responsible for each command and knows how to deal with it accordingly.
-func (app *Application) handleCommand(message twitch.PrivateMessage) {
+// AddCommand takes in a name parameter and a twitch.PrivateMessage. It slices the
+// twitch.PrivateMessage after the name parameter and adds everything after to a text
+// value. Then it calls the app.Models.Commands.Insert method with both name, and text
+// values adding them to the database.
+func (app *Application) AddCommand(name string, message twitch.PrivateMessage) {
+	// prefixLength is the length of `()addcommand` plus +2 (for the space and zero based)
+	prefixLength := 14
 
-	// Increments the counter how many commands have been used, called in the ping command.
-	common.CommandUsed()
+	// Split the twitch message at the length of the prefix + the length of the name of the command.
+	//      prefixLength |name| text
+	//      0123456789012|4567|
+	// e.g. ()addcommand dank FeelsDankMan
+	//      |   part1    snip ^  part2   |
+	text := message.Message[prefixLength+len(name) : len(message.Message)]
+	err := app.Models.Commands.Insert(name, text)
 
-	// commandName is the actual name of the command without the prefix.
-	// e.g. `()ping` would be `ping`.
-	commandName := strings.ToLower(strings.SplitN(message.Message, " ", 3)[0][2:])
+	//	app.Logger.Infow("Message splits",
+	//		"Command Name:", name,
+	//		"Command Text:", text)
 
-	// cmdParams are additional command parameters.
-	// e.g. `()weather san antonio`
-	// cmdParam[0] is `san` and cmdParam[1] = `antonio`.
-	//
-	// Since Twitch messages are at most 500 characters I use a
-	// maximum count of 500+10 just to be safe.
-	// https://discuss.dev.twitch.tv/t/missing-client-side-message-length-check/21316
-	cmdParams := strings.SplitN(message.Message, " ", 500)
-
-	// msgLen is the amount of words in a message without the prefix.
-	// Useful to check if enough cmdParams are provided.
-	msgLen := len(strings.SplitN(message.Message, " ", -2))
-
-	// target is the channelname the message originated from and
-	// where the TwitchClient should send the response
-	target := message.Channel
-
-	// Userlevel is the level set for a user in the database.
-	// It is NOT same as twitch user/mod.
-	// 1000 = admin
-	// 500 = mod
-	// 250 = vip
-	// 100 = normal
-	// If the level returned is 0 then the user was not found in the database.
-	userLevel := app.GetUserLevel(message.User.Name)
-
-	//	app.Logger.Infow("Command received",
-	//		// "message", message, // Pretty taxing
-	//		"message.Message", message.Message,
-	//		"message.Channel", target,
-	//		"userLevel", userLevel,
-	//		"commandName", commandName,
-	//		"cmdParams", cmdParams,
-	//		"msgLen", msgLen,
-	//	)
-
-	// A `commandName` is every message starting with `()`.
-	// Hardcoded commands have a priority over database commands.
-	// Switch over the commandName and see if there is a hardcoded case for it.
-	// If there was no switch case satisfied, query the database if there is
-	// a data.CommandModel.Name equal to the `commandName`
-	// If there is return the data.CommandModel.Text entry.
-	// Otherwise we ignore the message.
-	switch commandName {
-	case "":
-		if msgLen == 1 {
-			common.Send(target, "xd", app.TwitchClient)
-			return
-		}
-
-	// ()bttv <emote name>
-	case "bttv":
-		if msgLen < 2 {
-			common.Send(target, "Not enough arguments provided. Usage: ()bttv <emote name>", app.TwitchClient)
-			return
-		} else {
-			commands.Bttv(target, cmdParams[1], app.TwitchClient)
-			return
-		}
-
-	// Coinflip
-	case "coin":
-		commands.Coinflip(target, app.TwitchClient)
+	if err != nil {
+		reply := fmt.Sprintf("Something went wrong FeelsBadMan %s", err)
+		common.Send(message.Channel, reply, app.TwitchClient)
 		return
-	case "coinflip":
-		commands.Coinflip(target, app.TwitchClient)
-		return
-	case "cf":
-		commands.Coinflip(target, app.TwitchClient)
-		return
-
-	// ()currency <amount> <input currency> to <output currency>
-	case "currency":
-		if msgLen < 4 {
-			common.Send(target, "Not enough arguments provided. Usage: ()currency 10 USD to EUR", app.TwitchClient)
-			return
-		}
-		commands.Currency(target, cmdParams[1], cmdParams[2], cmdParams[4], app.TwitchClient)
-		return
-
-	// ()ffz <emote name>
-	case "ffz":
-		if msgLen < 2 {
-			common.Send(target, "Not enough arguments provided. Usage: ()ffz <emote name>", app.TwitchClient)
-			return
-		} else {
-			commands.Ffz(target, cmdParams[1], app.TwitchClient)
-			return
-		}
-
-	// ()followage <channel> <username>
-	case "followage":
-		if msgLen == 1 { // ()followage
-			commands.Followage(target, target, message.User.Name, app.TwitchClient)
-			return
-		} else if msgLen == 2 { // ()followage forsen
-			commands.Followage(target, target, cmdParams[1], app.TwitchClient)
-			return
-		} else { // ()followage forsen pajlada
-			commands.Followage(target, cmdParams[1], cmdParams[2], app.TwitchClient)
-			return
-		}
-
-	// First Line
-	// ()firstline <channel> <username>
-	case "firstline":
-		if msgLen == 1 {
-			common.Send(target, "Usage: ()firstline <channel> <user>", app.TwitchClient)
-			return
-		} else if msgLen == 2 {
-			commands.FirstLine(target, target, cmdParams[1], app.TwitchClient)
-			return
-		} else {
-			commands.FirstLine(target, cmdParams[1], cmdParams[2], app.TwitchClient)
-			return
-		}
-	// ()fl <channel> <username>
-	case "fl":
-		if msgLen == 1 {
-			common.Send(target, "Usage: ()firstline <channel> <user>", app.TwitchClient)
-			return
-		} else if msgLen == 2 {
-			commands.FirstLine(target, target, cmdParams[1], app.TwitchClient)
-			return
-		} else {
-			commands.FirstLine(target, cmdParams[1], cmdParams[2], app.TwitchClient)
-			return
-		}
-
-	// ()ping
-	case "ping":
-		commands.Ping(target, app.TwitchClient)
-		return
-
-	// Thumbnail
-	// ()preview <live channel>
-	case "preview":
-		if msgLen < 2 {
-			common.Send(target, "Not enough arguments provided. Usage: ()preview <username>", app.TwitchClient)
-			return
-		} else {
-			commands.Preview(target, cmdParams[1], app.TwitchClient)
-			return
-		}
-	// ()thumbnail <live channel>
-	case "thumbnail":
-		if msgLen < 2 {
-			common.Send(target, "Not enough arguments provided. Usage: ()thumbnail <username>", app.TwitchClient)
-			return
-		} else {
-			commands.Preview(target, cmdParams[1], app.TwitchClient)
-			return
-		}
-
-	// SevenTV
-	// ()seventv <emote name>
-	case "seventv":
-		if msgLen < 2 {
-			common.Send(target, "Not enough arguments provided. Usage: ()seventv <emote name>", app.TwitchClient)
-			return
-		} else {
-			commands.Seventv(target, cmdParams[1], app.TwitchClient)
-			return
-		}
-	// ()7tv <emote name>
-	case "7tv":
-		if msgLen < 2 {
-			common.Send(target, "Not enough arguments provided. Usage: ()seventv <emote name>", app.TwitchClient)
-			return
-		} else {
-			commands.Seventv(target, cmdParams[1], app.TwitchClient)
-			return
-		}
-
-	// ()tweet <username>
-	case "tweet":
-		if msgLen < 2 {
-			common.Send(target, "Not enough arguments provided. Usage: ()tweet <username>", app.TwitchClient)
-			return
-		} else {
-			commands.Tweet(target, cmdParams[1], app.TwitchClient)
-			return
-		}
-
-	// Xkcd
-	case "rxkcd":
-		commands.RandomXkcd(target, app.TwitchClient)
-		return
-	case "randomxkcd":
-		commands.RandomXkcd(target, app.TwitchClient)
-		return
-	case "xkcd":
-		commands.Xkcd(target, app.TwitchClient)
-		return
-
-	// Commands with permission level or database from here on
-
-	//#################
-	// 250 - VIP only
-	//#################
-	// ()debug user <username>
-	case "debug":
-		if userLevel < 250 {
-			return
-		} else if msgLen < 3 {
-			common.Send(target, "Not enough arguments provided.", app.TwitchClient)
-			return
-		} else if cmdParams[1] == "user" {
-			app.DebugUser(cmdParams[2], message)
-			return
-		} else {
-			return
-		}
-
-	// ()echo <message>
-	case "echo":
-		if userLevel < 250 { // Limit to myself for now.
-			return
-		} else if msgLen < 2 {
-			common.Send(target, "Not enough arguments provided.", app.TwitchClient)
-			return
-		} else {
-			commands.Echo(target, message.Message[7:len(message.Message)], app.TwitchClient)
-			return
-		}
-
-	//###################
-	// 1000 - Admin only
-	//###################
-
-	// #####
-	// Add
-	// #####
-	case "addchannel":
-		if userLevel < 1000 {
-			return
-		} else if msgLen < 2 {
-			common.Send(target, "Not enough arguments provided.", app.TwitchClient)
-			return
-		} else {
-			// ()addchannel noemience
-			app.AddChannel(cmdParams[1], message)
-			return
-		}
-	case "addcommand":
-		if userLevel < 1000 {
-			return
-		} else if msgLen < 3 {
-			common.Send(target, "Not enough arguments provided.", app.TwitchClient)
-			return
-		} else {
-			// ()addcommand dank FeelsDankMan xD
-			app.AddCommand(cmdParams[1], message)
-			return
-		}
-	case "adduser":
-		if userLevel < 1000 {
-			return
-		} else if msgLen < 3 {
-			common.Send(target, "Not enough arguments provided.", app.TwitchClient)
-			return
-		} else {
-			// ()adduser nourylul 1000
-			app.AddUser(cmdParams[1], cmdParams[2], message)
-			return
-		}
-
-	// ######
-	// Edit
-	// ######
-	case "edituser":
-		if userLevel < 1000 { // Limit to myself for now.
-			return
-		} else if msgLen < 4 {
-			common.Send(target, "Not enough arguments provided.", app.TwitchClient)
-			return
-		} else if cmdParams[1] == "level" {
-			// ()edituser level nourylul 1000
-			app.EditUserLevel(cmdParams[2], cmdParams[3], message)
-			return
-		} else {
-			return
-		}
-	case "editcommand": // ()editcommand level dankwave 1000
-		if userLevel < 1000 {
-			return
-		} else if msgLen < 4 {
-			common.Send(target, "Not enough arguments provided.", app.TwitchClient)
-			return
-		} else if cmdParams[1] == "level" {
-			app.EditCommandLevel(cmdParams[2], cmdParams[3], message)
-			return
-		} else {
-			return
-		}
-
-	// ########
-	// Delete
-	// ########
-	case "deletechannel":
-		if userLevel < 1000 { // Limit to myself for now.
-			return
-		} else if msgLen < 2 {
-			common.Send(target, "Not enough arguments provided.", app.TwitchClient)
-			return
-		} else {
-			// ()deletechannel noemience
-			app.DeleteChannel(cmdParams[1], message)
-			return
-		}
-	case "deletecommand":
-		if userLevel < 1000 { // Limit to myself for now.
-			return
-		} else if msgLen < 2 {
-			common.Send(target, "Not enough arguments provided.", app.TwitchClient)
-			return
-		} else {
-			// ()deletecommand dank
-			app.DeleteCommand(cmdParams[1], message)
-			return
-		}
-	case "deleteuser":
-		if userLevel < 1000 { // Limit to myself for now.
-			return
-		} else if msgLen < 2 {
-			common.Send(target, "Not enough arguments provided.", app.TwitchClient)
-			return
-		} else {
-			// ()deleteuser noemience
-			app.DeleteUser(cmdParams[1], message)
-			return
-		}
-
-	case "bttvemotes":
-		if userLevel < 1000 {
-			commands.Bttvemotes(target, app.TwitchClient)
-			return
-		} else {
-			return
-		}
-
-	case "ffzemotes":
-		if userLevel < 1000 {
-			commands.Ffzemotes(target, app.TwitchClient)
-			return
-		} else {
-			return
-		}
-
-	// ##################
-	// Check if the commandName exists as the "name" of a command in the database.
-	// if it doesnt then ignore it.
-	// ##################
-	default:
-		reply, err := app.GetCommand(commandName, message.User.Name)
-		if err != nil {
-			return
-		}
-		common.SendNoLimit(message.Channel, reply, app.TwitchClient)
+	} else {
+		reply := fmt.Sprintf("Successfully added command: %s", name)
+		common.Send(message.Channel, reply, app.TwitchClient)
 		return
 	}
+}
+
+// GetCommand queries the database for a name. If an entry exists it checks
+// if the Command.Level is 0, if it is the command.Text value is returned.
+//
+// If the Command.Level is not 0 it queries the database for the level of the
+// user who sent the message. If the users level is equal or higher
+// the command.Text field is returned.
+func (app *Application) GetCommand(name, username string) (string, error) {
+	// Fetch the command from the database if it exists.
+	command, err := app.Models.Commands.Get(name)
+	if err != nil {
+		// It probably did not exist
+		return "", err
+	}
+
+	// If the command has no level set just return the text.
+	// Otherwise check if the level is high enough.
+	if command.Level == 0 {
+		return command.Text, nil
+	} else {
+		// Get the user from the database to check if the userlevel is equal
+		// or higher than the command.Level.
+		user, err := app.Models.Users.Get(username)
+		if err != nil {
+			return "", err
+		}
+		if user.Level >= command.Level {
+			// Userlevel is sufficient so return the command.Text
+			return command.Text, nil
+		}
+	}
+
+	// Userlevel was not enough so return an empty string and error.
+	return "", ErrUserInsufficientLevel
+}
+
+// EditCommandLevel takes in a name and level string and updates the entry with name
+// to the supplied level value.
+func (app *Application) EditCommandLevel(name, lvl string, message twitch.PrivateMessage) {
+	level, err := strconv.Atoi(lvl)
+	if err != nil {
+		app.Logger.Error(err)
+		common.Send(message.Channel, fmt.Sprintf("Something went wrong FeelsBadMan %s", ErrCommandLevelNotInteger), app.TwitchClient)
+		return
+	}
+
+	err = app.Models.Commands.SetLevel(name, level)
+
+	if err != nil {
+		common.Send(message.Channel, fmt.Sprintf("Something went wrong FeelsBadMan %s", ErrRecordNotFound), app.TwitchClient)
+		app.Logger.Error(err)
+		return
+	} else {
+		reply := fmt.Sprintf("Updated command %s to level %v", name, level)
+		common.Send(message.Channel, reply, app.TwitchClient)
+		return
+	}
+}
+
+// EditCommandLevel takes in a name and level string and updates the entry with name
+// to the supplied level value.
+func (app *Application) EditCommandCategory(name, category string, message twitch.PrivateMessage) {
+	err := app.Models.Commands.SetCategory(name, category)
+
+	if err != nil {
+		common.Send(message.Channel, fmt.Sprintf("Something went wrong FeelsBadMan %s", ErrRecordNotFound), app.TwitchClient)
+		app.Logger.Error(err)
+		return
+	} else {
+		reply := fmt.Sprintf("Updated command %s to category %v", name, category)
+		common.Send(message.Channel, reply, app.TwitchClient)
+		return
+	}
+}
+
+// DeleteCommand takes in a name value and deletes the command from the database if it exists.
+func (app *Application) DeleteCommand(name string, message twitch.PrivateMessage) {
+	err := app.Models.Commands.Delete(name)
+	if err != nil {
+		common.Send(message.Channel, "Something went wrong FeelsBadMan", app.TwitchClient)
+		app.Logger.Error(err)
+		return
+	}
+
+	reply := fmt.Sprintf("Deleted command %s", name)
+	common.Send(message.Channel, reply, app.TwitchClient)
 }

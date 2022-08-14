@@ -32,6 +32,7 @@ type Models struct {
 		Get(name string) (*Command, error)
 		Insert(name, text string) error
 		SetLevel(name string, level int) error
+		SetCategory(name, category string) error
 		Delete(name string) error
 	}
 }

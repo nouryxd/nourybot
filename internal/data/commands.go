@@ -6,10 +6,11 @@ import (
 )
 
 type Command struct {
-	ID    int    `json:"id"`
-	Name  string `json:"name"`
-	Text  string `json:"text"`
-	Level int    `json:"level"`
+	ID       int    `json:"id"`
+	Name     string `json:"name"`
+	Text     string `json:"text"`
+	Category string `json:"category"`
+	Level    int    `json:"level"`
 }
 
 type CommandModel struct {
@@ -19,7 +20,7 @@ type CommandModel struct {
 // Get tries to find a command in the database with the provided name.
 func (c CommandModel) Get(name string) (*Command, error) {
 	query := `
-	SELECT id, name, text, level
+	SELECT id, name, text, category, level
 	FROM commands
 	WHERE name = $1`
 
@@ -29,6 +30,7 @@ func (c CommandModel) Get(name string) (*Command, error) {
 		&command.ID,
 		&command.Name,
 		&command.Text,
+		&command.Category,
 		&command.Level,
 	)
 
@@ -42,6 +44,31 @@ func (c CommandModel) Get(name string) (*Command, error) {
 	}
 
 	return &command, nil
+}
+
+// SetCategory queries the database for an entry with the provided name,
+// if there is one it updates the categories level with the provided level.
+func (c CommandModel) SetCategory(name string, category string) error {
+	query := `
+	UPDATE commands
+	SET category = $2
+	WHERE name = $1`
+
+	result, err := c.DB.Exec(query, name, category)
+	if err != nil {
+		return err
+	}
+
+	rowsAffected, err := result.RowsAffected()
+	if err != nil {
+		return err
+	}
+
+	if rowsAffected == 0 {
+		return ErrRecordNotFound
+	}
+
+	return nil
 }
 
 // SetLevel queries the database for an entry with the provided name,
@@ -72,15 +99,16 @@ func (c CommandModel) SetLevel(name string, level int) error {
 // Insert adds a command into the database.
 func (c CommandModel) Insert(name, text string) error {
 	perms := 0
+	category := "default"
 	query := `
-	INSERT into commands(name, text, level)
-	VALUES ($1, $2, $3)
+	INSERT into commands(name, text, category, level)
+	VALUES ($1, $2, $3, $4)
 	ON CONFLICT (name)
 	DO NOTHING
 	RETURNING id;
 	`
 
-	args := []interface{}{name, text, perms}
+	args := []interface{}{name, text, category, perms}
 
 	result, err := c.DB.Exec(query, args...)
 	if err != nil {
