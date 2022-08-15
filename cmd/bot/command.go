@@ -97,8 +97,8 @@ func (app *Application) EditCommandLevel(name, lvl string, message twitch.Privat
 	}
 }
 
-// EditCommandLevel takes in a name and level string and updates the entry with name
-// to the supplied level value.
+// EditCommandCategory takes in a name and category string and updates the command
+// in the databse with the passed in new category.
 func (app *Application) EditCommandCategory(name, category string, message twitch.PrivateMessage) {
 	err := app.Models.Commands.SetCategory(name, category)
 

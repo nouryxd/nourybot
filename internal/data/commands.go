@@ -99,7 +99,7 @@ func (c CommandModel) SetLevel(name string, level int) error {
 // Insert adds a command into the database.
 func (c CommandModel) Insert(name, text string) error {
 	perms := 0
-	category := "default"
+	category := "uncategorized"
 	query := `
 	INSERT into commands(name, text, category, level)
 	VALUES ($1, $2, $3, $4)
