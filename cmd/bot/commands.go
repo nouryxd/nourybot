@@ -203,16 +203,7 @@ func (app *Application) handleCommand(message twitch.PrivateMessage) {
 			return
 		}
 
-	// Xkcd
-	case "rxkcd":
-		commands.RandomXkcd(target, app.TwitchClient)
-		return
-	case "randomxkcd":
-		commands.RandomXkcd(target, app.TwitchClient)
-		return
-	case "xkcd":
-		commands.Xkcd(target, app.TwitchClient)
-		return
+	// ()weather <location>
 	case "weather":
 		if msgLen < 2 {
 			common.Send(target, "Not enough arguments provided.", app.TwitchClient)
@@ -221,6 +212,19 @@ func (app *Application) handleCommand(message twitch.PrivateMessage) {
 			commands.Weather(target, message.Message[10:len(message.Message)], app.TwitchClient)
 			return
 		}
+
+	// Xkcd
+	// Random Xkcd
+	case "rxkcd":
+		commands.RandomXkcd(target, app.TwitchClient)
+		return
+	case "randomxkcd":
+		commands.RandomXkcd(target, app.TwitchClient)
+		return
+	// Latest Xkcd
+	case "xkcd":
+		commands.Xkcd(target, app.TwitchClient)
+		return
 
 	// Commands with permission level or database from here on
 
@@ -323,7 +327,6 @@ func (app *Application) handleCommand(message twitch.PrivateMessage) {
 			app.EditCommandCategory(cmdParams[2], cmdParams[3], message)
 			return
 		} else {
-
 			return
 		}
 
