@@ -213,6 +213,14 @@ func (app *Application) handleCommand(message twitch.PrivateMessage) {
 	case "xkcd":
 		commands.Xkcd(target, app.TwitchClient)
 		return
+	case "weather":
+		if msgLen < 2 {
+			common.Send(target, "Not enough arguments provided.", app.TwitchClient)
+			return
+		} else {
+			commands.Weather(target, message.Message[10:len(message.Message)], app.TwitchClient)
+			return
+		}
 
 	// Commands with permission level or database from here on
 
