@@ -14,6 +14,7 @@ import (
 func Weather(target, location string, tc *twitch.Client) {
 	sugar := zap.NewExample().Sugar()
 	defer sugar.Sync()
+
 	err := godotenv.Load()
 	if err != nil {
 		sugar.Error("Error loading .env file")
@@ -25,9 +26,12 @@ func Weather(target, location string, tc *twitch.Client) {
 		sugar.Error(err)
 	}
 	w.CurrentByName(location)
-	// fmt.Println(w)
-	sugar.Infow("Weather",
-		"location", w)
-	reply := fmt.Sprintf("Weather for %s, %s: Feels like: %v°C. Currently %v°C with a high of %v°C and a low of %v°C, humidity: %v%%, wind: %vm/s.", w.Name, w.Sys.Country, w.Main.FeelsLike, w.Main.Temp, w.Main.TempMax, w.Main.TempMin, w.Main.Humidity, w.Wind.Speed)
-	common.Send(target, reply, tc)
+
+	if w.GeoPos.Longitude == 0 && w.GeoPos.Latitude == 0 {
+		reply := "Location not found FeelsBadMan"
+		common.Send(target, reply, tc)
+	} else {
+		reply := fmt.Sprintf("Weather for %s, %s: Feels like: %v°C. Currently %v°C with a high of %v°C and a low of %v°C, humidity: %v%%, wind: %vm/s.", w.Name, w.Sys.Country, w.Main.FeelsLike, w.Main.Temp, w.Main.TempMax, w.Main.TempMin, w.Main.Humidity, w.Wind.Speed)
+		common.Send(target, reply, tc)
+	}
 }
