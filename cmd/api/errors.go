@@ -16,8 +16,10 @@ func (app *application) serverErrorResponse(w http.ResponseWriter, r *http.Reque
 // book we'll upgrade this to use structured logging, and record additional information
 // about the request including the HTTP method and URL.
 func (app *application) logError(r *http.Request, err error) {
-	app.Logger.Infow("logError",
-		"error", err)
+	app.Logger.Errorw("Error",
+		"Request URI", r.RequestURI,
+		"error", err,
+	)
 }
 
 func (app *application) errorResponse(w http.ResponseWriter, r *http.Request, status int, message interface{}) {
@@ -25,5 +27,5 @@ func (app *application) errorResponse(w http.ResponseWriter, r *http.Request, st
 	// Write the response using the writeJSON() helper. If this happens to return an
 	// error then log it, and fall back to sending the client an empty response with a
 	// 500 Internal Server Error status code.
-	fmt.Fprintf(w, "Error: %s", status)
+	fmt.Fprintf(w, "Error: %d", status)
 }

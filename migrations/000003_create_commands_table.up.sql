@@ -8,6 +8,7 @@ CREATE TABLE IF NOT EXISTS commands (
 
 INSERT INTO commands (name,"text","category","level") VALUES
 	 ('repeat','xset r rate 175 50','default',0),
+	 ('xset','xset r rate 175 50','default',0),
 	 ('eurkey','setxkbmap -layout eu','default',0),
 	 ('clueless','ch02 ch21 ch31','default',0),
 	 ('justinfan','64537','default',0),

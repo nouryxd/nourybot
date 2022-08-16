@@ -11,7 +11,7 @@ import (
 func (app *application) showCommandHandler(w http.ResponseWriter, r *http.Request) {
 	name, err := app.readCommandNameParam(r)
 	if err != nil {
-		// app.Logger.Errorf("showCommandHandler, Command not found", err)
+		app.logError(r, err)
 		return
 	}
 
@@ -21,18 +21,20 @@ func (app *application) showCommandHandler(w http.ResponseWriter, r *http.Reques
 	if err != nil {
 		switch {
 		case errors.Is(err, data.ErrRecordNotFound):
-			app.Logger.Errorf("showCommandHandler, Command not found", err)
+			app.logError(r, err)
 			return
 		default:
 			app.serverErrorResponse(w, r, err)
 		}
 		return
 	}
-	app.Logger.Info("Command Name:", command.Name)
-	err = app.writeJSON(w, http.StatusOK, envelope{"movie": command}, nil)
-	// if err != nil {
-	// 	app.serverErrorResponse(w, r, err)
-	// }
+	app.Logger.Infow("GET Command",
+		"Command", command,
+	)
+	err = app.writeJSON(w, http.StatusOK, envelope{"command": command}, nil)
+	if err != nil {
+		app.serverErrorResponse(w, r, err)
+	}
 }
 
 type envelope map[string]interface{}
