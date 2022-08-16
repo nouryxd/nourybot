@@ -14,12 +14,11 @@ const Home: NextPage = () => {
 
       <main className={styles.main}>
         <h1 className={styles.title}>
-          Welcome to <a href="https://nextjs.org">Next.js!</a>
+          Nourybot 
         </h1>
 
         <p className={styles.description}>
-          Get started by editing{' '}
-          <code className={styles.code}>pages/index.tsx</code>
+          A lidl Twitch bot made by <a href="https://twitch.tv/nourylul">Noury</a> 
         </p>
 
         <div className={styles.grid}>
