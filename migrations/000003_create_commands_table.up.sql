@@ -11,6 +11,8 @@ INSERT INTO commands (name,"text","category","level") VALUES
 	 ('eurkey','setxkbmap -layout eu','default',0),
 	 ('clueless','ch02 ch21 ch31','default',0),
 	 ('justinfan','64537','default',0),
+	 ('kek','lmao','default',0),
+	 ('lmao','kek','default',0),
 	 ('streamlink','https://haste.zneix.eu/udajirixep put this in ~/.config/streamlink/config on Linux (or %appdata%\streamlink\streamlinkrc on Windows)','default',0),
 	 ('gyazo','Gyazo is the worst screenshot uploader in human history. At best, it’s inconvenient, slow, and missing features: at worst, it’s a bandwidth-draining malware risk for everyone who views your images. There is absolutely no reason to use it unless you’re too lazy to spend 5 minutes installing another program.','pasta',250),
 	 ('arch','Your friend isnt wrong. Being on the actual latest up to date software, having a single unified community repository for out of repo software (AUR) instead of a bunch of scattered broken PPAs for extra software, not having so many hard dependencies that removing GNOME removes basic system utilities, broader customization support and other things is indeed, pretty nice.','pasta',250),
