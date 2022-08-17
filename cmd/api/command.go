@@ -73,6 +73,71 @@ func (app *application) createCommandHandler(w http.ResponseWriter, r *http.Requ
 	}
 }
 
+func (app *application) updateCommandHandler(w http.ResponseWriter, r *http.Request) {
+	name, err := app.readCommandNameParam(r)
+	if err != nil {
+		app.notFoundResponse(w, r)
+		return
+	}
+
+	command, err := app.Models.Commands.Get(name)
+	if err != nil {
+		switch {
+		case errors.Is(err, data.ErrRecordNotFound):
+			app.notFoundResponse(w, r)
+		default:
+			app.serverErrorResponse(w, r, err)
+		}
+		return
+	}
+
+	var input struct {
+		Name     *string `json:"name"`
+		Text     *string `json:"text"`
+		Category *string `json:"category"`
+		Level    *int    `json:"level"`
+	}
+
+	err = app.readJSON(w, r, &input)
+	if err != nil {
+		app.badRequestResponse(w, r, err)
+		return
+	}
+
+	// There is a name since we successfully queried the database for
+	// a command, so no need to check != nil.
+	command.Name = *input.Name
+
+	if input.Text != nil {
+		command.Text = *input.Text
+	}
+
+	if input.Category != nil {
+		command.Category = *input.Category
+	}
+
+	if input.Level != nil {
+		command.Level = *input.Level
+	}
+
+	err = app.Models.Commands.Update(command)
+	if err != nil {
+		switch {
+		case errors.Is(err, data.ErrEditConflict):
+			app.editConflictResponse(w, r)
+		default:
+			app.serverErrorResponse(w, r, err)
+		}
+		return
+	}
+
+	err = app.writeJSON(w, http.StatusOK, envelope{"command": command}, nil)
+	if err != nil {
+		app.serverErrorResponse(w, r, err)
+	}
+
+}
+
 func (app *application) deleteCommandHandler(w http.ResponseWriter, r *http.Request) {
 	name, err := app.readCommandNameParam(r)
 	if err != nil {

@@ -8,6 +8,7 @@ import (
 var (
 	ErrRecordNotFound             = errors.New("record not found")
 	ErrChannelRecordAlreadyExists = errors.New("channel already in database")
+	ErrEditConflict               = errors.New("edit conflict")
 	ErrCommandRecordAlreadyExists = errors.New("command already exists")
 	ErrUserAlreadyExists          = errors.New("user already in database")
 )
@@ -31,6 +32,7 @@ type Models struct {
 	Commands interface {
 		Get(name string) (*Command, error)
 		Insert(command *Command) error
+		Update(command *Command) error
 		SetLevel(name string, level int) error
 		SetCategory(name, category string) error
 		Delete(name string) error

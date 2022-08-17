@@ -8,9 +8,9 @@ import (
 type Command struct {
 	ID       int    `json:"id"`
 	Name     string `json:"name"`
-	Text     string `json:"text"`
-	Category string `json:"category"`
-	Level    int    `json:"level"`
+	Text     string `json:"text,omitempty"`
+	Category string `json:"category,omitempty"`
+	Level    int    `json:"level,omitempty"`
 }
 
 type CommandModel struct {
@@ -44,6 +44,33 @@ func (c CommandModel) Get(name string) (*Command, error) {
 	}
 
 	return &command, nil
+}
+
+func (c CommandModel) Update(command *Command) error {
+	query := `
+	UPDATE commands
+	SET text = $2, category = $3, level = $4
+	WHERE name = $1
+	RETURNING id`
+
+	args := []interface{}{
+		command.Name,
+		command.Text,
+		command.Category,
+		command.Level,
+	}
+
+	err := c.DB.QueryRow(query, args...).Scan(&command.ID)
+	if err != nil {
+		switch {
+		case errors.Is(err, sql.ErrNoRows):
+			return ErrEditConflict
+		default:
+			return err
+		}
+	}
+
+	return nil
 }
 
 // SetCategory queries the database for an entry with the provided name,
