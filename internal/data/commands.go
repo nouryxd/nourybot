@@ -97,9 +97,7 @@ func (c CommandModel) SetLevel(name string, level int) error {
 }
 
 // Insert adds a command into the database.
-func (c CommandModel) Insert(name, text string) error {
-	perms := 0
-	category := "uncategorized"
+func (c CommandModel) Insert(command *Command) error {
 	query := `
 	INSERT into commands(name, text, category, level)
 	VALUES ($1, $2, $3, $4)
@@ -108,7 +106,7 @@ func (c CommandModel) Insert(name, text string) error {
 	RETURNING id;
 	`
 
-	args := []interface{}{name, text, category, perms}
+	args := []interface{}{command.Name, command.Text, command.Category, command.Level}
 
 	result, err := c.DB.Exec(query, args...)
 	if err != nil {

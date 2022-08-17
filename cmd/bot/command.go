@@ -5,6 +5,7 @@ import (
 	"strconv"
 
 	"github.com/gempir/go-twitch-irc/v3"
+	"github.com/lyx0/nourybot/internal/data"
 	"github.com/lyx0/nourybot/pkg/common"
 )
 
@@ -22,7 +23,13 @@ func (app *Application) AddCommand(name string, message twitch.PrivateMessage) {
 	// e.g. ()addcommand dank FeelsDankMan
 	//      |   part1    snip ^  part2   |
 	text := message.Message[prefixLength+len(name) : len(message.Message)]
-	err := app.Models.Commands.Insert(name, text)
+	command := &data.Command{
+		Name:     name,
+		Text:     text,
+		Category: "uncategorized",
+		Level:    0,
+	}
+	err := app.Models.Commands.Insert(command)
 
 	//	app.Logger.Infow("Message splits",
 	//		"Command Name:", name,
