@@ -73,4 +73,28 @@ func (app *application) createCommandHandler(w http.ResponseWriter, r *http.Requ
 	}
 }
 
+func (app *application) deleteCommandHandler(w http.ResponseWriter, r *http.Request) {
+	name, err := app.readCommandNameParam(r)
+	if err != nil {
+		app.notFoundResponse(w, r)
+		return
+	}
+
+	err = app.Models.Commands.Delete(name)
+	if err != nil {
+		switch {
+		case errors.Is(err, data.ErrRecordNotFound):
+			app.notFoundResponse(w, r)
+		default:
+			app.serverErrorResponse(w, r, err)
+		}
+		return
+	}
+
+	err = app.writeJSON(w, http.StatusOK, envelope{"message": fmt.Sprintf("command %s deleted", name)}, nil)
+	if err != nil {
+		app.serverErrorResponse(w, r, err)
+	}
+}
+
 type envelope map[string]interface{}
