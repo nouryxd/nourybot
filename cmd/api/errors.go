@@ -29,3 +29,7 @@ func (app *application) errorResponse(w http.ResponseWriter, r *http.Request, st
 	// 500 Internal Server Error status code.
 	fmt.Fprintf(w, "Error: %d", status)
 }
+
+func (app *application) badRequestResponse(w http.ResponseWriter, r *http.Request, err error) {
+	app.errorResponse(w, r, http.StatusBadRequest, err.Error())
+}

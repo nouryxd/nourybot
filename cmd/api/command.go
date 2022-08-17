@@ -1,8 +1,8 @@
 package main
 
 import (
-	"encoding/json"
 	"errors"
+	"fmt"
 	"net/http"
 
 	"github.com/lyx0/nourybot/internal/data"
@@ -37,30 +37,40 @@ func (app *application) showCommandHandler(w http.ResponseWriter, r *http.Reques
 	}
 }
 
-type envelope map[string]interface{}
+func (app *application) createCommandHandler(w http.ResponseWriter, r *http.Request) {
+	var input struct {
+		Name     string `json:"name"`
+		Text     string `json:"text"`
+		Category string `json:"category"`
+		Level    int    `json:"level"`
+	}
 
-func (app *application) writeJSON(w http.ResponseWriter, status int, data envelope, headers http.Header) error {
-	// Encode the data into JSON and return any errors if there were any.
-	// Use MarshalIndent instead of normal Marshal so it looks prettier on terminals.
-	js, err := json.MarshalIndent(data, "", "\t")
+	err := app.readJSON(w, r, &input)
 	if err != nil {
-		return err
+		app.badRequestResponse(w, r, err)
+		return
 	}
 
-	// Append a newline to make it prettier on terminals.
-	js = append(js, '\n')
-
-	// Iterate over the header map and add each header to the
-	// http.ResponseWriter header map.
-	for key, value := range headers {
-		w.Header()[key] = value
+	command := &data.Command{
+		Name:     input.Name,
+		Text:     input.Text,
+		Category: input.Category,
+		Level:    input.Level,
 	}
 
-	// Set `Content-Type` to `application/json` because go
-	// defaults to `text-plain; charset=utf8`.
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(status)
-	w.Write(js)
+	err = app.Models.Commands.Insert(command)
+	if err != nil {
+		app.serverErrorResponse(w, r, err)
+		return
+	}
 
-	return nil
+	headers := make(http.Header)
+	headers.Set("Location", fmt.Sprintf("/v1/commands/%s", command.Name))
+
+	err = app.writeJSON(w, http.StatusCreated, envelope{"command": command}, headers)
+	if err != nil {
+		app.serverErrorResponse(w, r, err)
+	}
 }
+
+type envelope map[string]interface{}
