@@ -28,9 +28,11 @@ func (app *application) showCommandHandler(w http.ResponseWriter, r *http.Reques
 		}
 		return
 	}
+
 	app.Logger.Infow("GET Command",
 		"Command", command,
 	)
+
 	err = app.writeJSON(w, http.StatusOK, envelope{"command": command}, nil)
 	if err != nil {
 		app.serverErrorResponse(w, r, err)
@@ -66,6 +68,10 @@ func (app *application) createCommandHandler(w http.ResponseWriter, r *http.Requ
 
 	headers := make(http.Header)
 	headers.Set("Location", fmt.Sprintf("/v1/commands/%s", command.Name))
+
+	app.Logger.Infow("PUT Command",
+		"Command", command,
+	)
 
 	err = app.writeJSON(w, http.StatusCreated, envelope{"command": command}, headers)
 	if err != nil {
@@ -131,6 +137,10 @@ func (app *application) updateCommandHandler(w http.ResponseWriter, r *http.Requ
 		return
 	}
 
+	app.Logger.Infow("PATCH Command",
+		"Command", command,
+	)
+
 	err = app.writeJSON(w, http.StatusOK, envelope{"command": command}, nil)
 	if err != nil {
 		app.serverErrorResponse(w, r, err)
@@ -155,6 +165,10 @@ func (app *application) deleteCommandHandler(w http.ResponseWriter, r *http.Requ
 		}
 		return
 	}
+
+	app.Logger.Infow("DELETE Command",
+		"Name", name,
+	)
 
 	err = app.writeJSON(w, http.StatusOK, envelope{"message": fmt.Sprintf("command %s deleted", name)}, nil)
 	if err != nil {
