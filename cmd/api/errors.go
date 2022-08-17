@@ -12,9 +12,7 @@ func (app *application) serverErrorResponse(w http.ResponseWriter, r *http.Reque
 	app.errorResponse(w, r, http.StatusInternalServerError, message)
 }
 
-// The logError() method is a generic helper for logging an error message. Later in the
-// book we'll upgrade this to use structured logging, and record additional information
-// about the request including the HTTP method and URL.
+// The logError() method is a generic helper for logging an error message.
 func (app *application) logError(r *http.Request, err error) {
 	app.Logger.Errorw("Error",
 		"Request URI", r.RequestURI,
@@ -42,4 +40,9 @@ func (app *application) notFoundResponse(w http.ResponseWriter, r *http.Request)
 func (app *application) editConflictResponse(w http.ResponseWriter, r *http.Request) {
 	message := "unable to update the record due to an edit conflict, please try again"
 	app.errorResponse(w, r, http.StatusConflict, message)
+}
+
+func (app *application) methodNotAllowedResponse(w http.ResponseWriter, r *http.Request) {
+	message := fmt.Sprintf("the %s method is not supported for this resource", r.Method)
+	app.errorResponse(w, r, http.StatusMethodNotAllowed, message)
 }
