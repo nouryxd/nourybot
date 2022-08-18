@@ -74,7 +74,6 @@ func main() {
 
 	err = srv.ListenAndServe()
 	sugar.Fatal(err)
-
 }
 
 // openDB returns the sql.DB connection pool.

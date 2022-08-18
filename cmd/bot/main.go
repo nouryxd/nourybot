@@ -8,6 +8,7 @@ import (
 	"time"
 
 	"github.com/gempir/go-twitch-irc/v3"
+	"github.com/go-co-op/gocron"
 	"github.com/joho/godotenv"
 	_ "github.com/lib/pq"
 	"github.com/lyx0/nourybot/internal/data"
@@ -115,8 +116,16 @@ func main() {
 		// Join the channels in the database.
 		app.InitialJoin()
 
-		common.Send("nourylul", "xd", app.TwitchClient)
+		common.Send("nourylul", "dankCircle", app.TwitchClient)
 	})
+
+	s := gocron.NewScheduler(time.UTC)
+	s.Cron("*/5 * * * *").Do(func() { // Every 5 minutes
+		tc.Say("nourylul", "WeirdDoc")
+		tc.Say("nourybot", "gopherDance")
+	})
+
+	s.StartAsync()
 
 	// Actually connect to chat.
 	err = app.TwitchClient.Connect()
