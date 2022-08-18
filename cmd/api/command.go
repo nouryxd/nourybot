@@ -33,6 +33,7 @@ func (app *application) showCommandHandler(w http.ResponseWriter, r *http.Reques
 		"Command", command,
 	)
 
+	w.Header().Set("Access-Control-Allow-Origin", "*")
 	err = app.writeJSON(w, http.StatusOK, envelope{"command": command}, nil)
 	if err != nil {
 		app.serverErrorResponse(w, r, err)
