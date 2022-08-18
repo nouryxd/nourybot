@@ -12,7 +12,8 @@ class Command extends React.Component {
 
 
   componentDidMount() {
-    fetch(`http://localhost:3000/v1/commands/test`)
+    const commandName = window.location.pathname
+    fetch(`http://localhost:3000/v1${commandName}`)
     .then(res => res.json())
     .then(
       (result) => {
