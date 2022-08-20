@@ -16,6 +16,26 @@ import (
 	"go.uber.org/zap"
 )
 
+type config struct {
+	twitchUsername string
+	twitchOauth    string
+	commandPrefix  string
+	environment    string
+	db             struct {
+		dsn          string
+		maxOpenConns int
+		maxIdleConns int
+		maxIdleTime  string
+	}
+}
+
+type Application struct {
+	TwitchClient *twitch.Client
+	Logger       *zap.SugaredLogger
+	Db           *sql.DB
+	Models       data.Models
+}
+
 func main() {
 	var cfg config
 
