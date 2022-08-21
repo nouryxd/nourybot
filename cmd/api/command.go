@@ -132,10 +132,11 @@ func (app *application) updateCommandHandler(w http.ResponseWriter, r *http.Requ
 		switch {
 		case errors.Is(err, data.ErrEditConflict):
 			app.editConflictResponse(w, r)
+			return
 		default:
 			app.serverErrorResponse(w, r, err)
+			return
 		}
-		return
 	}
 
 	app.Logger.Infow("PATCH Command",
