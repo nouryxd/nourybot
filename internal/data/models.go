@@ -39,6 +39,7 @@ type Models struct {
 	}
 	Timers interface {
 		Get(name string) (*Timer, error)
+		Insert(timer *Timer) error
 	}
 }
 
@@ -47,6 +48,6 @@ func NewModels(db *sql.DB) Models {
 		Channels: ChannelModel{DB: db},
 		Users:    UserModel{DB: db},
 		Commands: CommandModel{DB: db},
-		Timers:   TimerModel{DB, db},
+		Timers:   TimerModel{DB: db},
 	}
 }
