@@ -25,8 +25,8 @@ func (app *application) showCommandHandler(w http.ResponseWriter, r *http.Reques
 			return
 		default:
 			app.serverErrorResponse(w, r, err)
+			return
 		}
-		return
 	}
 
 	app.Logger.Infow("GET Command",

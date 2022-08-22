@@ -286,6 +286,17 @@ func (app *Application) handleCommand(message twitch.PrivateMessage) {
 			app.AddCommand(cmdParams[1], message)
 			return
 		}
+	case "addtimer":
+		if userLevel < 1000 {
+			return
+		} else if msgLen < 4 {
+			common.Send(target, "Not enough arguments provided.", app.TwitchClient)
+			return
+		} else {
+			// ()addtimer gfuel 5m sponsor XD xD
+			app.AddTimer(cmdParams[1], message)
+			return
+		}
 	case "adduser":
 		if userLevel < 1000 {
 			return
