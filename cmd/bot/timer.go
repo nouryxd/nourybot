@@ -3,8 +3,10 @@ package main
 import (
 	"fmt"
 	"strings"
+	"time"
 
 	"github.com/gempir/go-twitch-irc/v3"
+	"github.com/go-co-op/gocron"
 	"github.com/lyx0/nourybot/internal/data"
 	"github.com/lyx0/nourybot/pkg/common"
 )
@@ -48,4 +50,38 @@ func (app *Application) AddTimer(name string, message twitch.PrivateMessage) {
 		common.Send(message.Channel, reply, app.TwitchClient)
 		return
 	}
+}
+
+// InitialJoin is called on startup and queries the database for a list of
+// channels which the TwitchClient then joins.
+func (app *Application) InitialTimers() {
+	// GetJoinable returns a slice of channel names.
+	timer, err := app.Models.Timers.GetAll()
+	if err != nil {
+		app.Logger.Error(err)
+		return
+	}
+
+	app.Logger.Info(timer)
+
+	s := gocron.NewScheduler(time.UTC)
+	// Iterate over the slice of channels and join each.
+	for _, v := range timer {
+		s.TagsUnique()
+		app.Logger.Infow("Initial timers:",
+			"Name", v.Name,
+			"Channel", v.Channel,
+			"Text", v.Text,
+			"Repeat", v.Repeat,
+			"V", v,
+		)
+
+		s.Tag("pipelines", fmt.Sprintf("%s-%s", v.Channel, v.Name)).Every(v.Repeat).StartAt(time.Now()).Do(app.xD, v.Channel, v.Text)
+
+	}
+	s.StartAsync()
+}
+
+func (app *Application) xD(a, b string) {
+	common.Send(a, b, app.TwitchClient)
 }
