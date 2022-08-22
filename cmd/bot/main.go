@@ -138,6 +138,9 @@ func main() {
 		app.InitialTimers()
 
 		common.Send("nourylul", "dankCircle", app.TwitchClient)
+		common.Send("nourybot", "gopherDance", app.TwitchClient)
+		common.Send("xnoury", "pajaDink", app.TwitchClient)
+		common.Send("uudelleenkytkeytynyt", "PepeS", app.TwitchClient)
 	})
 
 	// Actually connect to chat.
