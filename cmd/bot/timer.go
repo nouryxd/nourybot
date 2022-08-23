@@ -6,7 +6,6 @@ import (
 	"time"
 
 	"github.com/gempir/go-twitch-irc/v3"
-	"github.com/go-co-op/gocron"
 	"github.com/lyx0/nourybot/internal/data"
 	"github.com/lyx0/nourybot/pkg/common"
 )
@@ -39,13 +38,12 @@ func (app *Application) AddTimer(name string, message twitch.PrivateMessage) {
 
 	app.Logger.Infow("timer", timer)
 	err := app.Models.Timers.Insert(timer)
-
 	if err != nil {
 		reply := fmt.Sprintf("Something went wrong FeelsBadMan %s", err)
 		common.Send(message.Channel, reply, app.TwitchClient)
 		return
 	} else {
-
+		app.Scheduler.Tag("pipelines", fmt.Sprintf("%s-%s", message.Channel, name)).Every(repeat).StartAt(time.Now()).Do(app.newTimer, message.Channel, text)
 		reply := fmt.Sprintf("Successfully added timer %s repeating every %s", name, repeat)
 		common.Send(message.Channel, reply, app.TwitchClient)
 		return
@@ -64,10 +62,8 @@ func (app *Application) InitialTimers() {
 
 	app.Logger.Info(timer)
 
-	s := gocron.NewScheduler(time.UTC)
 	// Iterate over the slice of channels and join each.
 	for _, v := range timer {
-		s.TagsUnique()
 		app.Logger.Infow("Initial timers:",
 			"Name", v.Name,
 			"Channel", v.Channel,
@@ -76,12 +72,11 @@ func (app *Application) InitialTimers() {
 			"V", v,
 		)
 
-		s.Tag("pipelines", fmt.Sprintf("%s-%s", v.Channel, v.Name)).Every(v.Repeat).StartAt(time.Now()).Do(app.xD, v.Channel, v.Text)
+		app.Scheduler.Tag("pipelines", fmt.Sprintf("%s-%s", v.Channel, v.Name)).Every(v.Repeat).StartAt(time.Now()).Do(app.newTimer, v.Channel, v.Text)
 
 	}
-	s.StartAsync()
 }
 
-func (app *Application) xD(a, b string) {
-	common.Send(a, b, app.TwitchClient)
+func (app *Application) newTimer(channel, text string) {
+	common.Send(channel, text, app.TwitchClient)
 }

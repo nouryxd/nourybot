@@ -8,6 +8,7 @@ import (
 	"time"
 
 	"github.com/gempir/go-twitch-irc/v3"
+	"github.com/go-co-op/gocron"
 	"github.com/joho/godotenv"
 	_ "github.com/lib/pq"
 	"github.com/lyx0/nourybot/internal/data"
@@ -33,6 +34,7 @@ type Application struct {
 	Logger       *zap.SugaredLogger
 	Db           *sql.DB
 	Models       data.Models
+	Scheduler    *gocron.Scheduler
 }
 
 func main() {
@@ -69,12 +71,15 @@ func main() {
 		sugar.Fatal(err)
 	}
 
+	s := gocron.NewScheduler(time.UTC)
+
 	// Initialize Application
 	app := &Application{
 		TwitchClient: tc,
 		Logger:       sugar,
 		Db:           db,
 		Models:       data.NewModels(db),
+		Scheduler:    s,
 	}
 
 	// Received a PrivateMessage (normal chat message).
@@ -142,6 +147,8 @@ func main() {
 		common.Send("xnoury", "pajaDink", app.TwitchClient)
 		common.Send("uudelleenkytkeytynyt", "PepeS", app.TwitchClient)
 	})
+
+	s.StartAsync()
 
 	// Actually connect to chat.
 	err = app.TwitchClient.Connect()
