@@ -127,3 +127,31 @@ func (t TimerModel) GetAll() ([]*Timer, error) {
 
 	return timers, nil
 }
+
+// Delete takes in a command name and queries the database for an entry with
+// the same name and tries to delete that entry.
+func (t TimerModel) Delete(name string) error {
+	// Prepare the statement.
+	query := `
+	DELETE FROM timers
+	WHERE name = $1`
+
+	// Execute the query returning the number of affected rows.
+	result, err := t.DB.Exec(query, name)
+	if err != nil {
+		return err
+	}
+
+	// Check how many rows were affected.
+	rowsAffected, err := result.RowsAffected()
+	if err != nil {
+		return err
+	}
+
+	// We want atleast 1, if it is 0 the entry did not exist.
+	if rowsAffected == 0 {
+		return ErrRecordNotFound
+	}
+
+	return nil
+}

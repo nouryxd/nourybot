@@ -62,7 +62,7 @@ func (app *Application) InitialTimers() {
 
 	app.Logger.Info(timer)
 
-	// Iterate over the slice of channels and join each.
+	// Iterate over each timer and add them to the scheduler.
 	for _, v := range timer {
 		app.Logger.Infow("Initial timers:",
 			"Name", v.Name,
@@ -79,4 +79,17 @@ func (app *Application) InitialTimers() {
 
 func (app *Application) newTimer(channel, text string) {
 	common.Send(channel, text, app.TwitchClient)
+}
+
+// DeleteCommand takes in a name value and deletes the command from the database if it exists.
+func (app *Application) DeleteTimer(name string, message twitch.PrivateMessage) {
+	err := app.Models.Timers.Delete(name)
+	if err != nil {
+		common.Send(message.Channel, "Something went wrong FeelsBadMan", app.TwitchClient)
+		app.Logger.Error(err)
+		return
+	}
+
+	reply := fmt.Sprintf("Deleted timer %s", name)
+	common.Send(message.Channel, reply, app.TwitchClient)
 }

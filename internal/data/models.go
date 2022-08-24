@@ -41,6 +41,7 @@ type Models struct {
 		Get(name string) (*Timer, error)
 		Insert(timer *Timer) error
 		GetAll() ([]*Timer, error)
+		Delete(name string) error
 	}
 }
 

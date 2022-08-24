@@ -377,6 +377,17 @@ func (app *Application) handleCommand(message twitch.PrivateMessage) {
 			app.DeleteUser(cmdParams[1], message)
 			return
 		}
+	case "deletetimer":
+		if userLevel < 1000 { // Limit to myself for now.
+			return
+		} else if msgLen < 2 {
+			common.Send(target, "Not enough arguments provided.", app.TwitchClient)
+			return
+		} else {
+			// ()deletetimer dank
+			app.DeleteTimer(cmdParams[1], message)
+			return
+		}
 
 	case "bttvemotes":
 		if userLevel < 1000 {
