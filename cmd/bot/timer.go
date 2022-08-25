@@ -3,7 +3,6 @@ package main
 import (
 	"fmt"
 	"strings"
-	"time"
 
 	"github.com/gempir/go-twitch-irc/v3"
 	"github.com/lyx0/nourybot/internal/data"
@@ -43,8 +42,14 @@ func (app *Application) AddTimer(name string, message twitch.PrivateMessage) {
 		common.Send(message.Channel, reply, app.TwitchClient)
 		return
 	} else {
-		app.Scheduler.Tag("pipelines", fmt.Sprintf("%s-%s", message.Channel, name)).Every(repeat).StartAt(time.Now()).Do(app.newTimer, message.Channel, text)
-		reply := fmt.Sprintf("Successfully added timer %s repeating every %s", name, repeat)
+		//                         app.TwitchClient.OnPrivateMessage(func(message twitch.PrivateMessage) {
+		// app.Scheduler.AddFunc(fmt.Sprintf("@every %s", repeat), (func() {
+		// app.Scheduler.AddFunc(fmt.Sprintf("@every %s", repeat), func(message.Channel, text) { app.newTimer(message.Channel, text) }))
+		cronName := fmt.Sprintf("%s-%s", message.Channel, name)
+		app.Scheduler.AddFunc(fmt.Sprintf("@every %s", repeat), func() { app.newTimer(message.Channel, text) }, cronName)
+
+		//app.Scheduler.Tag(fmt.Sprintf("%s-%s", message.Channel, name)).Every(repeat).StartAt(time.Now()).Do(app.newTimer, message.Channel, text
+		reply := fmt.Sprintf("Successfully added timer %s repeating every %s (ID: xd)", name, repeat)
 		common.Send(message.Channel, reply, app.TwitchClient)
 		return
 	}
@@ -64,17 +69,26 @@ func (app *Application) InitialTimers() {
 
 	// Iterate over each timer and add them to the scheduler.
 	for _, v := range timer {
+		cronName := fmt.Sprintf("%s-%s", v.Channel, v.Name)
+		app.Scheduler.AddFunc(fmt.Sprintf("@every %s", v.Repeat), func() { app.newTimer(v.Channel, v.Text) }, cronName)
 		app.Logger.Infow("Initial timers:",
 			"Name", v.Name,
 			"Channel", v.Channel,
 			"Text", v.Text,
 			"Repeat", v.Repeat,
 			"V", v,
+			"cronName", cronName,
 		)
 
-		app.Scheduler.Tag("pipelines", fmt.Sprintf("%s-%s", v.Channel, v.Name)).Every(v.Repeat).StartAt(time.Now()).Do(app.newTimer, v.Channel, v.Text)
+		// app.Scheduler.Tag(fmt.Sprintf("%s-%s", v.Channel, v.Name)).Every(v.Repeat).StartAt(time.Now()).Do(app.newTimer, v.Channel, v.Text)
 
 	}
+	for _, v := range app.Scheduler.Entries() {
+		app.Logger.Info(v)
+	}
+
+	//ent := app.Scheduler.Enries()
+	app.Logger.Infow("Entries", app.Scheduler.Entries())
 }
 
 func (app *Application) newTimer(channel, text string) {
@@ -83,11 +97,15 @@ func (app *Application) newTimer(channel, text string) {
 
 // DeleteCommand takes in a name value and deletes the command from the database if it exists.
 func (app *Application) DeleteTimer(name string, message twitch.PrivateMessage) {
+
+	cronName := fmt.Sprintf("%s-%s", message.Channel, name)
+	app.Scheduler.RemoveJob(cronName)
+
+	// app.Scheduler.Remove(timer.ID)
 	err := app.Models.Timers.Delete(name)
 	if err != nil {
-		common.Send(message.Channel, "Something went wrong FeelsBadMan", app.TwitchClient)
 		app.Logger.Error(err)
-		return
+		common.Send(message.Channel, "Something went wrong FeelsBadMan", app.TwitchClient)
 	}
 
 	reply := fmt.Sprintf("Deleted timer %s", name)
