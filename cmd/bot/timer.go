@@ -45,7 +45,7 @@ func (app *Application) AddTimer(name string, message twitch.PrivateMessage) {
 		//                         app.TwitchClient.OnPrivateMessage(func(message twitch.PrivateMessage) {
 		// app.Scheduler.AddFunc(fmt.Sprintf("@every %s", repeat), (func() {
 		// app.Scheduler.AddFunc(fmt.Sprintf("@every %s", repeat), func(message.Channel, text) { app.newTimer(message.Channel, text) }))
-		cronName := fmt.Sprintf("%s-%s", message.Channel, name)
+		cronName := fmt.Sprintf("%s%s", message.Channel, name)
 		app.Scheduler.AddFunc(fmt.Sprintf("@every %s", repeat), func() { app.newTimer(message.Channel, text) }, cronName)
 
 		//app.Scheduler.Tag(fmt.Sprintf("%s-%s", message.Channel, name)).Every(repeat).StartAt(time.Now()).Do(app.newTimer, message.Channel, text
@@ -61,28 +61,39 @@ func (app *Application) InitialTimers() {
 	// GetJoinable returns a slice of channel names.
 	timer, err := app.Models.Timers.GetAll()
 	if err != nil {
-		app.Logger.Error(err)
+		app.Logger.Errorw("XD", err)
 		return
 	}
 
 	app.Logger.Info(timer)
 
-	// Iterate over each timer and add them to the scheduler.
-	for _, v := range timer {
-		cronName := fmt.Sprintf("%s-%s", v.Channel, v.Name)
-		app.Scheduler.AddFunc(fmt.Sprintf("@every %s", v.Repeat), func() { app.newTimer(v.Channel, v.Text) }, cronName)
-		app.Logger.Infow("Initial timers:",
-			"Name", v.Name,
-			"Channel", v.Channel,
-			"Text", v.Text,
-			"Repeat", v.Repeat,
-			"V", v,
-			"cronName", cronName,
-		)
-
-		// app.Scheduler.Tag(fmt.Sprintf("%s-%s", v.Channel, v.Name)).Every(v.Repeat).StartAt(time.Now()).Do(app.newTimer, v.Channel, v.Text)
-
+	// https://github.com/robfig/cron/issues/420#issuecomment-940949195
+	// idk either, it works for some reason
+	for i, v := range timer {
+		i, v := i, v
+		cronName := fmt.Sprintf("%s%s", v.Channel, v.Name)
+		// app.Logger.Info(cronName)
+		//app.Logger.Info(fmt.Sprintf("@every %s", v.Repeat))
+		repeating := fmt.Sprintf("@every %s", v.Repeat)
+		app.Scheduler.AddFunc(repeating, func() { app.newTimer(v.Channel, v.Text) }, cronName)
+		_ = i
+		//	app.Logger.Infow("Initial timers:",
+		//		"Name", v.Name,
+		//		"Channel", v.Channel,
+		//		"Text", v.Text,
+		//		"Repeat", v.Repeat,
+		//		"V", v,
+		//		"cronName", cronName,
+		//	)
 	}
+
+	// Iterate over each timer and add them to the scheduler.
+	//	for _, v := range timer {
+	//		c := cron.New()
+	//		c.Start()
+	//
+	//		// app.Scheduler.Tag(fmt.Sprintf("%s-%s", v.Channel, v.Name)).Every(v.Repeat).StartAt(time.Now()).Do(app.newTimer, v.Channel, v.Text)
+	//	}
 	for _, v := range app.Scheduler.Entries() {
 		app.Logger.Info(v)
 	}
@@ -98,7 +109,7 @@ func (app *Application) newTimer(channel, text string) {
 // DeleteCommand takes in a name value and deletes the command from the database if it exists.
 func (app *Application) DeleteTimer(name string, message twitch.PrivateMessage) {
 
-	cronName := fmt.Sprintf("%s-%s", message.Channel, name)
+	cronName := fmt.Sprintf("%s%s", message.Channel, name)
 	app.Scheduler.RemoveJob(cronName)
 
 	// app.Scheduler.Remove(timer.ID)

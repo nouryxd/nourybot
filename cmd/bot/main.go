@@ -71,7 +71,6 @@ func main() {
 		sugar.Fatal(err)
 	}
 
-	c := cron.New()
 	//s := gocron.NewScheduler(time.UTC)
 
 	// Initialize Application
@@ -80,7 +79,7 @@ func main() {
 		Logger:       sugar,
 		Db:           db,
 		Models:       data.NewModels(db),
-		Scheduler:    c,
+		Scheduler:    cron.New(),
 	}
 
 	// Received a PrivateMessage (normal chat message).
@@ -142,14 +141,13 @@ func main() {
 		app.InitialJoin()
 
 		app.InitialTimers()
+		app.Scheduler.Start()
 
 		common.Send("nourylul", "dankCircle", app.TwitchClient)
 		common.Send("nourybot", "gopherDance", app.TwitchClient)
 		common.Send("xnoury", "pajaDink", app.TwitchClient)
 		common.Send("uudelleenkytkeytynyt", "PepeS", app.TwitchClient)
 	})
-
-	c.Start()
 
 	// Actually connect to chat.
 	err = app.TwitchClient.Connect()

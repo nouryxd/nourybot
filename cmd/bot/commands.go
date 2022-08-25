@@ -389,6 +389,10 @@ func (app *Application) handleCommand(message twitch.PrivateMessage) {
 			return
 		}
 
+	case "asd":
+		app.Logger.Info(app.Scheduler.Entries())
+		return
+
 	case "bttvemotes":
 		if userLevel < 1000 {
 			commands.Bttvemotes(target, app.TwitchClient)
