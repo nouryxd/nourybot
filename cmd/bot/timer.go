@@ -9,25 +9,20 @@ import (
 	"github.com/lyx0/nourybot/pkg/common"
 )
 
-// AddCommand takes in a name parameter and a twitch.PrivateMessage. It slices the
-// twitch.PrivateMessage after the name parameter and adds everything after to a text
-// value. Then it calls the app.Models.Commands.Insert method with both name, and text
-// values adding them to the database.
+// AddTimer slices the message into relevant parts, adding the values onto a
+// new data.Timer struct so that the timer can be inserted into the database.
 func (app *Application) AddTimer(name string, message twitch.PrivateMessage) {
-	// prefixLength is the length of `()addtimer` plus +2 (for the space and zero based)
 	cmdParams := strings.SplitN(message.Message, " ", 500)
+	// prefixLength is the length of `()addcommand` plus +2 (for the space and zero based)
 	prefixLength := 12
 	repeat := cmdParams[2]
 
-	// Split the twitch message at the length of the prefix + the length of the name of the command.
-	//      prefixLength |name| text
-	//      0123456789012|4567|
-	// e.g. ()addcommand dank FeelsDankMan
-	//      |   part1    snip ^  part2   |
+	// Split the message into the parts we need.
+	//
+	// message:  ()addtimer   sponsor    20m  hecking love my madmonq pills BatChest
+	// parts:    | prefix  |  |name | |repeat | <----------- text ------------->   |
 	text := message.Message[prefixLength+len(name)+len(cmdParams[2]) : len(message.Message)]
 
-	// ()addtimer gfuel 5m Yo buy my cool gfuel cause its cool n shit
-	// |         | name |
 	timer := &data.Timer{
 		Name:    name,
 		Text:    text,
@@ -35,90 +30,100 @@ func (app *Application) AddTimer(name string, message twitch.PrivateMessage) {
 		Repeat:  repeat,
 	}
 
-	app.Logger.Infow("timer", timer)
 	err := app.Models.Timers.Insert(timer)
 	if err != nil {
-		reply := fmt.Sprintf("Something went wrong FeelsBadMan %s", err)
+		app.Logger.Errorw("Error inserting new timer into database",
+			"timer", timer,
+			"error", err,
+		)
+
+		reply := fmt.Sprintln("Something went wrong FeelsBadMan")
 		common.Send(message.Channel, reply, app.TwitchClient)
 		return
 	} else {
-		//                         app.TwitchClient.OnPrivateMessage(func(message twitch.PrivateMessage) {
-		// app.Scheduler.AddFunc(fmt.Sprintf("@every %s", repeat), (func() {
-		// app.Scheduler.AddFunc(fmt.Sprintf("@every %s", repeat), func(message.Channel, text) { app.newTimer(message.Channel, text) }))
+		// cronName is the internal, unique tag/name for the timer.
+		// A timer named "sponsor" in channel "forsen" will be named "forsensponsor"
 		cronName := fmt.Sprintf("%s%s", message.Channel, name)
-		app.Scheduler.AddFunc(fmt.Sprintf("@every %s", repeat), func() { app.newTimer(message.Channel, text) }, cronName)
 
-		//app.Scheduler.Tag(fmt.Sprintf("%s-%s", message.Channel, name)).Every(repeat).StartAt(time.Now()).Do(app.newTimer, message.Channel, text
-		reply := fmt.Sprintf("Successfully added timer %s repeating every %s (ID: xd)", name, repeat)
+		app.Scheduler.AddFunc(fmt.Sprintf("@every %s", repeat), func() { app.newPrivateMessageTimer(message.Channel, text) }, cronName)
+		app.Logger.Infow("Added new timer",
+			"timer", timer,
+		)
+
+		reply := fmt.Sprintf("Successfully added timer %s repeating every %s", name, repeat)
 		common.Send(message.Channel, reply, app.TwitchClient)
 		return
 	}
 }
 
-// InitialJoin is called on startup and queries the database for a list of
-// channels which the TwitchClient then joins.
+// InitialTimers is called on startup and queries the database for a list of
+// timers and then adds each onto the scheduler.
 func (app *Application) InitialTimers() {
-	// GetJoinable returns a slice of channel names.
 	timer, err := app.Models.Timers.GetAll()
 	if err != nil {
-		app.Logger.Errorw("XD", err)
+		app.Logger.Errorw("Error trying to retrieve all timers from database", err)
 		return
 	}
 
-	app.Logger.Info(timer)
+	// The slice of timers is only used to log them at
+	// the start so it looks a bit nicer.
+	var ts []*data.Timer
 
-	// https://github.com/robfig/cron/issues/420#issuecomment-940949195
-	// idk either, it works for some reason
+	// Iterate over all timers and then add them onto the scheduler.
 	for i, v := range timer {
+		// idk why this works but it does so no touchy touchy.
+		// https://github.com/robfig/cron/issues/420#issuecomment-940949195
 		i, v := i, v
-		cronName := fmt.Sprintf("%s%s", v.Channel, v.Name)
-		// app.Logger.Info(cronName)
-		//app.Logger.Info(fmt.Sprintf("@every %s", v.Repeat))
-		repeating := fmt.Sprintf("@every %s", v.Repeat)
-		app.Scheduler.AddFunc(repeating, func() { app.newTimer(v.Channel, v.Text) }, cronName)
 		_ = i
-		//	app.Logger.Infow("Initial timers:",
-		//		"Name", v.Name,
-		//		"Channel", v.Channel,
-		//		"Text", v.Text,
-		//		"Repeat", v.Repeat,
-		//		"V", v,
-		//		"cronName", cronName,
-		//	)
+
+		// cronName is the internal, unique tag/name for the timer.
+		// A timer named "sponsor" in channel "forsen" will be named "forsensponsor"
+		cronName := fmt.Sprintf("%s%s", v.Channel, v.Name)
+
+		// Repeating is at what times the timer should repeat.
+		// 2 minute timer is @every 2m
+		repeating := fmt.Sprintf("@every %s", v.Repeat)
+
+		// Add new value to the slice
+		ts = append(ts, v)
+
+		app.Scheduler.AddFunc(repeating, func() { app.newPrivateMessageTimer(v.Channel, v.Text) }, cronName)
 	}
 
-	// Iterate over each timer and add them to the scheduler.
-	//	for _, v := range timer {
-	//		c := cron.New()
-	//		c.Start()
-	//
-	//		// app.Scheduler.Tag(fmt.Sprintf("%s-%s", v.Channel, v.Name)).Every(v.Repeat).StartAt(time.Now()).Do(app.newTimer, v.Channel, v.Text)
-	//	}
-	for _, v := range app.Scheduler.Entries() {
-		app.Logger.Info(v)
-	}
-
-	//ent := app.Scheduler.Enries()
-	app.Logger.Infow("Entries", app.Scheduler.Entries())
+	// Log the initial timers
+	app.Logger.Infow("Initial timers",
+		"timer",
+		ts,
+	)
+	return
 }
 
-func (app *Application) newTimer(channel, text string) {
+// newPrivateMessageTimer is a helper function to set timers
+// which trigger into sending a twitch PrivateMessage.
+func (app *Application) newPrivateMessageTimer(channel, text string) {
 	common.Send(channel, text, app.TwitchClient)
+	return
 }
 
-// DeleteCommand takes in a name value and deletes the command from the database if it exists.
+// DeleteTimer takes in the name of a timer and tries to delete the timer from the database.
 func (app *Application) DeleteTimer(name string, message twitch.PrivateMessage) {
-
 	cronName := fmt.Sprintf("%s%s", message.Channel, name)
 	app.Scheduler.RemoveJob(cronName)
 
-	// app.Scheduler.Remove(timer.ID)
 	err := app.Models.Timers.Delete(name)
 	if err != nil {
-		app.Logger.Error(err)
-		common.Send(message.Channel, "Something went wrong FeelsBadMan", app.TwitchClient)
+		app.Logger.Errorw("Error deleting timer from database",
+			"name", name,
+			"cronName", cronName,
+			"error", err,
+		)
+
+		reply := fmt.Sprintln("Something went wrong FeelsBadMan")
+		common.Send(message.Channel, reply, app.TwitchClient)
+		return
 	}
 
-	reply := fmt.Sprintf("Deleted timer %s", name)
+	reply := fmt.Sprintf("Deleted timer with name %s", name)
 	common.Send(message.Channel, reply, app.TwitchClient)
+	return
 }
