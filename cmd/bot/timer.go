@@ -122,10 +122,8 @@ func (app *Application) InitialTimers() {
 		app.Scheduler.AddFunc(repeating, func() { app.newPrivateMessageTimer(v.Channel, v.Text) }, cronName)
 	}
 
-	// Log the initial timers
 	app.Logger.Infow("Initial timers",
-		"timer",
-		ts,
+		"timer", ts,
 	)
 	return
 }
@@ -141,6 +139,7 @@ func (app *Application) newPrivateMessageTimer(channel, text string) {
 func (app *Application) DeleteTimer(name string, message twitch.PrivateMessage) {
 	cronName := fmt.Sprintf("%s%s", message.Channel, name)
 	app.Scheduler.RemoveJob(cronName)
+
 	app.Logger.Infow("Deleting timer",
 		"name", name,
 		"message.Channel", message.Channel,

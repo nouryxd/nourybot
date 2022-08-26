@@ -31,10 +31,6 @@ func (app *Application) AddCommand(name string, message twitch.PrivateMessage) {
 	}
 	err := app.Models.Commands.Insert(command)
 
-	//	app.Logger.Infow("Message splits",
-	//		"Command Name:", name,
-	//		"Command Text:", text)
-
 	if err != nil {
 		reply := fmt.Sprintf("Something went wrong FeelsBadMan %s", err)
 		common.Send(message.Channel, reply, app.TwitchClient)
