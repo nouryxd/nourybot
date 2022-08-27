@@ -128,6 +128,33 @@ func (t TimerModel) GetAll() ([]*Timer, error) {
 	return timers, nil
 }
 
+func (t TimerModel) Update(timer *Timer) error {
+	query := `
+	UPDATE timers
+	SET text = $2, channel = $3, repeat = $4
+	WHERE name = $1
+	RETURNING id`
+
+	args := []interface{}{
+		timer.Name,
+		timer.Text,
+		timer.Channel,
+		timer.Repeat,
+	}
+
+	err := t.DB.QueryRow(query, args...).Scan(&timer.ID)
+	if err != nil {
+		switch {
+		case errors.Is(err, sql.ErrNoRows):
+			return ErrEditConflict
+		default:
+			return err
+		}
+	}
+
+	return nil
+}
+
 // Delete takes in a command name and queries the database for an entry with
 // the same name and tries to delete that entry.
 func (t TimerModel) Delete(name string) error {

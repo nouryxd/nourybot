@@ -325,6 +325,17 @@ func (app *Application) handleCommand(message twitch.PrivateMessage) {
 		} else {
 			return
 		}
+		// ()edittimer testname 10m test text xd
+	case "edittimer":
+		if userLevel < 1000 { // Limit to myself for now.
+			return
+		} else if msgLen < 4 {
+			common.Send(target, "Not enough arguments provided.", app.TwitchClient)
+			return
+		} else {
+			// ()edituser level nourylul 1000
+			app.EditTimer(cmdParams[1], message)
+		}
 	case "editcommand": // ()editcommand level dankwave 1000
 		if userLevel < 1000 {
 			return
