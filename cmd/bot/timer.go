@@ -91,6 +91,7 @@ func (app *Application) AddTimer(name string, message twitch.PrivateMessage) {
 // EditTimer just contains the logic for deleting a timer, and then adding a new one
 // with the same name. It is technically not editing the timer.
 func (app *Application) EditTimer(name string, message twitch.PrivateMessage) {
+	// Check if a timer with that name is in the database.
 	old, err := app.Models.Timers.Get(name)
 	if err != nil {
 		app.Logger.Errorw("Could not get timer",
@@ -102,15 +103,11 @@ func (app *Application) EditTimer(name string, message twitch.PrivateMessage) {
 		return
 	}
 
-	// app.DeleteTimer(name, message)
+	// -----------------------
+	// Delete the old timer
+	// -----------------------
 	cronName := fmt.Sprintf("%s%s", message.Channel, name)
 	app.Scheduler.RemoveJob(cronName)
-
-	app.Logger.Infow("Deleting timer",
-		"name", name,
-		"message.Channel", message.Channel,
-		"cronName", cronName,
-	)
 
 	err = app.Models.Timers.Delete(name)
 	if err != nil {
@@ -125,7 +122,9 @@ func (app *Application) EditTimer(name string, message twitch.PrivateMessage) {
 		return
 	}
 
-	// app.AddTimer(name, message)
+	// -----------------------
+	// Add the new timer
+	// -----------------------
 	cmdParams := strings.SplitN(message.Message, " ", 500)
 	// prefixLength is the length of `()editcommand` plus +2 (for the space and zero based)
 	prefixLength := 13
@@ -176,14 +175,18 @@ func (app *Application) EditTimer(name string, message twitch.PrivateMessage) {
 			reply := fmt.Sprintln("Something went wrong FeelsBadMan")
 			common.Send(message.Channel, reply, app.TwitchClient)
 			return
-		} else {
+		} else { // this is a bit scuffed. The else here is the end of a successful call.
 			// cronName is the internal, unique tag/name for the timer.
 			// A timer named "sponsor" in channel "forsen" will be named "forsensponsor"
 			cronName := fmt.Sprintf("%s%s", message.Channel, name)
 
 			app.Scheduler.AddFunc(fmt.Sprintf("@every %s", repeat), func() { app.newPrivateMessageTimer(message.Channel, text) }, cronName)
-			app.Logger.Infow("Added new timer",
-				"timer", timer,
+
+			app.Logger.Infow("Updated a timer",
+				"Name", name,
+				"Channel", message.Channel,
+				"Old timer", old,
+				"New timer", timer,
 			)
 
 			reply := fmt.Sprintf("Successfully updated timer %s", name)
