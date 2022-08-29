@@ -13,15 +13,19 @@ import (
 	_ "github.com/lib/pq"
 	"github.com/lyx0/nourybot/internal/data"
 	"github.com/lyx0/nourybot/pkg/common"
+	"github.com/nicklaw5/helix"
 	"go.uber.org/zap"
 )
 
 type config struct {
-	twitchUsername string
-	twitchOauth    string
-	commandPrefix  string
-	environment    string
-	db             struct {
+	twitchUsername     string
+	twitchOauth        string
+	twitchClientId     string
+	twitchClientSecret string
+	twitchAccessToken  string
+	commandPrefix      string
+	environment        string
+	db                 struct {
 		dsn          string
 		maxOpenConns int
 		maxIdleConns int
@@ -31,6 +35,7 @@ type config struct {
 
 type Application struct {
 	TwitchClient *twitch.Client
+	HelixClient  *helix.Client
 	Logger       *zap.SugaredLogger
 	Db           *sql.DB
 	Models       data.Models
@@ -53,6 +58,9 @@ func main() {
 	// Twitch
 	cfg.twitchUsername = os.Getenv("TWITCH_USERNAME")
 	cfg.twitchOauth = os.Getenv("TWITCH_OAUTH")
+	cfg.twitchClientId = os.Getenv("TWITCH_CLIENT_ID")
+	cfg.twitchClientSecret = os.Getenv("TWITCH_CLIENT_SECRET")
+	cfg.twitchAccessToken = os.Getenv("TWITCH_ACCESS_TOKEN")
 	cfg.commandPrefix = os.Getenv("TWITCH_COMMAND_PREFIX")
 	tc := twitch.NewClient(cfg.twitchUsername, cfg.twitchOauth)
 
@@ -65,6 +73,23 @@ func main() {
 	cfg.db.maxIdleConns = 25
 	cfg.db.maxIdleTime = "15m"
 
+	helixClient, err := helix.NewClient(&helix.Options{
+		ClientID:       cfg.twitchClientId,
+		ClientSecret:   cfg.twitchClientSecret,
+		AppAccessToken: cfg.twitchAccessToken,
+		// ClientID: cfg.twitchClientId,
+	})
+	helixResp, err := helixClient.GetUsers(&helix.UsersParams{
+		IDs:    []string{"596581605", "31437432"},
+		Logins: []string{"nourybot", "nourylul"},
+	})
+	if err != nil {
+		sugar.Errorw("Helix: Error getting user data",
+			"helixResp", helixResp,
+			"err", err,
+		)
+	}
+
 	// Establish database connection
 	db, err := openDB(cfg)
 	if err != nil {
@@ -76,6 +101,7 @@ func main() {
 	// Initialize Application
 	app := &Application{
 		TwitchClient: tc,
+		HelixClient:  helixClient,
 		Logger:       sugar,
 		Db:           db,
 		Models:       data.NewModels(db),
@@ -132,6 +158,7 @@ func main() {
 			"Database Idle Conns", cfg.db.maxIdleConns,
 			"Database Idle Time", cfg.db.maxIdleTime,
 			"Database", db.Stats(),
+			"Helix", helixResp,
 		)
 
 		// Start time
