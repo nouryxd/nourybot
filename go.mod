@@ -14,6 +14,8 @@ require (
 )
 
 require (
+	github.com/golang-jwt/jwt v3.2.1+incompatible // indirect
+	github.com/nicklaw5/helix v1.25.0 // indirect
 	go.uber.org/atomic v1.9.0 // indirect
 	go.uber.org/multierr v1.8.0 // indirect
 )
