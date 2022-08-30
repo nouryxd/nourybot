@@ -55,7 +55,7 @@ func main() {
 		log.Fatal("Error loading .env file")
 	}
 
-	// Twitch
+	// Twitch config variables
 	cfg.twitchUsername = os.Getenv("TWITCH_USERNAME")
 	cfg.twitchOauth = os.Getenv("TWITCH_OAUTH")
 	cfg.twitchClientId = os.Getenv("TWITCH_CLIENT_ID")
@@ -67,28 +67,35 @@ func main() {
 	// Will be used someday Copesen
 	cfg.environment = "Development"
 
-	// Database
+	// Database config variables
 	cfg.db.dsn = os.Getenv("DB_DSN")
 	cfg.db.maxOpenConns = 25
 	cfg.db.maxIdleConns = 25
 	cfg.db.maxIdleTime = "15m"
 
+	// Initialize a new Helix Client, request a new AppAccessToken
+	// and set the token on the client.
 	helixClient, err := helix.NewClient(&helix.Options{
-		ClientID:       cfg.twitchClientId,
-		ClientSecret:   cfg.twitchClientSecret,
-		AppAccessToken: cfg.twitchAccessToken,
-		// ClientID: cfg.twitchClientId,
-	})
-	helixResp, err := helixClient.GetUsers(&helix.UsersParams{
-		IDs:    []string{"596581605", "31437432"},
-		Logins: []string{"nourybot", "nourylul"},
+		ClientID:     cfg.twitchClientId,
+		ClientSecret: cfg.twitchClientSecret,
 	})
 	if err != nil {
-		sugar.Errorw("Helix: Error getting user data",
-			"helixResp", helixResp,
+		sugar.Fatalw("Error creating new helix client",
+			"helixClient", helixClient,
 			"err", err,
 		)
 	}
+
+	helixResp, err := helixClient.RequestAppAccessToken([]string{"user:read:email"})
+	if err != nil {
+		sugar.Fatalw("Helix: Error getting new helix AppAcessToken",
+			"resp", helixResp,
+			"err", err,
+		)
+	}
+
+	// Set the access token on the client
+	helixClient.SetAppAccessToken(helixResp.Data.AccessToken)
 
 	// Establish database connection
 	db, err := openDB(cfg)
@@ -96,9 +103,7 @@ func main() {
 		sugar.Fatal(err)
 	}
 
-	//s := gocron.NewScheduler(time.UTC)
-
-	// Initialize Application
+	// Initialize Application with the new values
 	app := &Application{
 		TwitchClient: tc,
 		HelixClient:  helixClient,
@@ -110,12 +115,6 @@ func main() {
 
 	// Received a PrivateMessage (normal chat message).
 	app.TwitchClient.OnPrivateMessage(func(message twitch.PrivateMessage) {
-		//	app.Logger.Infow("Private Message received",
-		//		// "message", message,
-		//		"message.Channel", message.Channel,
-		//		"message.User", message.User.DisplayName,
-		//		"message.Message", message.Message,
-		//	)
 
 		// roomId is the Twitch UserID of the channel the message originated from.
 		// If there is no roomId something went really wrong.
@@ -129,7 +128,7 @@ func main() {
 
 		// Message was shorter than our prefix is therefore it's irrelevant for us.
 		if len(message.Message) >= 2 {
-			// This bots prefix is "()" configured above at `cfg.commandPrefix`,
+			// This bots prefix is "()" configured above at cfg.commandPrefix,
 			// Check if the first 2 characters of the mesage were our prefix.
 			// if they were forward the message to the command handler.
 			if message.Message[:2] == cfg.commandPrefix {
@@ -167,7 +166,10 @@ func main() {
 		// Join the channels in the database.
 		app.InitialJoin()
 
+		// Load the initial timers from the database.
 		app.InitialTimers()
+
+		// Start the timers.
 		app.Scheduler.Start()
 
 		common.Send("nourylul", "dankCircle", app.TwitchClient)
