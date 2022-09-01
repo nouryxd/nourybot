@@ -60,7 +60,6 @@ func main() {
 	cfg.twitchOauth = os.Getenv("TWITCH_OAUTH")
 	cfg.twitchClientId = os.Getenv("TWITCH_CLIENT_ID")
 	cfg.twitchClientSecret = os.Getenv("TWITCH_CLIENT_SECRET")
-	cfg.twitchAccessToken = os.Getenv("TWITCH_ACCESS_TOKEN")
 	cfg.commandPrefix = os.Getenv("TWITCH_COMMAND_PREFIX")
 	tc := twitch.NewClient(cfg.twitchUsername, cfg.twitchOauth)
 
