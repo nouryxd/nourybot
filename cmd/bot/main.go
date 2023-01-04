@@ -22,7 +22,6 @@ type config struct {
 	twitchOauth        string
 	twitchClientId     string
 	twitchClientSecret string
-	twitchAccessToken  string
 	commandPrefix      string
 	environment        string
 	db                 struct {
@@ -92,6 +91,9 @@ func main() {
 			"err", err,
 		)
 	}
+	sugar.Infow("Got new helix AppAccessToken",
+		"helixClient", helixResp,
+	)
 
 	// Set the access token on the client
 	helixClient.SetAppAccessToken(helixResp.Data.AccessToken)

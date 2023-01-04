@@ -82,7 +82,7 @@ func (app *Application) AddTimer(name string, message twitch.PrivateMessage) {
 			"timer", timer,
 			"error", err,
 		)
-		reply := fmt.Sprintf("Something went wrong FeelsBadMan received wrong time format. Allowed formats: 30m, 10h, 10h30m")
+		reply := "Something went wrong FeelsBadMan received wrong time format. Allowed formats: 30m, 10h, 10h30m"
 		common.Send(message.Channel, reply, app.TwitchClient)
 		return
 	}
@@ -98,7 +98,7 @@ func (app *Application) EditTimer(name string, message twitch.PrivateMessage) {
 			"timer", old,
 			"error", err,
 		)
-		reply := fmt.Sprintf("Something went wrong FeelsBadMan")
+		reply := "Something went wrong FeelsBadMan"
 		common.Send(message.Channel, reply, app.TwitchClient)
 		return
 	}
@@ -198,7 +198,7 @@ func (app *Application) EditTimer(name string, message twitch.PrivateMessage) {
 			"timer", timer,
 			"error", err,
 		)
-		reply := fmt.Sprintf("Something went wrong FeelsBadMan received wrong time format. Allowed formats: 30s, 30m, 10h, 10h30m")
+		reply := "Something went wrong FeelsBadMan received wrong time format. Allowed formats: 30s, 30m, 10h, 10h30m"
 		common.Send(message.Channel, reply, app.TwitchClient)
 		return
 	}
@@ -241,14 +241,12 @@ func (app *Application) InitialTimers() {
 	app.Logger.Infow("Initial timers",
 		"timer", ts,
 	)
-	return
 }
 
 // newPrivateMessageTimer is a helper function to set timers
 // which trigger into sending a twitch PrivateMessage.
 func (app *Application) newPrivateMessageTimer(channel, text string) {
 	common.Send(channel, text, app.TwitchClient)
-	return
 }
 
 // DeleteTimer takes in the name of a timer and tries to delete the timer from the database.
@@ -277,5 +275,4 @@ func (app *Application) DeleteTimer(name string, message twitch.PrivateMessage) 
 
 	reply := fmt.Sprintf("Deleted timer with name %s", name)
 	common.Send(message.Channel, reply, app.TwitchClient)
-	return
 }
