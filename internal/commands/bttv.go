@@ -4,7 +4,7 @@ import (
 	"fmt"
 
 	"github.com/gempir/go-twitch-irc/v3"
-	"github.com/lyx0/nourybot/pkg/common"
+	"github.com/lyx0/nourybot/internal/common"
 )
 
 func Bttv(target, query string, tc *twitch.Client) {

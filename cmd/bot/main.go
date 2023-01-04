@@ -11,8 +11,8 @@ import (
 	"github.com/jakecoffman/cron"
 	"github.com/joho/godotenv"
 	_ "github.com/lib/pq"
+	"github.com/lyx0/nourybot/internal/common"
 	"github.com/lyx0/nourybot/internal/data"
-	"github.com/lyx0/nourybot/pkg/common"
 	"github.com/nicklaw5/helix"
 	"go.uber.org/zap"
 )

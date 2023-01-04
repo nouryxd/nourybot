@@ -4,8 +4,8 @@ import (
 	"fmt"
 
 	"github.com/gempir/go-twitch-irc/v3"
-	"github.com/lyx0/nourybot/pkg/common"
-	"github.com/lyx0/nourybot/pkg/humanize"
+	"github.com/lyx0/nourybot/internal/common"
+	"github.com/lyx0/nourybot/internal/humanize"
 )
 
 func Ping(target string, tc *twitch.Client) {

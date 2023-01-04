@@ -7,7 +7,7 @@ import (
 	"net/http"
 
 	"github.com/gempir/go-twitch-irc/v3"
-	"github.com/lyx0/nourybot/pkg/common"
+	"github.com/lyx0/nourybot/internal/common"
 	"go.uber.org/zap"
 )
 

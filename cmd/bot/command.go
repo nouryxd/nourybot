@@ -5,8 +5,8 @@ import (
 	"strconv"
 
 	"github.com/gempir/go-twitch-irc/v3"
+	"github.com/lyx0/nourybot/internal/common"
 	"github.com/lyx0/nourybot/internal/data"
-	"github.com/lyx0/nourybot/pkg/common"
 )
 
 // AddCommand takes in a name parameter and a twitch.PrivateMessage. It slices the

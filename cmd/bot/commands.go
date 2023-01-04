@@ -4,8 +4,8 @@ import (
 	"strings"
 
 	"github.com/gempir/go-twitch-irc/v3"
-	"github.com/lyx0/nourybot/pkg/commands"
-	"github.com/lyx0/nourybot/pkg/common"
+	"github.com/lyx0/nourybot/internal/commands"
+	"github.com/lyx0/nourybot/internal/common"
 )
 
 // handleCommand takes in a twitch.PrivateMessage and then routes the message to
