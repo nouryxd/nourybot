@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"database/sql"
+	"flag"
 	"log"
 	"os"
 	"time"
@@ -41,6 +42,13 @@ type Application struct {
 	Scheduler    *cron.Cron
 }
 
+var envFlag string
+
+func init() {
+	flag.StringVar(&envFlag, "env", "dev", "database connection to use: (dev/prod)")
+	flag.Parse()
+}
+
 func main() {
 	var cfg config
 
@@ -62,11 +70,13 @@ func main() {
 	cfg.commandPrefix = os.Getenv("TWITCH_COMMAND_PREFIX")
 	tc := twitch.NewClient(cfg.twitchUsername, cfg.twitchOauth)
 
-	// Will be used someday Copesen
-	cfg.environment = "Development"
-
+	switch envFlag {
+	case "dev":
+		cfg.db.dsn = os.Getenv("LOCAL_DSN")
+	case "prod":
+		cfg.db.dsn = os.Getenv("SUPABASE_DSN")
+	}
 	// Database config variables
-	cfg.db.dsn = os.Getenv("DB_DSN")
 	cfg.db.maxOpenConns = 25
 	cfg.db.maxIdleConns = 25
 	cfg.db.maxIdleTime = "15m"
