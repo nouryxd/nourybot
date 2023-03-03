@@ -1,6 +1,6 @@
 module github.com/lyx0/nourybot
 
-go 1.19
+go 1.20
 
 require (
 	github.com/briandowns/openweathermap v0.18.0
@@ -10,12 +10,12 @@ require (
 	github.com/joho/godotenv v1.4.0
 	github.com/julienschmidt/httprouter v1.3.0
 	github.com/lib/pq v1.10.6
+	github.com/nicklaw5/helix v1.25.0
 	go.uber.org/zap v1.21.0
 )
 
 require (
 	github.com/golang-jwt/jwt v3.2.1+incompatible // indirect
-	github.com/nicklaw5/helix v1.25.0 // indirect
 	go.uber.org/atomic v1.9.0 // indirect
 	go.uber.org/multierr v1.8.0 // indirect
 )
