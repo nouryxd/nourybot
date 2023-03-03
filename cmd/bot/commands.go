@@ -148,6 +148,15 @@ func (app *Application) handleCommand(message twitch.PrivateMessage) {
 			return
 		}
 
+	case "help":
+		if msgLen < 2 {
+			common.Send(target, "Not enough arguments provided. Usage: ()help <commandname>", app.TwitchClient)
+			return
+		} else {
+			commands.Preview(target, cmdParams[1], app.TwitchClient)
+			return
+		}
+
 	// ()ping
 	case "ping":
 		commands.Ping(target, app.TwitchClient)
