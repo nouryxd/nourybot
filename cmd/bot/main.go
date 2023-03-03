@@ -24,7 +24,6 @@ type config struct {
 	twitchClientId     string
 	twitchClientSecret string
 	commandPrefix      string
-	environment        string
 	db                 struct {
 		dsn          string
 		maxOpenConns int
@@ -127,6 +126,12 @@ func main() {
 	// Received a PrivateMessage (normal chat message).
 	app.TwitchClient.OnPrivateMessage(func(message twitch.PrivateMessage) {
 
+		app.Logger.Infow("Message received",
+			"message", message,
+			"message.User.DisplayName", message.User.DisplayName,
+			"message.Message", message.Message,
+		)
+
 		// roomId is the Twitch UserID of the channel the message originated from.
 		// If there is no roomId something went really wrong.
 		roomId := message.Tags["room-id"]
@@ -163,7 +168,7 @@ func main() {
 	app.TwitchClient.OnConnect(func() {
 		app.Logger.Infow("Successfully connected to Twitch Servers",
 			"Bot username", cfg.twitchUsername,
-			"Environment", cfg.environment,
+			"Environment", envFlag,
 			"Database Open Conns", cfg.db.maxOpenConns,
 			"Database Idle Conns", cfg.db.maxIdleConns,
 			"Database Idle Time", cfg.db.maxIdleTime,

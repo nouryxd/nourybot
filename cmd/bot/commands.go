@@ -45,15 +45,15 @@ func (app *Application) handleCommand(message twitch.PrivateMessage) {
 	// If the level returned is 0 then the user was not found in the database.
 	userLevel := app.GetUserLevel(message.User.Name)
 
-	//	app.Logger.Infow("Command received",
-	//		// "message", message, // Pretty taxing
-	//		"message.Message", message.Message,
-	//		"message.Channel", target,
-	//		"userLevel", userLevel,
-	//		"commandName", commandName,
-	//		"cmdParams", cmdParams,
-	//		"msgLen", msgLen,
-	//	)
+	app.Logger.Infow("Command received",
+		// "message", message, // Pretty taxing
+		"message.Message", message.Message,
+		"message.Channel", target,
+		"userLevel", userLevel,
+		"commandName", commandName,
+		"cmdParams", cmdParams,
+		"msgLen", msgLen,
+	)
 
 	// A `commandName` is every message starting with `()`.
 	// Hardcoded commands have a priority over database commands.
