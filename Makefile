@@ -1,14 +1,24 @@
-build:
-	cd cmd/bot && go build -o Nourybot
-
-run:
-	cd cmd/bot && ./Nourybot
-
-xd:
-	cd cmd/bot && go build -o Nourybot && ./Nourybot
-
-jq:
-	cd cmd/bot && go build -o Nourybot && ./Nourybot | jq
+BINARY_NAME=Nourybot.out
+BINARY_NAME_API=NourybotApi.out
 
 jqapi:
 	cd cmd/api && go build -o Nourybot-Api && ./Nourybot-Api | jq
+  go build -o ${BINARY_NAME_API} cmd/api
+	./${BINARY_NAME} | jq
+
+xd:
+  go build -o ${BINARY_NAME} cmd/bot/main.go
+	./${BINARY_NAME} -env="dev"
+
+xdprod:
+  go build -o ${BINARY_NAME} cmd/bot/main.go
+	./${BINARY_NAME} -env="prod"
+
+jq:
+  go build -o ${BINARY_NAME} cmd/bot/main.go
+  ./${BINARY_NAME} -env="dev" | jq
+
+jqprod:
+  go build -o ${BINARY_NAME} cmd/bot/main.go
+  ./${BINARY_NAME} -env="prod" | jq
+
