@@ -11,6 +11,7 @@ type Command struct {
 	Text     string `json:"text,omitempty"`
 	Category string `json:"category,omitempty"`
 	Level    int    `json:"level,omitempty"`
+	Help     string `json:"help,omitempty"`
 }
 
 type CommandModel struct {
@@ -20,7 +21,7 @@ type CommandModel struct {
 // Get tries to find a command in the database with the provided name.
 func (c CommandModel) Get(name string) (*Command, error) {
 	query := `
-	SELECT id, name, text, category, level
+	SELECT id, name, text, category, level, help
 	FROM commands
 	WHERE name = $1`
 
@@ -32,6 +33,7 @@ func (c CommandModel) Get(name string) (*Command, error) {
 		&command.Text,
 		&command.Category,
 		&command.Level,
+		&command.Help,
 	)
 
 	if err != nil {
@@ -49,15 +51,13 @@ func (c CommandModel) Get(name string) (*Command, error) {
 func (c CommandModel) Update(command *Command) error {
 	query := `
 	UPDATE commands
-	SET text = $2, category = $3, level = $4
+	SET text = $2
 	WHERE name = $1
 	RETURNING id`
 
 	args := []interface{}{
 		command.Name,
 		command.Text,
-		command.Category,
-		command.Level,
 	}
 
 	err := c.DB.QueryRow(query, args...).Scan(&command.ID)
@@ -123,17 +123,42 @@ func (c CommandModel) SetLevel(name string, level int) error {
 	return nil
 }
 
+// SetLevel queries the database for an entry with the provided name,
+// if there is one it updates the entrys level with the provided level.
+func (c CommandModel) SetHelp(name string, helptext string) error {
+	query := `
+	UPDATE commands
+	SET help = $2
+	WHERE name = $1`
+
+	result, err := c.DB.Exec(query, name, helptext)
+	if err != nil {
+		return err
+	}
+
+	rowsAffected, err := result.RowsAffected()
+	if err != nil {
+		return err
+	}
+
+	if rowsAffected == 0 {
+		return ErrRecordNotFound
+	}
+
+	return nil
+}
+
 // Insert adds a command into the database.
 func (c CommandModel) Insert(command *Command) error {
 	query := `
-	INSERT into commands(name, text, category, level)
-	VALUES ($1, $2, $3, $4)
+	INSERT into commands(name, text, category, level, help)
+	VALUES ($1, $2, $3, $4, $5)
 	ON CONFLICT (name)
 	DO NOTHING
 	RETURNING id;
 	`
 
-	args := []interface{}{command.Name, command.Text, command.Category, command.Level}
+	args := []interface{}{command.Name, command.Text, command.Category, command.Level, command.Help}
 
 	result, err := c.DB.Exec(query, args...)
 	if err != nil {

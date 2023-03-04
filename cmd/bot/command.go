@@ -28,6 +28,7 @@ func (app *Application) AddCommand(name string, message twitch.PrivateMessage) {
 		Text:     text,
 		Category: "uncategorized",
 		Level:    0,
+		Help:     "",
 	}
 	err := app.Models.Commands.Insert(command)
 
