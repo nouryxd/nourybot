@@ -9,20 +9,25 @@ import (
 	"github.com/lyx0/nourybot/internal/data"
 )
 
-// AddCommand takes in a name parameter and a twitch.PrivateMessage. It slices the
-// twitch.PrivateMessage after the name parameter and adds everything after to a text
-// value. Then it calls the app.Models.Commands.Insert method with both name, and text
-// values adding them to the database.
+// AddCommand splits a message into two parts and passes on the
+// name and text to the database handler.
 func (app *Application) AddCommand(name string, message twitch.PrivateMessage) {
-	// prefixLength is the length of `()addcommand` plus +2 (for the space and zero based)
-	prefixLength := 14
+	// snipLength is the length we need to "snip" off of the start of `message`.
+	//  `()addcommand` = +12
+	//  trailing space =  +1
+	//      zero-based =  +1
+	//                 =  14
+	snipLength := 14
 
-	// Split the twitch message at the length of the prefix + the length of the name of the command.
-	//      prefixLength |name| text
-	//      0123456789012|4567|
-	// e.g. ()addcommand dank FeelsDankMan
-	//      |   part1    snip ^  part2   |
-	text := message.Message[prefixLength+len(name) : len(message.Message)]
+	// Split the twitch message at `snipLength` plus length of the name of the
+	// command that we want to add.
+	// The part of the message we are left over with is then passed on to the database
+	// handlers as the `text` part of the command.
+	//
+	// e.g. `()addcommand CoolSponsors Check out CoolSponsor.com they are the coolest sponsors!
+	//       | <- snipLength + name -> |  <--- command text with however many characters ---> |
+	//       | <----- 14 + 12  ------> |
+	text := message.Message[snipLength+len(name) : len(message.Message)]
 	command := &data.Command{
 		Name:     name,
 		Text:     text,
