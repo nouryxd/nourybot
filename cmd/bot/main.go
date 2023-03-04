@@ -151,6 +151,12 @@ func main() {
 				app.handleCommand(message)
 				return
 			}
+
+			// Special rule for #pajlada.
+			if message.Message == "!nourybot" {
+				common.Send(message.Channel, "Lidl Twitch bot made by @nourylul. Prefix: ()", app.TwitchClient)
+			}
+
 		}
 	})
 

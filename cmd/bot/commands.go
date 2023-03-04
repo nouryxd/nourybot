@@ -70,6 +70,10 @@ func (app *Application) handleCommand(message twitch.PrivateMessage) {
 			return
 		}
 
+	case "nourybot":
+		common.Send(target, "Lidl Twitch bot made by @nourylul. Prefix: ()", app.TwitchClient)
+		return
+
 	// ()bttv <emote name>
 	case "bttv":
 		if msgLen < 2 {
