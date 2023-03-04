@@ -117,6 +117,38 @@ func (app *Application) EditCommandCategory(name, category string, message twitc
 	}
 }
 
+// SetCommandHelp updates the `help` column of a given commands name in the
+// database to the provided new help text.
+func (app *Application) EditCommandHelp(name string, message twitch.PrivateMessage) {
+	// snipLength is the length we need to "snip" off of the start of `message`.
+	// `()editcommand` = +13
+	//  trailing space =  +1
+	//      zero-based =  +1
+	//          `help` =  +4
+	//                 =  19
+	snipLength := 19
+
+	// Split the twitch message at `snipLength` plus length of the name of the
+	// command that we want to set the help text for so that we get the
+	// actual help message left over and then assign this string to `text`.
+	//
+	// e.g. `()editcommand help FeelsDankMan Returns a FeelsDankMan ascii art. Requires user level 500.`
+	//       | <---- snipLength + name ----> | <------  help text with however many characters. ----> |
+	//       | <--------- 19 + 12  --------> |
+	text := message.Message[snipLength+len(name) : len(message.Message)]
+	err := app.Models.Commands.SetHelp(name, text)
+
+	if err != nil {
+		common.Send(message.Channel, fmt.Sprintf("Something went wrong FeelsBadMan %s", ErrRecordNotFound), app.TwitchClient)
+		app.Logger.Error(err)
+		return
+	} else {
+		reply := fmt.Sprintf("Updated help text for command %s to: %v", name, text)
+		common.Send(message.Channel, reply, app.TwitchClient)
+		return
+	}
+}
+
 // DeleteCommand takes in a name value and deletes the command from the database if it exists.
 func (app *Application) DeleteCommand(name string, message twitch.PrivateMessage) {
 	err := app.Models.Commands.Delete(name)

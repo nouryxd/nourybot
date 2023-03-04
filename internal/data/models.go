@@ -35,6 +35,7 @@ type Models struct {
 		Update(command *Command) error
 		SetLevel(name string, level int) error
 		SetCategory(name, category string) error
+		SetHelp(name, helptext string) error
 		Delete(name string) error
 	}
 	Timers interface {

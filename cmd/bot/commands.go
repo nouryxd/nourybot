@@ -357,6 +357,9 @@ func (app *Application) handleCommand(message twitch.PrivateMessage) {
 		} else if cmdParams[1] == "category" {
 			app.EditCommandCategory(cmdParams[2], cmdParams[3], message)
 			return
+		} else if cmdParams[1] == "help" {
+			app.EditCommandHelp(cmdParams[2], message)
+			return
 		} else {
 			return
 		}
