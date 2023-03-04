@@ -83,6 +83,41 @@ func (app *Application) GetCommand(name, username string) (string, error) {
 	return "", ErrUserInsufficientLevel
 }
 
+// GetCommand queries the database for a name. If an entry exists it checks
+// if the Command.Level is 0, if it is the command.Text value is returned.
+//
+// If the Command.Level is not 0 it queries the database for the level of the
+// user who sent the message. If the users level is equal or higher
+// the command.Text field is returned.
+func (app *Application) GetCommandHelp(name, username string) (string, error) {
+	// Fetch the command from the database if it exists.
+	command, err := app.Models.Commands.Get(name)
+	if err != nil {
+		// It probably did not exist
+		return "", err
+	}
+
+	// If the command has no level set just return the text.
+	// Otherwise check if the level is high enough.
+	if command.Level == 0 {
+		return command.Help, nil
+	} else {
+		// Get the user from the database to check if the userlevel is equal
+		// or higher than the command.Level.
+		user, err := app.Models.Users.Get(username)
+		if err != nil {
+			return "", err
+		}
+		if user.Level >= command.Level {
+			// Userlevel is sufficient so return the command.Text
+			return command.Help, nil
+		}
+	}
+
+	// Userlevel was not enough so return an empty string and error.
+	return "", ErrUserInsufficientLevel
+}
+
 // EditCommandLevel takes in a name and level string and updates the entry with name
 // to the supplied level value.
 func (app *Application) EditCommandLevel(name, lvl string, message twitch.PrivateMessage) {
