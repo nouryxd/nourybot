@@ -246,6 +246,7 @@ func (app *Application) handleCommand(message twitch.PrivateMessage) {
 	// 250 - VIP only
 	//#################
 	// ()debug user <username>
+	// ()debug command <command name>
 	case "debug":
 		if userLevel < 250 {
 			return
@@ -254,6 +255,9 @@ func (app *Application) handleCommand(message twitch.PrivateMessage) {
 			return
 		} else if cmdParams[1] == "user" {
 			app.DebugUser(cmdParams[2], message)
+			return
+		} else if cmdParams[1] == "command" {
+			app.DebugCommand(cmdParams[2], message)
 			return
 		} else {
 			return

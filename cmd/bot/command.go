@@ -157,6 +157,43 @@ func (app *Application) EditCommandCategory(name, category string, message twitc
 	}
 }
 
+// DebugCommand checks if a command with the provided name exists in the database
+// and outputs information about it in the chat.
+func (app *Application) DebugCommand(name string, message twitch.PrivateMessage) {
+	// Query the database for a command with the provided name
+	cmd, err := app.Models.Commands.Get(name)
+	if err != nil {
+		reply := fmt.Sprintf("Something went wrong FeelsBadMan %s", err)
+		common.Send(message.Channel, reply, app.TwitchClient)
+		return
+	} else if cmd.Category == "ascii" {
+		// If the command is in the ascii category don't post the Text field
+		// otherwise it becomes too spammy and won't fit in the max message length.
+		reply := fmt.Sprintf("ID %v: Name %v, Level: %v, Category: %v Help: %v",
+			cmd.ID,
+			cmd.Name,
+			cmd.Level,
+			cmd.Category,
+			cmd.Help,
+		)
+
+		common.Send(message.Channel, reply, app.TwitchClient)
+		return
+	} else {
+		reply := fmt.Sprintf("ID %v: Name %v, Level: %v, Category: %v, Text: %v, Help: %v",
+			cmd.ID,
+			cmd.Name,
+			cmd.Level,
+			cmd.Category,
+			cmd.Text,
+			cmd.Help,
+		)
+
+		common.Send(message.Channel, reply, app.TwitchClient)
+		return
+	}
+}
+
 // SetCommandHelp updates the `help` column of a given commands name in the
 // database to the provided new help text.
 func (app *Application) EditCommandHelp(name string, message twitch.PrivateMessage) {
