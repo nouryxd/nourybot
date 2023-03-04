@@ -16,6 +16,7 @@ require (
 
 require (
 	github.com/golang-jwt/jwt v3.2.1+incompatible // indirect
+	github.com/shkh/lastfm-go v0.0.0-20191215035245-89a801c244e0 // indirect
 	go.uber.org/atomic v1.9.0 // indirect
 	go.uber.org/multierr v1.8.0 // indirect
 )
