@@ -190,13 +190,15 @@ func (app *Application) handleCommand(message twitch.PrivateMessage) {
 			commands.Preview(target, cmdParams[1], app.TwitchClient)
 			return
 		}
-	// ()thumbnail <live channel>
-	case "thumbnail":
-		if msgLen < 2 {
-			common.Send(target, "Not enough arguments provided. Usage: ()thumbnail <username>", app.TwitchClient)
+
+	case "set":
+		if msgLen < 3 {
+			common.Send(target, "Not enough arguments provided.", app.TwitchClient)
+			return
+		} else if cmdParams[1] == "lastfm" {
+			app.SetLastFMUser(cmdParams[2], message)
 			return
 		} else {
-			commands.Preview(target, cmdParams[1], app.TwitchClient)
 			return
 		}
 
@@ -208,6 +210,16 @@ func (app *Application) handleCommand(message twitch.PrivateMessage) {
 			return
 		} else {
 			commands.Seventv(target, cmdParams[1], app.TwitchClient)
+			return
+		}
+
+	// ()thumbnail <live channel>
+	case "thumbnail":
+		if msgLen < 2 {
+			common.Send(target, "Not enough arguments provided. Usage: ()thumbnail <username>", app.TwitchClient)
+			return
+		} else {
+			commands.Preview(target, cmdParams[1], app.TwitchClient)
 			return
 		}
 	// ()7tv <emote name>

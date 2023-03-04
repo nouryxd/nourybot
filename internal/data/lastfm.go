@@ -65,7 +65,7 @@ func (l LastFMUserModel) Insert(lastfm *LastFMUser) error {
 	}
 
 	if rowsAffected == 0 {
-		return ErrCommandRecordAlreadyExists
+		return ErrLastFMUserRecordAlreadyExists
 	}
 
 	return nil
