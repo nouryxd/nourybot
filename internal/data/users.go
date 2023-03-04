@@ -12,6 +12,7 @@ type User struct {
 	Login    string    `json:"login"`
 	TwitchID string    `json:"twitchid"`
 	Level    int       `json:"level"`
+	Location string    `json:"location,omitempty"`
 }
 
 type UserModel struct {
@@ -49,6 +50,33 @@ func (u UserModel) Insert(user *User) error {
 	return nil
 }
 
+// SetLocation searches the database for a record with the provided login value
+// and if that exists sets the location to the supplied
+func (u UserModel) SetLocation(login, location string) error {
+	query := `
+	UPDATE users
+	SET location = $2
+	WHERE login = $1`
+
+	result, err := u.DB.Exec(query, login, location)
+	if err != nil {
+		return err
+	}
+
+	// Check how many rows were affected.
+	rowsAffected, err := result.RowsAffected()
+	if err != nil {
+		return err
+	}
+
+	// We want atleast 1, if it is 0 the entry did not exist.
+	if rowsAffected == 0 {
+		return ErrRecordNotFound
+	}
+
+	return nil
+}
+
 // Setlevel searches the database for a record with the provided login value
 // and if that exists sets the level to the supplied level value.
 func (u UserModel) SetLevel(login string, level int) error {
@@ -80,7 +108,7 @@ func (u UserModel) SetLevel(login string, level int) error {
 // Get searches the database for a login name and returns the user struct on success.
 func (u UserModel) Get(login string) (*User, error) {
 	query := `
-	SELECT id, added_at, login, twitchid, level
+	SELECT id, added_at, login, twitchid, level, location
 	FROM users
 	WHERE login = $1`
 
@@ -92,6 +120,7 @@ func (u UserModel) Get(login string) (*User, error) {
 		&user.Login,
 		&user.TwitchID,
 		&user.Level,
+		&user.Location,
 	)
 
 	if err != nil {

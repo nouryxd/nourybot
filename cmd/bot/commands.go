@@ -198,6 +198,9 @@ func (app *Application) handleCommand(message twitch.PrivateMessage) {
 		} else if cmdParams[1] == "lastfm" {
 			app.SetLastFMUser(cmdParams[2], message)
 			return
+		} else if cmdParams[1] == "location" {
+			app.SetUserLocation(cmdParams[2], message)
+			return
 		} else {
 			return
 		}

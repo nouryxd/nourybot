@@ -28,6 +28,7 @@ type Models struct {
 		Insert(user *User) error
 		Get(login string) (*User, error)
 		SetLevel(login string, level int) error
+		SetLocation(login, location string) error
 		Delete(login string) error
 	}
 	Commands interface {

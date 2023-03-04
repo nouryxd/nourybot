@@ -103,6 +103,27 @@ func (app *Application) EditUserLevel(login, lvl string, message twitch.PrivateM
 	}
 }
 
+// EditUserLevel tries to update the database record for the supplied
+// login name with the new level.
+func (app *Application) SetUserLocation(location string, message twitch.PrivateMessage) {
+	login := message.User.Name
+
+	app.Logger.Infow("SetUserLocation",
+		"location", location,
+		"login", login,
+	)
+	err := app.Models.Users.SetLocation(login, location)
+	if err != nil {
+		common.Send(message.Channel, fmt.Sprintf("Something went wrong FeelsBadMan %s", ErrRecordNotFound), app.TwitchClient)
+		app.Logger.Error(err)
+		return
+	} else {
+		reply := fmt.Sprintf("Successfully set your location to %v", location)
+		common.Send(message.Channel, reply, app.TwitchClient)
+		return
+	}
+}
+
 // GetUserLevel takes in a login name and queries the database for an entry
 // with such a name value. If there is one it returns the level value as an integer.
 // Returns 0 on an error which is the level for unregistered users.
