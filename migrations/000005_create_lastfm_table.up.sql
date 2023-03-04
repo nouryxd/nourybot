@@ -1,7 +1,7 @@
 CREATE TABLE IF NOT EXISTS lastfm_users (
 	id bigserial PRIMARY KEY,
-	twitch_login text UNIQUE NOT NULL,
-	twitch_id text NOT NULL,
+	twitch_login text NOT NULL,
+	twitch_id text UNIQUE NOT NULL,
 	lastfm_username text NOT NULL 
 );
 
