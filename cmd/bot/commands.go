@@ -466,6 +466,7 @@ var helpText = map[string]string{
 	"ping":       "Hopefully returns a Pong! monkaS",
 	"preview":    "Returns a link to an (almost) live screenshot of a live channel. Alias: preview, thumbnail. Example usage: ()preview <channel>",
 	"thumbnail":  "Returns a link to an (almost) live screenshot of a live channel. Alias: preview, thumbnail. Example usage: ()thumbnail <channel>",
+	"tweet":      "Returns the latest tweet for a provided user. Example usage: ()tweet <username>",
 	"seventv":    "Returns the search URL for a given SevenTV emote. Aliases: seventv, 7tv. Example usage: ()seventv FeelsDankMan",
 	"7tv":        "Returns the search URL for a given SevenTV emote. Aliases: seventv, 7tv. Example usage: ()7tv FeelsDankMan",
 	"weather":    "Returns the weather for a given location. Example usage: ()weather Vilnius",

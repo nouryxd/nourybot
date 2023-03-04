@@ -53,8 +53,9 @@ func main() {
 
 	// Initialize a new sugared logger that we'll pass on
 	// down through the application.
-	sugar := zap.NewExample().Sugar()
-	defer sugar.Sync()
+	logger := zap.NewExample()
+	defer logger.Sync()
+	sugar := logger.Sugar()
 
 	err := godotenv.Load()
 	if err != nil {
@@ -75,6 +76,7 @@ func main() {
 	case "prod":
 		cfg.db.dsn = os.Getenv("SUPABASE_DSN")
 	}
+
 	// Database config variables
 	cfg.db.maxOpenConns = 25
 	cfg.db.maxIdleConns = 25
