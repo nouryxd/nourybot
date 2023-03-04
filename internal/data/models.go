@@ -38,6 +38,10 @@ type Models struct {
 		SetHelp(name, helptext string) error
 		Delete(name string) error
 	}
+	LastFMUsers interface {
+		Get(name string) (*LastFMUser, error)
+		Insert(lastfm *LastFMUser) error
+	}
 	Timers interface {
 		Get(name string) (*Timer, error)
 		Insert(timer *Timer) error
@@ -49,9 +53,10 @@ type Models struct {
 
 func NewModels(db *sql.DB) Models {
 	return Models{
-		Channels: ChannelModel{DB: db},
-		Users:    UserModel{DB: db},
-		Commands: CommandModel{DB: db},
-		Timers:   TimerModel{DB: db},
+		Channels:    ChannelModel{DB: db},
+		Users:       UserModel{DB: db},
+		Commands:    CommandModel{DB: db},
+		LastFMUsers: LastFMUserModel{DB: db},
+		Timers:      TimerModel{DB: db},
 	}
 }
