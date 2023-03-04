@@ -14,15 +14,15 @@ import (
 // new data.Timer struct so that the timer can be inserted into the database.
 func (app *Application) AddTimer(name string, message twitch.PrivateMessage) {
 	cmdParams := strings.SplitN(message.Message, " ", 500)
-	// prefixLength is the length of `()addcommand` plus +2 (for the space and zero based)
-	prefixLength := 12
+	// snipLength is the length of `()addcommand` plus +2 (for the space and zero based)
+	snipLength := 12
 	repeat := cmdParams[2]
 
 	// Split the message into the parts we need.
 	//
 	// message:  ()addtimer   sponsor    20m  hecking love my madmonq pills BatChest
 	// parts:    | prefix  |  |name | |repeat | <----------- text ------------->   |
-	text := message.Message[prefixLength+len(name)+len(cmdParams[2]) : len(message.Message)]
+	text := message.Message[snipLength+len(name)+len(cmdParams[2]) : len(message.Message)]
 
 	// validateTimeFormat will be true if the repeat parameter is in
 	// the format of either 30m, 10h, or 10h30m.
@@ -103,9 +103,7 @@ func (app *Application) EditTimer(name string, message twitch.PrivateMessage) {
 		return
 	}
 
-	// -----------------------
 	// Delete the old timer
-	// -----------------------
 	cronName := fmt.Sprintf("%s%s", message.Channel, name)
 	app.Scheduler.RemoveJob(cronName)
 
@@ -122,19 +120,17 @@ func (app *Application) EditTimer(name string, message twitch.PrivateMessage) {
 		return
 	}
 
-	// -----------------------
 	// Add the new timer
-	// -----------------------
 	cmdParams := strings.SplitN(message.Message, " ", 500)
-	// prefixLength is the length of `()editcommand` plus +2 (for the space and zero based)
-	prefixLength := 13
+	// snipLength is the length of `()editcommand` plus +2 (for the space and zero based)
+	snipLength := 13
 	repeat := cmdParams[2]
 
 	// Split the message into the parts we need.
 	//
 	// message:  ()addtimer   sponsor    20m  hecking love my madmonq pills BatChest
 	// parts:    | prefix  |  |name | |repeat | <----------- text ------------->   |
-	text := message.Message[prefixLength+len(name)+len(cmdParams[2]) : len(message.Message)]
+	text := message.Message[snipLength+len(name)+len(cmdParams[2]) : len(message.Message)]
 
 	// validateTimeFormat will be true if the repeat parameter is in
 	// the format of either 30m, 10h, or 10h30m.
