@@ -152,10 +152,9 @@ func (app *Application) handleCommand(message twitch.PrivateMessage) {
 			commands.FirstLine(target, cmdParams[1], cmdParams[2], app.TwitchClient)
 			return
 		}
-
 	case "lastfm":
 		if msgLen == 1 {
-			common.Send(target, "Usage: ()firstline <channel> <user>", app.TwitchClient)
+			app.CheckLastFM(message)
 			return
 		} else if cmdParams[1] == "artist" && cmdParams[2] == "top" {
 			commands.LastFmArtistTop(target, message, app.TwitchClient)
@@ -508,12 +507,11 @@ func (app *Application) commandHelp(target, name, username string) {
 			return
 		}
 
-		reply := fmt.Sprintf(c)
+		reply := fmt.Sprint(c)
 		common.Send(target, reply, app.TwitchClient)
 		return
 	}
 
-	reply := fmt.Sprintf("%s", i)
+	reply := fmt.Sprint(i)
 	common.Send(target, reply, app.TwitchClient)
-	return
 }
