@@ -153,6 +153,20 @@ func (app *Application) handleCommand(message twitch.PrivateMessage) {
 			return
 		}
 
+	case "lastfm":
+		if msgLen == 1 {
+			common.Send(target, "Usage: ()firstline <channel> <user>", app.TwitchClient)
+			return
+		} else if cmdParams[1] == "artist" && cmdParams[2] == "top" {
+			commands.LastFmArtistTop(target, message, app.TwitchClient)
+			return
+		} else {
+			// Default to first argument supplied being the name
+			// of the user to look up recently played.
+			commands.LastFmUserRecent(target, cmdParams[1], app.TwitchClient)
+			return
+		}
+
 	case "help":
 		if msgLen == 1 {
 			common.Send(target, "Provides information for a given command. Usage: ()help <commandname>", app.TwitchClient)
