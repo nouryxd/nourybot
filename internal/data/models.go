@@ -25,8 +25,9 @@ type Models struct {
 		Delete(login string) error
 	}
 	Users interface {
-		Insert(user *User) error
+		Insert(login, twitchId string) error
 		Get(login string) (*User, error)
+		Check(login string) (*User, error)
 		SetLevel(login string, level int) error
 		SetLocation(login, location string) error
 		GetLocation(login string) (string, error)
