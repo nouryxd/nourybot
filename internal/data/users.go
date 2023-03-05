@@ -80,6 +80,32 @@ func (u UserModel) SetLocation(login, location string) error {
 
 // SetLocation searches the database for a record with the provided login value
 // and if that exists sets the location to the supplied
+func (u UserModel) GetLocation(login string) (string, error) {
+	query := `
+	SELECT location
+	FROM users
+	WHERE login = $1`
+
+	var user User
+
+	err := u.DB.QueryRow(query, login).Scan(
+		&user.Location,
+	)
+
+	if err != nil {
+		switch {
+		case errors.Is(err, sql.ErrNoRows):
+			return "", ErrRecordNotFound
+		default:
+			return "", err
+		}
+	}
+
+	return user.Location, nil
+}
+
+// SetLocation searches the database for a record with the provided login value
+// and if that exists sets the location to the supplied
 func (u UserModel) SetLastFM(login, lastfmUser string) error {
 	query := `
 	UPDATE users

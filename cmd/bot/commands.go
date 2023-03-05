@@ -248,7 +248,12 @@ func (app *Application) handleCommand(message twitch.PrivateMessage) {
 
 	// ()weather <location>
 	case "weather":
-		if msgLen < 2 {
+		if msgLen == 1 {
+			// Default to first argument supplied being the name
+			// of the user to look up recently played.
+			app.CheckWeather(message)
+			return
+		} else if msgLen < 2 {
 			common.Send(target, "Not enough arguments provided.", app.TwitchClient)
 			return
 		} else {

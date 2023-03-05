@@ -5,9 +5,11 @@ import (
 	"strconv"
 
 	"github.com/gempir/go-twitch-irc/v3"
+	"github.com/lyx0/nourybot/internal/commands"
 	"github.com/lyx0/nourybot/internal/commands/decapi"
 	"github.com/lyx0/nourybot/internal/common"
 	"github.com/lyx0/nourybot/internal/data"
+	"go.uber.org/zap"
 )
 
 // AddUser calls GetIdByLogin to get the twitch id of the login name and then adds
@@ -155,4 +157,31 @@ func (app *Application) GetUserLevel(login string) int {
 	} else {
 		return user.Level
 	}
+}
+
+func (app *Application) CheckWeather(message twitch.PrivateMessage) {
+	sugar := zap.NewExample().Sugar()
+	defer sugar.Sync()
+
+	twitchLogin := message.User.Name
+	sugar.Infow("Twitchlogin: ",
+		"twitchLogin:", twitchLogin,
+	)
+	location, err := app.Models.Users.GetLocation(twitchLogin)
+	if err != nil {
+		sugar.Errorw("No LastFM account registered for: ",
+			"twitchLogin:", twitchLogin,
+		)
+		reply := "No location for your account set in my database. Use ()set location <location> to register. Otherwise use ()weather <location> without registering."
+		common.Send(message.Channel, reply, app.TwitchClient)
+		return
+	}
+
+	target := message.Channel
+	sugar.Infow("Twitchlogin: ",
+		"twitchLogin:", twitchLogin,
+		"location:", location,
+	)
+
+	commands.Weather(target, location, app.TwitchClient)
 }
