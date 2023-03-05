@@ -80,15 +80,15 @@ func (u UserModel) SetLocation(login, location string) error {
 
 // SetLocation searches the database for a record with the provided login value
 // and if that exists sets the location to the supplied
-func (u UserModel) GetLocation(login string) (string, error) {
+func (u UserModel) GetLocation(twitchId string) (string, error) {
 	query := `
 	SELECT location
 	FROM users
-	WHERE login = $1`
+	WHERE twitchid = $1`
 
 	var user User
 
-	err := u.DB.QueryRow(query, login).Scan(
+	err := u.DB.QueryRow(query, twitchId).Scan(
 		&user.Location,
 	)
 

@@ -158,13 +158,16 @@ func (app *Application) UserCheckWeather(message twitch.PrivateMessage) {
 	defer sugar.Sync()
 
 	twitchLogin := message.User.Name
-	sugar.Infow("Twitchlogin: ",
+	twitchId := message.User.ID
+	sugar.Infow("UserCheckWeather: ",
 		"twitchLogin:", twitchLogin,
+		"twitchId:", twitchId,
 	)
-	location, err := app.Models.Users.GetLocation(twitchLogin)
+	location, err := app.Models.Users.GetLocation(twitchId)
 	if err != nil {
-		sugar.Errorw("No LastFM account registered for: ",
+		sugar.Errorw("No location data registered for: ",
 			"twitchLogin:", twitchLogin,
+			"twitchId:", twitchId,
 		)
 		reply := "No location for your account set in my database. Use ()set location <location> to register. Otherwise use ()weather <location> without registering."
 		common.Send(message.Channel, reply, app.TwitchClient)
