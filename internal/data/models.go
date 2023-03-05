@@ -29,6 +29,8 @@ type Models struct {
 		Get(login string) (*User, error)
 		SetLevel(login string, level int) error
 		SetLocation(login, location string) error
+		SetLastFM(login, lastfmUser string) error
+		GetLastFM(login string) (string, error)
 		Delete(login string) error
 	}
 	Commands interface {

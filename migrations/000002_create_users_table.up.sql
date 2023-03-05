@@ -4,7 +4,8 @@ CREATE TABLE IF NOT EXISTS users (
 	login text UNIQUE NOT NULL,
 	twitchid text NOT NULL,
 	level integer NOT NULL,
-	location text
+	location text,
+	lastfm_username text
 );
 
 INSERT INTO users (added_at,login,twitchid,"level") VALUES
@@ -14,3 +15,5 @@ INSERT INTO users (added_at,login,twitchid,"level") VALUES
 	 (NOW(),'xnoury','197780373',500),
 	 (NOW(),'noemience','135447564',500);
 
+UPDATE users SET location = 'vilnius' WHERE login = 'nourylul';
+UPDATE users SET lastfm_username = 'nouryqt' WHERE login = 'nourylul';

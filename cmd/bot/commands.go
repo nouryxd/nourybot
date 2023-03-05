@@ -196,7 +196,8 @@ func (app *Application) handleCommand(message twitch.PrivateMessage) {
 			common.Send(target, "Not enough arguments provided.", app.TwitchClient)
 			return
 		} else if cmdParams[1] == "lastfm" {
-			app.SetLastFMUser(cmdParams[2], message)
+			app.SetUserLastFM(cmdParams[2], message)
+			//app.SetLastFMUser(cmdParams[2], message)
 			return
 		} else if cmdParams[1] == "location" {
 			app.SetUserLocation(cmdParams[2], message)

@@ -124,6 +124,27 @@ func (app *Application) SetUserLocation(location string, message twitch.PrivateM
 	}
 }
 
+// SetUserLastFM tries to update the database record for the supplied
+// login name with the new level.
+func (app *Application) SetUserLastFM(lastfmUser string, message twitch.PrivateMessage) {
+	login := message.User.Name
+
+	app.Logger.Infow("SetUserLastFM",
+		"lastfmUser", lastfmUser,
+		"login", login,
+	)
+	err := app.Models.Users.SetLastFM(login, lastfmUser)
+	if err != nil {
+		common.Send(message.Channel, fmt.Sprintf("Something went wrong FeelsBadMan %s", ErrRecordNotFound), app.TwitchClient)
+		app.Logger.Error(err)
+		return
+	} else {
+		reply := fmt.Sprintf("Successfully set your lastfm username to %v", lastfmUser)
+		common.Send(message.Channel, reply, app.TwitchClient)
+		return
+	}
+}
+
 // GetUserLevel takes in a login name and queries the database for an entry
 // with such a name value. If there is one it returns the level value as an integer.
 // Returns 0 on an error which is the level for unregistered users.

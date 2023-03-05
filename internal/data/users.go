@@ -7,12 +7,13 @@ import (
 )
 
 type User struct {
-	ID       int       `json:"id"`
-	AddedAt  time.Time `json:"-"`
-	Login    string    `json:"login"`
-	TwitchID string    `json:"twitchid"`
-	Level    int       `json:"level"`
-	Location string    `json:"location,omitempty"`
+	ID             int       `json:"id"`
+	AddedAt        time.Time `json:"-"`
+	Login          string    `json:"login"`
+	TwitchID       string    `json:"twitchid"`
+	Level          int       `json:"level"`
+	Location       string    `json:"location,omitempty"`
+	LastFMUsername string    `json:"lastfm_username,omitempty"`
 }
 
 type UserModel struct {
@@ -75,6 +76,59 @@ func (u UserModel) SetLocation(login, location string) error {
 	}
 
 	return nil
+}
+
+// SetLocation searches the database for a record with the provided login value
+// and if that exists sets the location to the supplied
+func (u UserModel) SetLastFM(login, lastfmUser string) error {
+	query := `
+	UPDATE users
+	SET lastfm_username = $2
+	WHERE login = $1`
+
+	result, err := u.DB.Exec(query, login, lastfmUser)
+	if err != nil {
+		return err
+	}
+
+	// Check how many rows were affected.
+	rowsAffected, err := result.RowsAffected()
+	if err != nil {
+		return err
+	}
+
+	// We want atleast 1, if it is 0 the entry did not exist.
+	if rowsAffected == 0 {
+		return ErrRecordNotFound
+	}
+
+	return nil
+}
+
+// SetLocation searches the database for a record with the provided login value
+// and if that exists sets the location to the supplied
+func (u UserModel) GetLastFM(login string) (string, error) {
+	query := `
+	SELECT lastfm_username
+	FROM users
+	WHERE login = $1`
+
+	var user User
+
+	err := u.DB.QueryRow(query, login).Scan(
+		&user.LastFMUsername,
+	)
+
+	if err != nil {
+		switch {
+		case errors.Is(err, sql.ErrNoRows):
+			return "", ErrRecordNotFound
+		default:
+			return "", err
+		}
+	}
+
+	return user.LastFMUsername, nil
 }
 
 // Setlevel searches the database for a record with the provided login value
