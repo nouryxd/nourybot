@@ -53,13 +53,13 @@ func (u UserModel) Insert(login, twitchId string) error {
 
 // SetLocation searches the database for a record with the provided login value
 // and if that exists sets the location to the supplied
-func (u UserModel) SetLocation(login, location string) error {
+func (u UserModel) SetLocation(twitchId, location string) error {
 	query := `
 	UPDATE users
 	SET location = $2
-	WHERE login = $1`
+	WHERE twitchId = $1`
 
-	result, err := u.DB.Exec(query, login, location)
+	result, err := u.DB.Exec(query, twitchId, location)
 	if err != nil {
 		return err
 	}

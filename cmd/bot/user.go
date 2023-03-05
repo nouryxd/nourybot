@@ -103,12 +103,14 @@ func (app *Application) SetUserLocation(message twitch.PrivateMessage) {
 	// handlers as the `location` part of the command.
 	location := message.Message[snipLength:len(message.Message)]
 	login := message.User.Name
+	twitchId := message.User.ID
 
 	app.Logger.Infow("SetUserLocation",
 		"location", location,
 		"login", login,
+		"twitchId", message.User.ID,
 	)
-	err := app.Models.Users.SetLocation(login, location)
+	err := app.Models.Users.SetLocation(twitchId, location)
 	if err != nil {
 		common.Send(message.Channel, fmt.Sprintf("Something went wrong FeelsBadMan %s", ErrRecordNotFound), app.TwitchClient)
 		app.Logger.Error(err)
