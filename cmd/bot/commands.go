@@ -154,7 +154,7 @@ func (app *Application) handleCommand(message twitch.PrivateMessage) {
 		}
 	case "lastfm":
 		if msgLen == 1 {
-			app.CheckLastFM(message)
+			app.UserCheckLastFM(message)
 			return
 		} else if cmdParams[1] == "artist" && cmdParams[2] == "top" {
 			commands.LastFmArtistTop(target, message, app.TwitchClient)
@@ -251,7 +251,7 @@ func (app *Application) handleCommand(message twitch.PrivateMessage) {
 		if msgLen == 1 {
 			// Default to first argument supplied being the name
 			// of the user to look up recently played.
-			app.CheckWeather(message)
+			app.UserCheckWeather(message)
 			return
 		} else if msgLen < 2 {
 			common.Send(target, "Not enough arguments provided.", app.TwitchClient)

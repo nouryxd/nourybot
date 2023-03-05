@@ -159,7 +159,7 @@ func (app *Application) GetUserLevel(login string) int {
 	}
 }
 
-func (app *Application) CheckWeather(message twitch.PrivateMessage) {
+func (app *Application) UserCheckWeather(message twitch.PrivateMessage) {
 	sugar := zap.NewExample().Sugar()
 	defer sugar.Sync()
 
@@ -184,4 +184,31 @@ func (app *Application) CheckWeather(message twitch.PrivateMessage) {
 	)
 
 	commands.Weather(target, location, app.TwitchClient)
+}
+
+func (app *Application) UserCheckLastFM(message twitch.PrivateMessage) {
+	sugar := zap.NewExample().Sugar()
+	defer sugar.Sync()
+
+	twitchLogin := message.User.Name
+	sugar.Infow("Twitchlogin: ",
+		"twitchLogin:", twitchLogin,
+	)
+	lastfmUser, err := app.Models.Users.GetLastFM(twitchLogin)
+	if err != nil {
+		sugar.Errorw("No LastFM account registered for: ",
+			"twitchLogin:", twitchLogin,
+		)
+		reply := "No lastfm account registered in my database. Use ()register lastfm <username> to register. (Not yet implemented) Otherwise use ()lastfm <username> without registering."
+		common.Send(message.Channel, reply, app.TwitchClient)
+		return
+	}
+
+	target := message.Channel
+	sugar.Infow("Twitchlogin: ",
+		"twitchLogin:", twitchLogin,
+		"user:", lastfmUser,
+	)
+
+	commands.LastFmUserRecent(target, lastfmUser, app.TwitchClient)
 }
