@@ -6,48 +6,32 @@ import (
 
 	"github.com/gempir/go-twitch-irc/v3"
 	"github.com/lyx0/nourybot/internal/commands"
-	"github.com/lyx0/nourybot/internal/commands/decapi"
 	"github.com/lyx0/nourybot/internal/common"
-	"github.com/lyx0/nourybot/internal/data"
 	"go.uber.org/zap"
 )
 
 // AddUser calls GetIdByLogin to get the twitch id of the login name and then adds
 // the login name, twitch id and supplied level to the database.
-func (app *Application) AddUser(login, lvl string, message twitch.PrivateMessage) {
-	userId, err := decapi.GetIdByLogin(login)
+func (app *Application) InitUser(login, twitchId string, message twitch.PrivateMessage) {
+	sugar := zap.NewExample().Sugar()
+	defer sugar.Sync()
+
+	_, err := app.Models.Users.Check(login)
+	app.Logger.Error(err)
 	if err != nil {
-		app.Logger.Error(err)
-		common.Send(message.Channel, "Something went wrong FeelsBadMan", app.TwitchClient)
+		app.Logger.Infow("InitUser: Adding new user:",
+			"login: ", login,
+			"twitchId: ", twitchId,
+		)
+		app.Models.Users.Insert(login, twitchId)
+
 		return
 	}
 
-	// Convert the level string to an integer. This is an easy check to see if
-	// the level supplied was a number only.
-	level, err := strconv.Atoi(lvl)
-	if err != nil {
-		app.Logger.Error(err)
-		common.Send(message.Channel, fmt.Sprintf("Something went wrong FeelsBadMan %s", ErrUserLevelNotInteger), app.TwitchClient)
-		return
-	}
-
-	// Create a user to hold our values to be inserted to the database.
-	user := &data.User{
-		Login:    login,
-		TwitchID: userId,
-		Level:    level,
-	}
-
-	err = app.Models.Users.Insert(user)
-	if err != nil {
-		reply := fmt.Sprintf("Something went wrong FeelsBadMan %s", err)
-		common.Send(message.Channel, reply, app.TwitchClient)
-		return
-	} else {
-		reply := fmt.Sprintf("Added user %s with level %v", login, level)
-		common.Send(message.Channel, reply, app.TwitchClient)
-		return
-	}
+	sugar.Infow("User Insert: User already registered: xd",
+		"login: ", login,
+		"twitchId: ", twitchId,
+	)
 }
 
 // DebugUser queries the database for a login name, if that name exists it returns the fields
@@ -105,9 +89,19 @@ func (app *Application) EditUserLevel(login, lvl string, message twitch.PrivateM
 	}
 }
 
-// EditUserLevel tries to update the database record for the supplied
-// login name with the new level.
-func (app *Application) SetUserLocation(location string, message twitch.PrivateMessage) {
+// SetUserLocation sets new location for the user
+func (app *Application) SetUserLocation(message twitch.PrivateMessage) {
+	// snipLength is the length we need to "snip" off of the start of `message`.
+	//  `()set location` = +13
+	//  trailing space =  +1
+	//      zero-based =  +1
+	//                 =  16
+	snipLength := 15
+
+	// Split the twitch message at `snipLength` plus length of the name of the
+	// The part of the message we are left over with is then passed on to the database
+	// handlers as the `location` part of the command.
+	location := message.Message[snipLength:len(message.Message)]
 	login := message.User.Name
 
 	app.Logger.Infow("SetUserLocation",

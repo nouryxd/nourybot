@@ -200,7 +200,7 @@ func (app *Application) handleCommand(message twitch.PrivateMessage) {
 			//app.SetLastFMUser(cmdParams[2], message)
 			return
 		} else if cmdParams[1] == "location" {
-			app.SetUserLocation(cmdParams[2], message)
+			app.SetUserLocation(message)
 			return
 		} else {
 			return
@@ -347,17 +347,6 @@ func (app *Application) handleCommand(message twitch.PrivateMessage) {
 		} else {
 			// ()addtimer gfuel 5m sponsor XD xD
 			app.AddTimer(cmdParams[1], message)
-			return
-		}
-	case "adduser":
-		if userLevel < 1000 {
-			return
-		} else if msgLen < 3 {
-			common.Send(target, "Not enough arguments provided.", app.TwitchClient)
-			return
-		} else {
-			// ()adduser nourylul 1000
-			app.AddUser(cmdParams[1], cmdParams[2], message)
 			return
 		}
 

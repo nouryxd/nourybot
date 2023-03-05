@@ -128,11 +128,11 @@ func main() {
 	// Received a PrivateMessage (normal chat message).
 	app.TwitchClient.OnPrivateMessage(func(message twitch.PrivateMessage) {
 
-		app.Logger.Infow("Message received",
-			"message", message,
-			"message.User.DisplayName", message.User.DisplayName,
-			"message.Message", message.Message,
-		)
+		// app.Logger.Infow("Message received",
+		// 	"message", message,
+		// 	"message.User.DisplayName", message.User.DisplayName,
+		// 	"message.Message", message.Message,
+		// )
 
 		// roomId is the Twitch UserID of the channel the message originated from.
 		// If there is no roomId something went really wrong.
@@ -150,6 +150,7 @@ func main() {
 			// Check if the first 2 characters of the mesage were our prefix.
 			// if they were forward the message to the command handler.
 			if message.Message[:2] == cfg.commandPrefix {
+				app.InitUser(message.User.Name, message.User.ID, message)
 				app.handleCommand(message)
 				return
 			}

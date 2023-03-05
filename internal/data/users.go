@@ -21,16 +21,16 @@ type UserModel struct {
 }
 
 // Insert inserts a user model into the database.
-func (u UserModel) Insert(user *User) error {
+func (u UserModel) Insert(login, twitchId string) error {
 	query := `
-	INSERT INTO users(login, twitchid, level)
-	VALUES ($1, $2, $3)
+	INSERT INTO users(login, twitchid)
+	VALUES ($1, $2)
 	ON CONFLICT (login)
 	DO NOTHING
 	RETURNING id, added_at;
 	`
 
-	args := []interface{}{user.Login, user.TwitchID, user.Level}
+	args := []interface{}{login, twitchId}
 
 	// Execute the query returning the number of affected rows.
 	result, err := u.DB.Exec(query, args...)
@@ -201,6 +201,33 @@ func (u UserModel) Get(login string) (*User, error) {
 		&user.TwitchID,
 		&user.Level,
 		&user.Location,
+	)
+
+	if err != nil {
+		switch {
+		case errors.Is(err, sql.ErrNoRows):
+			return nil, ErrRecordNotFound
+		default:
+			return nil, err
+		}
+	}
+
+	return &user, nil
+}
+
+// Check checks the database for a record with the given login name.
+func (u UserModel) Check(login string) (*User, error) {
+	query := `
+	SELECT id, added_at, login
+	FROM users
+	WHERE login = $1`
+
+	var user User
+
+	err := u.DB.QueryRow(query, login).Scan(
+		&user.ID,
+		&user.Login,
+		&user.TwitchID,
 	)
 
 	if err != nil {
