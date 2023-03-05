@@ -157,6 +157,32 @@ func (u UserModel) GetLastFM(login string) (string, error) {
 	return user.LastFMUsername, nil
 }
 
+// SetLocation searches the database for a record with the provided login value
+// and if that exists sets the location to the supplied
+func (u UserModel) GetLevel(twitchId string) (int, error) {
+	query := `
+	SELECT level
+	FROM users
+	WHERE twitchid = $1`
+
+	var user User
+
+	err := u.DB.QueryRow(query, twitchId).Scan(
+		&user.Level,
+	)
+
+	if err != nil {
+		switch {
+		case errors.Is(err, sql.ErrNoRows):
+			return -1, ErrRecordNotFound
+		default:
+			return -1, err
+		}
+	}
+
+	return user.Level, nil
+}
+
 // Setlevel searches the database for a record with the provided login value
 // and if that exists sets the level to the supplied level value.
 func (u UserModel) SetLevel(login string, level int) error {
@@ -216,18 +242,17 @@ func (u UserModel) Get(login string) (*User, error) {
 }
 
 // Check checks the database for a record with the given login name.
-func (u UserModel) Check(login string) (*User, error) {
+func (u UserModel) Check(twitchId string) (*User, error) {
 	query := `
-	SELECT id, added_at, login
+	SELECT id, login
 	FROM users
-	WHERE login = $1`
+	WHERE twitchid = $1`
 
 	var user User
 
-	err := u.DB.QueryRow(query, login).Scan(
+	err := u.DB.QueryRow(query, twitchId).Scan(
 		&user.ID,
 		&user.Login,
-		&user.TwitchID,
 	)
 
 	if err != nil {

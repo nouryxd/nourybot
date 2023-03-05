@@ -16,7 +16,7 @@ func (app *Application) InitUser(login, twitchId string, message twitch.PrivateM
 	sugar := zap.NewExample().Sugar()
 	defer sugar.Sync()
 
-	_, err := app.Models.Users.Check(login)
+	_, err := app.Models.Users.Check(twitchId)
 	app.Logger.Error(err)
 	if err != nil {
 		app.Logger.Infow("InitUser: Adding new user:",
@@ -144,12 +144,12 @@ func (app *Application) SetUserLastFM(lastfmUser string, message twitch.PrivateM
 // GetUserLevel takes in a login name and queries the database for an entry
 // with such a name value. If there is one it returns the level value as an integer.
 // Returns 0 on an error which is the level for unregistered users.
-func (app *Application) GetUserLevel(login string) int {
-	user, err := app.Models.Users.Get(login)
+func (app *Application) GetUserLevel(twitchId string) int {
+	userLevel, err := app.Models.Users.GetLevel(twitchId)
 	if err != nil {
 		return 0
 	} else {
-		return user.Level
+		return userLevel
 	}
 }
 

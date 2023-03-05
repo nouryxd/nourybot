@@ -27,8 +27,9 @@ type Models struct {
 	Users interface {
 		Insert(login, twitchId string) error
 		Get(login string) (*User, error)
-		Check(login string) (*User, error)
+		Check(twitchId string) (*User, error)
 		SetLevel(login string, level int) error
+		GetLevel(twitchId string) (int, error)
 		SetLocation(login, location string) error
 		GetLocation(login string) (string, error)
 		SetLastFM(login, lastfmUser string) error
