@@ -30,7 +30,7 @@ type Models struct {
 		Check(twitchId string) (*User, error)
 		SetLevel(login string, level int) error
 		GetLevel(twitchId string) (int, error)
-		SetLocation(login, location string) error
+		SetLocation(twitchId, location string) error
 		GetLocation(twitchId string) (string, error)
 		SetLastFM(login, lastfmUser string) error
 		GetLastFM(login string) (string, error)
