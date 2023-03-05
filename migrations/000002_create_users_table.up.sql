@@ -3,7 +3,7 @@ CREATE TABLE IF NOT EXISTS users (
 	added_at timestamp(0) with time zone NOT NULL DEFAULT NOW(),
 	login text UNIQUE NOT NULL,
 	twitchid text NOT NULL,
-	level integer NOT NULL,
+	level integer,
 	location text,
 	lastfm_username text
 );
