@@ -4,4 +4,4 @@ services:
     build:
       dockerfile: Dockerfile
       context: .
-    restart: unless-stopped
+    # restart: unless-stopped
