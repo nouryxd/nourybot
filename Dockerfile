@@ -7,6 +7,4 @@ COPY . /app
 # Set working directory
 WORKDIR /app
 
-RUN cd cmd && go build -o Nourybot
-
-CMD ["/app/cmd/Nourybot"]
+RUN make xdprod

@@ -1,0 +1,7 @@
+version: "3.9"
+services:
+  nourybot:
+    build:
+      dockerfile: Dockerfile
+      context: .
+    restart: unless-stopped
