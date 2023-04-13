@@ -246,6 +246,24 @@ func (app *Application) handleCommand(message twitch.PrivateMessage) {
 			return
 		}
 
+	case "phonetic":
+		if msgLen < 2 {
+			common.Send(target, "Not enough arguments provided. Usage: ()phonetic <text>. ()help phonetic for more info", app.TwitchClient)
+			return
+		} else {
+			commands.Phonetic(target, message.Message[10:len(message.Message)], app.TwitchClient)
+			return
+		}
+
+	case "ph":
+		if msgLen < 2 {
+			common.Send(target, "Not enough arguments provided. Usage: ()ph <text>. ()help ph for more info", app.TwitchClient)
+			return
+		} else {
+			commands.Phonetic(target, message.Message[4:len(message.Message)], app.TwitchClient)
+			return
+		}
+
 	// ()weather <location>
 	case "weather":
 		if msgLen == 1 {
@@ -492,6 +510,8 @@ var helpText = map[string]string{
 	"help":       "Returns more information about a command and its usage. 4Head Example usage: ()help <command name>",
 	"ping":       "Hopefully returns a Pong! monkaS",
 	"preview":    "Returns a link to an (almost) live screenshot of a live channel. Alias: preview, thumbnail. Example usage: ()preview <channel>",
+	"phonetic":   "Translates the input to the text equivalent on a phonetic russian keyboard layout. Layout and general functionality is the same as https://russian.typeit.org/",
+	"ph":         "Translates the input to the text equivalent on a phonetic russian keyboard layout. Layout and general functionality is the same as https://russian.typeit.org/",
 	"thumbnail":  "Returns a link to an (almost) live screenshot of a live channel. Alias: preview, thumbnail. Example usage: ()thumbnail <channel>",
 	"tweet":      "Returns the latest tweet for a provided user. Example usage: ()tweet <username>",
 	"seventv":    "Returns the search URL for a given SevenTV emote. Aliases: seventv, 7tv. Example usage: ()seventv FeelsDankMan",
