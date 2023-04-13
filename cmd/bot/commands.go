@@ -502,6 +502,20 @@ var helpText = map[string]string{
 	"xkcd":       "Returns a link to the latest xkcd comic. Example usage: ()xkcd",
 }
 
+func (app *Application) loadCommandHelp() {
+	for k, v := range helpText {
+		err := app.Rdb.HSet(ctx, "command-help", k, v).Err()
+		if err != nil {
+			app.Logger.Panic(err)
+		}
+	}
+	commandHelpText := app.Rdb.HGetAll(ctx, "command-help").Val()
+	app.Logger.Infow("Successfully loaded command help text into redis",
+		"commandHelpText", commandHelpText,
+	)
+
+}
+
 // Help checks if a help text for a given command exists and replies with it.
 func (app *Application) commandHelp(target, name, username string) {
 	// Check if the `helpText` map has an entry for `name`. If it does return it's value entry

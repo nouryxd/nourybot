@@ -262,7 +262,6 @@ func (app *Application) InitialTimers() {
 		if _, err := app.Rdb.Pipelined(ctx, func(rdb redis.Pipeliner) error {
 			rdb.HSet(ctx, cronName, "timer-id", v.ID)
 			rdb.HSet(ctx, cronName, "timer-name", v.Name)
-			rdb.HSet(ctx, cronName, "timer-cronname", cronName)
 			rdb.HSet(ctx, cronName, "timer-text", v.Text)
 			rdb.HSet(ctx, cronName, "timer-channel", v.Channel)
 			rdb.HSet(ctx, cronName, "timer-repeat", v.Repeat)

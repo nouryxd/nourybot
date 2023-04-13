@@ -210,6 +210,8 @@ func main() {
 		// Start time
 		common.StartTime()
 
+		app.loadCommandHelp()
+
 		// Join the channels in the database.
 		app.InitialJoin()
 
