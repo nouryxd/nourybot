@@ -15,6 +15,7 @@ import (
 	"github.com/lyx0/nourybot/internal/common"
 	"github.com/lyx0/nourybot/internal/data"
 	"github.com/nicklaw5/helix"
+	"github.com/redis/go-redis/v9"
 	"go.uber.org/zap"
 )
 
@@ -39,9 +40,11 @@ type Application struct {
 	Db           *sql.DB
 	Models       data.Models
 	Scheduler    *cron.Cron
+	Rdb          *redis.Client
 }
 
 var envFlag string
+var ctx = context.Background()
 
 func init() {
 	flag.StringVar(&envFlag, "env", "dev", "database connection to use: (dev/prod)")
@@ -115,6 +118,24 @@ func main() {
 		sugar.Fatal(err)
 	}
 
+	rdb := redis.NewClient(&redis.Options{
+		Addr:     "127.0.0.1:6379",
+		Password: "",
+		DB:       0,
+	})
+
+	err = rdb.Set(ctx, "key", "value", 0).Err()
+	if err != nil {
+		sugar.Panic(err)
+	}
+	val, err := rdb.Get(ctx, "key").Result()
+	if err != nil {
+		sugar.Panic(err)
+	}
+	sugar.Infow("Redis initialization key",
+		"key", val,
+	)
+
 	// Initialize Application with the new values
 	app := &Application{
 		TwitchClient: tc,
@@ -123,6 +144,7 @@ func main() {
 		Db:           db,
 		Models:       data.NewModels(db),
 		Scheduler:    cron.New(),
+		Rdb:          rdb,
 	}
 
 	// Received a PrivateMessage (normal chat message).

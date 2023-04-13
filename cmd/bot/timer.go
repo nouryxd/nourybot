@@ -8,6 +8,7 @@ import (
 	"github.com/gempir/go-twitch-irc/v3"
 	"github.com/lyx0/nourybot/internal/common"
 	"github.com/lyx0/nourybot/internal/data"
+	"github.com/redis/go-redis/v9"
 )
 
 // AddTimer slices the message into relevant parts, adding the values onto a
@@ -66,11 +67,26 @@ func (app *Application) AddTimer(name string, message twitch.PrivateMessage) {
 		} else {
 			// cronName is the internal, unique tag/name for the timer.
 			// A timer named "sponsor" in channel "forsen" will be named "forsensponsor"
-			cronName := fmt.Sprintf("%s%s", message.Channel, name)
+			cronName := fmt.Sprintf("%s-%s", message.Channel, name)
 
 			app.Scheduler.AddFunc(fmt.Sprintf("@every %s", repeat), func() { app.newPrivateMessageTimer(message.Channel, text) }, cronName)
 			app.Logger.Infow("Added new timer",
 				"timer", timer,
+			)
+
+			if _, err := app.Rdb.Pipelined(ctx, func(rdb redis.Pipeliner) error {
+				rdb.HSet(ctx, cronName, "timer-name", name)
+				rdb.HSet(ctx, cronName, "timer-cronname", cronName)
+				rdb.HSet(ctx, cronName, "timer-text", text)
+				rdb.HSet(ctx, cronName, "timer-channel", message.Channel)
+				rdb.HSet(ctx, cronName, "timer-repeat", repeat)
+				return nil
+			}); err != nil {
+				app.Logger.Panic(err)
+			}
+			app.Logger.Infow("Loaded timer into redis:",
+				"key", cronName,
+				"value", app.Rdb.HGetAll(ctx, cronName),
 			)
 
 			reply := fmt.Sprintf("Successfully added timer %s repeating every %s", name, repeat)
@@ -104,9 +120,10 @@ func (app *Application) EditTimer(name string, message twitch.PrivateMessage) {
 	}
 
 	// Delete the old timer
-	cronName := fmt.Sprintf("%s%s", message.Channel, name)
+	cronName := fmt.Sprintf("%s-%s", message.Channel, name)
 	app.Scheduler.RemoveJob(cronName)
 
+	_ = app.Rdb.Del(ctx, cronName)
 	err = app.Models.Timers.Delete(name)
 	if err != nil {
 		app.Logger.Errorw("Error deleting timer from database",
@@ -174,15 +191,29 @@ func (app *Application) EditTimer(name string, message twitch.PrivateMessage) {
 		} else { // this is a bit scuffed. The else here is the end of a successful call.
 			// cronName is the internal, unique tag/name for the timer.
 			// A timer named "sponsor" in channel "forsen" will be named "forsensponsor"
-			cronName := fmt.Sprintf("%s%s", message.Channel, name)
+			cronName := fmt.Sprintf("%s-%s", message.Channel, name)
 
 			app.Scheduler.AddFunc(fmt.Sprintf("@every %s", repeat), func() { app.newPrivateMessageTimer(message.Channel, text) }, cronName)
-
 			app.Logger.Infow("Updated a timer",
 				"Name", name,
 				"Channel", message.Channel,
 				"Old timer", old,
 				"New timer", timer,
+			)
+
+			if _, err := app.Rdb.Pipelined(ctx, func(rdb redis.Pipeliner) error {
+				rdb.HSet(ctx, cronName, "timer-name", name)
+				rdb.HSet(ctx, cronName, "timer-cronname", cronName)
+				rdb.HSet(ctx, cronName, "timer-text", text)
+				rdb.HSet(ctx, cronName, "timer-channel", message.Channel)
+				rdb.HSet(ctx, cronName, "timer-repeat", repeat)
+				return nil
+			}); err != nil {
+				app.Logger.Panic(err)
+			}
+			app.Logger.Infow("Loaded timer into redis:",
+				"key", cronName,
+				"value", app.Rdb.HGetAll(ctx, cronName),
 			)
 
 			reply := fmt.Sprintf("Successfully updated timer %s", name)
@@ -222,17 +253,37 @@ func (app *Application) InitialTimers() {
 
 		// cronName is the internal, unique tag/name for the timer.
 		// A timer named "sponsor" in channel "forsen" will be named "forsensponsor"
-		cronName := fmt.Sprintf("%s%s", v.Channel, v.Name)
+		cronName := fmt.Sprintf("%s-%s", v.Channel, v.Name)
 
 		// Repeating is at what times the timer should repeat.
 		// 2 minute timer is @every 2m
 		repeating := fmt.Sprintf("@every %s", v.Repeat)
 
+		if _, err := app.Rdb.Pipelined(ctx, func(rdb redis.Pipeliner) error {
+			rdb.HSet(ctx, cronName, "timer-id", v.ID)
+			rdb.HSet(ctx, cronName, "timer-name", v.Name)
+			rdb.HSet(ctx, cronName, "timer-cronname", cronName)
+			rdb.HSet(ctx, cronName, "timer-text", v.Text)
+			rdb.HSet(ctx, cronName, "timer-channel", v.Channel)
+			rdb.HSet(ctx, cronName, "timer-repeat", v.Repeat)
+			return nil
+		}); err != nil {
+			app.Logger.Panic(err)
+		}
+		app.Logger.Infow("Loaded timer into redis:",
+			"key", cronName,
+			"value", app.Rdb.HGetAll(ctx, v.Channel),
+		)
+		app.Scheduler.AddFunc(repeating, func() { app.newPrivateMessageTimer(v.Channel, v.Text) }, cronName)
+
 		// Add new value to the slice
 		ts = append(ts, v)
-
-		app.Scheduler.AddFunc(repeating, func() { app.newPrivateMessageTimer(v.Channel, v.Text) }, cronName)
 	}
+
+	// var model1 rdbVal
+	// if err := app.Rdb.HGetAll(ctx, cronName).Scan(&model1); err != nil {
+	// app.Logger.Panic(err)
+	// }
 
 	app.Logger.Infow("Initial timers",
 		"timer", ts,
@@ -247,7 +298,7 @@ func (app *Application) newPrivateMessageTimer(channel, text string) {
 
 // DeleteTimer takes in the name of a timer and tries to delete the timer from the database.
 func (app *Application) DeleteTimer(name string, message twitch.PrivateMessage) {
-	cronName := fmt.Sprintf("%s%s", message.Channel, name)
+	cronName := fmt.Sprintf("%s-%s", message.Channel, name)
 	app.Scheduler.RemoveJob(cronName)
 
 	app.Logger.Infow("Deleting timer",
@@ -256,6 +307,7 @@ func (app *Application) DeleteTimer(name string, message twitch.PrivateMessage) 
 		"cronName", cronName,
 	)
 
+	_ = app.Rdb.Del(ctx, cronName)
 	err := app.Models.Timers.Delete(name)
 	if err != nil {
 		app.Logger.Errorw("Error deleting timer from database",

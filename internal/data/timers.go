@@ -8,11 +8,12 @@ import (
 )
 
 type Timer struct {
-	ID      int    `json:"id"`
-	Name    string `json:"name"`
-	Text    string `json:"text"`
-	Channel string `json:"channel"`
-	Repeat  string `json:"repeat"`
+	ID       int    `json:"id" redis:"timer-id"`
+	Name     string `json:"name" redis:"timer-name"`
+	CronName string `redis:"timer-cronname"`
+	Text     string `json:"text" redis:"timer-text"`
+	Channel  string `json:"channel" redis:"timer-channel"`
+	Repeat   string `json:"repeat" redis:"timer-repeat"`
 }
 
 type TimerModel struct {
