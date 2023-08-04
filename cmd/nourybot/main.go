@@ -4,7 +4,6 @@ import (
 	"context"
 	"database/sql"
 	"flag"
-	"log"
 	"os"
 	"time"
 
@@ -12,10 +11,9 @@ import (
 	"github.com/jakecoffman/cron"
 	"github.com/joho/godotenv"
 	_ "github.com/lib/pq"
-	"github.com/lyx0/nourybot/internal/common"
-	"github.com/lyx0/nourybot/internal/data"
 	"github.com/nicklaw5/helix"
-	"github.com/redis/go-redis/v9"
+	"github.com/rs/zerolog/log"
+
 	"go.uber.org/zap"
 )
 
@@ -33,14 +31,14 @@ type config struct {
 	}
 }
 
-type Application struct {
+type application struct {
 	TwitchClient *twitch.Client
 	HelixClient  *helix.Client
-	Logger       *zap.SugaredLogger
+	Log          *zap.SugaredLogger
 	Db           *sql.DB
-	Models       data.Models
-	Scheduler    *cron.Cron
-	Rdb          *redis.Client
+	// Models       data.Models
+	Scheduler *cron.Cron
+	// Rdb       *redis.Client
 }
 
 var envFlag string
@@ -50,10 +48,8 @@ func init() {
 	flag.StringVar(&envFlag, "env", "dev", "database connection to use: (dev/prod)")
 	flag.Parse()
 }
-
 func main() {
 	var cfg config
-
 	// Initialize a new sugared logger that we'll pass on
 	// down through the application.
 	logger := zap.NewExample()
@@ -62,7 +58,7 @@ func main() {
 
 	err := godotenv.Load()
 	if err != nil {
-		log.Fatal("Error loading .env file")
+		sugar.Fatal("Error loading .env")
 	}
 
 	// Twitch config variables
@@ -79,7 +75,6 @@ func main() {
 	case "prod":
 		cfg.db.dsn = os.Getenv("SUPABASE_DSN")
 	}
-
 	// Database config variables
 	cfg.db.maxOpenConns = 25
 	cfg.db.maxIdleConns = 25
@@ -115,44 +110,28 @@ func main() {
 	// Establish database connection
 	db, err := openDB(cfg)
 	if err != nil {
-		sugar.Fatal(err)
+		sugar.Fatalw("could not establish database connection",
+			"err", err,
+		)
 	}
 
-	rdb := redis.NewClient(&redis.Options{
-		Addr:     "127.0.0.1:6379",
-		Password: "",
-		DB:       0,
-	})
-
-	err = rdb.Set(ctx, "key", "value", 0).Err()
-	if err != nil {
-		sugar.Panic(err)
-	}
-	val, err := rdb.Get(ctx, "key").Result()
-	if err != nil {
-		sugar.Panic(err)
-	}
-	sugar.Infow("Redis initialization key",
-		"key", val,
+	sugar.Infow("db.Stats",
+		"db.Stats", db.Stats(),
 	)
 
-	// Initialize Application with the new values
-	app := &Application{
+	app := &application{
 		TwitchClient: tc,
 		HelixClient:  helixClient,
-		Logger:       sugar,
+		Log:          sugar,
 		Db:           db,
-		Models:       data.NewModels(db),
-		Scheduler:    cron.New(),
-		Rdb:          rdb,
 	}
 
 	// Received a PrivateMessage (normal chat message).
 	app.TwitchClient.OnPrivateMessage(func(message twitch.PrivateMessage) {
-
-		// app.Logger.Infow("Message received",
-		// 	"message", message,
+		// sugar.Infow("New Twitch PrivateMessage",
+		// 	"message.Channel", message.Channel,
 		// 	"message.User.DisplayName", message.User.DisplayName,
+		// 	"message.User.ID", message.User.ID,
 		// 	"message.Message", message.Message,
 		// )
 
@@ -160,73 +139,28 @@ func main() {
 		// If there is no roomId something went really wrong.
 		roomId := message.Tags["room-id"]
 		if roomId == "" {
-			app.Logger.Errorw("Missing room-id in message tag",
-				"roomId", roomId,
-			)
+			log.Error().Msgf("Missing room-id in message tag: %s", roomId)
 			return
 		}
-
-		// Message was shorter than our prefix is therefore it's irrelevant for us.
-		if len(message.Message) >= 2 {
-			// This bots prefix is "()" configured above at cfg.commandPrefix,
-			// Check if the first 2 characters of the mesage were our prefix.
-			// if they were forward the message to the command handler.
-			if message.Message[:2] == cfg.commandPrefix {
-				app.InitUser(message.User.Name, message.User.ID, message)
-				app.handleCommand(message)
-				return
-			}
-
-			// Special rule for #pajlada.
-			if message.Message == "!nourybot" {
-				common.Send(message.Channel, "Lidl Twitch bot made by @nourylul. Prefix: ()", app.TwitchClient)
-			}
-
-		}
-	})
-
-	// Received a WhisperMessage (Twitch DM).
-	app.TwitchClient.OnWhisperMessage(func(message twitch.WhisperMessage) {
-		// Print the whisper message for now.
-		app.Logger.Infow("Whisper Message received",
-			"message", message,
-			"message.User.DisplayName", message.User.DisplayName,
-			"message.Message", message.Message,
-		)
 	})
 
 	// Successfully connected to Twitch
+	app.Log.Infow("Successfully connected to Twitch Servers",
+		"Bot username", cfg.twitchUsername,
+		"Environment", envFlag,
+		"Database Open Conns", cfg.db.maxOpenConns,
+		"Database Idle Conns", cfg.db.maxIdleConns,
+		"Database Idle Time", cfg.db.maxIdleTime,
+		"Database", db.Stats(),
+		"Helix", helixResp,
+	)
 	app.TwitchClient.OnConnect(func() {
-		app.Logger.Infow("Successfully connected to Twitch Servers",
-			"Bot username", cfg.twitchUsername,
-			"Environment", envFlag,
-			"Database Open Conns", cfg.db.maxOpenConns,
-			"Database Idle Conns", cfg.db.maxIdleConns,
-			"Database Idle Time", cfg.db.maxIdleTime,
-			"Database", db.Stats(),
-			"Helix", helixResp,
-		)
-
-		// Start time
-		common.StartTime()
-
-		app.loadCommandHelp()
-
-		// Join the channels in the database.
-		app.InitialJoin()
-
-		// Load the initial timers from the database.
-		app.InitialTimers()
-
-		// Start the timers.
-		app.Scheduler.Start()
-
-		common.Send("nourylul", "dankCircle", app.TwitchClient)
-		common.Send("nourybot", "gopherDance", app.TwitchClient)
-		common.Send("xnoury", "pajaDink", app.TwitchClient)
-		common.Send("uudelleenkytkeytynyt", "PepeS", app.TwitchClient)
+		app.TwitchClient.Join("nourylul")
+		app.TwitchClient.Say("nourylul", "xD!")
+		// sugar.Infow("db.Stats",
+		// "db.Stats", db.Stats(),
+		// )
 	})
-
 	// Actually connect to chat.
 	err = app.TwitchClient.Connect()
 	if err != nil {
