@@ -5,7 +5,7 @@ go 1.20
 require (
 	github.com/briandowns/openweathermap v0.18.0
 	github.com/dustin/go-humanize v1.0.0
-	github.com/gempir/go-twitch-irc/v4 v4.0.0 // indirect
+	github.com/gempir/go-twitch-irc/v4 v4.0.0
 	github.com/jakecoffman/cron v0.0.0-20190106200828-7e2009c226a5
 	github.com/joho/godotenv v1.4.0
 	github.com/julienschmidt/httprouter v1.3.0
