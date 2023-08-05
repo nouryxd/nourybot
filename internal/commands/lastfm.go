@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/gempir/go-twitch-irc/v3"
+	"github.com/gempir/go-twitch-irc/v4"
 	"github.com/joho/godotenv"
 	"github.com/lyx0/nourybot/internal/common"
 	"github.com/shkh/lastfm-go/lastfm"

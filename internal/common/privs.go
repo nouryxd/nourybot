@@ -1,6 +1,6 @@
 package common
 
-import "github.com/gempir/go-twitch-irc/v3"
+import "github.com/gempir/go-twitch-irc/v4"
 
 // ElevatedPrivsMessage is checking a given message twitch.PrivateMessage
 // if it came from a moderator/vip/or broadcaster and returns a bool

@@ -8,7 +8,7 @@ import (
 	"log"
 	"net/http"
 
-	"github.com/gempir/go-twitch-irc/v3"
+	"github.com/gempir/go-twitch-irc/v4"
 	"go.uber.org/zap"
 )
 

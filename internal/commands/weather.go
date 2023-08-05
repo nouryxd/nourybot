@@ -5,7 +5,7 @@ import (
 	"os"
 
 	owm "github.com/briandowns/openweathermap"
-	"github.com/gempir/go-twitch-irc/v3"
+	"github.com/gempir/go-twitch-irc/v4"
 	"github.com/joho/godotenv"
 	"github.com/lyx0/nourybot/internal/common"
 	"go.uber.org/zap"

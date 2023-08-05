@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"strconv"
 
-	"github.com/gempir/go-twitch-irc/v3"
+	"github.com/gempir/go-twitch-irc/v4"
 	"github.com/lyx0/nourybot/internal/commands"
 	"github.com/lyx0/nourybot/internal/common"
 	"go.uber.org/zap"
@@ -46,7 +46,7 @@ func (app *Application) DebugUser(login string, message twitch.PrivateMessage) {
 	} else {
 		reply := fmt.Sprintf("User %v: ID %v, Login: %s, TwitchID: %v, Level: %v", login, user.ID, user.Login, user.TwitchID, user.Level)
 		common.Send(message.Channel, reply, app.TwitchClient)
-		app.TwitchClient.Whisper(message.User.Name, reply)
+		//app.TwitchClient.Whisper(message.User.Name, reply)
 		return
 	}
 }

@@ -3,7 +3,7 @@ package main
 import (
 	"fmt"
 
-	"github.com/gempir/go-twitch-irc/v3"
+	"github.com/gempir/go-twitch-irc/v4"
 	"github.com/lyx0/nourybot/internal/commands/decapi"
 	"github.com/lyx0/nourybot/internal/common"
 	"github.com/lyx0/nourybot/internal/data"
