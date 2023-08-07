@@ -73,7 +73,7 @@ func main() {
 	case "dev":
 		cfg.db.dsn = os.Getenv("LOCAL_DSN")
 	case "prod":
-		cfg.db.dsn = os.Getenv("SUPABASE_DSN")
+		cfg.db.dsn = os.Getenv("REMOTE_DSN")
 	}
 	// Database config variables
 	cfg.db.maxOpenConns = 25
