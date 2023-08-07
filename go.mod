@@ -3,7 +3,7 @@ module github.com/lyx0/nourybot
 go 1.20
 
 require (
-	github.com/gempir/go-twitch-irc/v3 v3.3.0
+	github.com/gempir/go-twitch-irc/v4 v4.0.0
 	github.com/jakecoffman/cron v0.0.0-20190106200828-7e2009c226a5
 	github.com/lib/pq v1.10.9
 	github.com/nicklaw5/helix v1.25.0

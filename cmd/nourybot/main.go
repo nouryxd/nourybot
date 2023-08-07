@@ -7,7 +7,7 @@ import (
 	"os"
 	"time"
 
-	"github.com/gempir/go-twitch-irc/v3"
+	"github.com/gempir/go-twitch-irc/v4"
 	"github.com/jakecoffman/cron"
 	"github.com/joho/godotenv"
 	_ "github.com/lib/pq"
