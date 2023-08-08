@@ -17,6 +17,7 @@ require (
 )
 
 require (
+	github.com/dustin/go-humanize v1.0.1
 	github.com/golang-jwt/jwt v3.2.1+incompatible // indirect
 	github.com/joho/godotenv v1.5.1
 	github.com/mattn/go-colorable v0.1.12 // indirect

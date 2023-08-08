@@ -11,6 +11,7 @@ import (
 	"github.com/jakecoffman/cron"
 	"github.com/joho/godotenv"
 	_ "github.com/lib/pq"
+	"github.com/lyx0/nourybot/internal/common"
 	"github.com/nicklaw5/helix"
 	"github.com/rs/zerolog/log"
 
@@ -53,7 +54,13 @@ func main() {
 	// Initialize a new sugared logger that we'll pass on
 	// down through the application.
 	logger := zap.NewExample()
-	defer logger.Sync()
+	defer func() {
+		if err := logger.Sync(); err != nil {
+			logger.Sugar().Fatalw("error syncing logger",
+				"error", err,
+			)
+		}
+	}()
 	sugar := logger.Sugar()
 
 	err := godotenv.Load()
@@ -100,9 +107,6 @@ func main() {
 			"err", err,
 		)
 	}
-	sugar.Infow("Got new helix AppAccessToken",
-		"helixClient", helixResp,
-	)
 
 	// Set the access token on the client
 	helixClient.SetAppAccessToken(helixResp.Data.AccessToken)
@@ -142,24 +146,40 @@ func main() {
 			log.Error().Msgf("Missing room-id in message tag: %s", roomId)
 			return
 		}
+
+		// Message was shorter than our prefix is therefore it's irrelevant for us.
+		if len(message.Message) >= 2 {
+			// This bots prefix is "()" configured above at cfg.commandPrefix,
+			// Check if the first 2 characters of the mesage were our prefix.
+			// if they were forward the message to the command handler.
+			if message.Message[:2] == cfg.commandPrefix {
+				app.handleCommand(message)
+				return
+			}
+
+			// Special rule for #pajlada.
+			if message.Message == "!nourybot" {
+				common.Send(message.Channel, "Lidl Twitch bot made by @nourylul. Prefix: ()", app.TwitchClient)
+			}
+		}
 	})
 
-	// Successfully connected to Twitch
-	app.Log.Infow("Successfully connected to Twitch Servers",
-		"Bot username", cfg.twitchUsername,
-		"Environment", envFlag,
-		"Database Open Conns", cfg.db.maxOpenConns,
-		"Database Idle Conns", cfg.db.maxIdleConns,
-		"Database Idle Time", cfg.db.maxIdleTime,
-		"Database", db.Stats(),
-		"Helix", helixResp,
-	)
 	app.TwitchClient.OnConnect(func() {
+		common.StartTime()
+
 		app.TwitchClient.Join("nourylul")
 		app.TwitchClient.Say("nourylul", "xD!")
-		// sugar.Infow("db.Stats",
-		// "db.Stats", db.Stats(),
-		// )
+
+		// Successfully connected to Twitch
+		app.Log.Infow("Successfully connected to Twitch Servers",
+			"Bot username", cfg.twitchUsername,
+			"Environment", envFlag,
+			"Database Open Conns", cfg.db.maxOpenConns,
+			"Database Idle Conns", cfg.db.maxIdleConns,
+			"Database Idle Time", cfg.db.maxIdleTime,
+			"Database", db.Stats(),
+			"Helix", helixResp,
+		)
 	})
 	// Actually connect to chat.
 	err = app.TwitchClient.Connect()
