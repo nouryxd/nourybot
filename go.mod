@@ -8,6 +8,7 @@ require (
 	github.com/lib/pq v1.10.9
 	github.com/nicklaw5/helix v1.25.0
 	github.com/rs/zerolog v1.29.1
+	github.com/shkh/lastfm-go v0.0.0-20191215035245-89a801c244e0
 	go.uber.org/zap v1.24.0
 )
 

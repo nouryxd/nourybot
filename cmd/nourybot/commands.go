@@ -81,6 +81,15 @@ func (app *application) handleCommand(message twitch.PrivateMessage) {
 			reply, _ = commands.Currency(cmdParams[1], cmdParams[2], cmdParams[4])
 		}
 
+	case "lastfm":
+		if msgLen == 1 {
+			reply = app.UserCheckLastFM(message)
+		} else {
+			// Default to first argument supplied being the name
+			// of the user to look up recently played.
+			reply = commands.LastFmUserRecent(target, cmdParams[1])
+		}
+
 	case "nourybot":
 		reply = "Lidl Twitch bot made by @nourylul. Prefix: ()"
 
@@ -97,7 +106,7 @@ func (app *application) handleCommand(message twitch.PrivateMessage) {
 		// ()weather <location>
 	case "weather":
 		if msgLen == 1 {
-			reply = "Not enough arguments provided."
+			app.UserCheckWeather(message)
 		} else if msgLen < 2 {
 			reply = "Not enough arguments provided."
 		} else {
@@ -136,6 +145,23 @@ func (app *application) handleCommand(message twitch.PrivateMessage) {
 				app.EditCommandLevel(cmdParams[3], cmdParams[4], message)
 			case "category":
 				app.EditCommandCategory(cmdParams[3], cmdParams[4], message)
+			}
+		}
+
+	case "set":
+		switch cmdParams[1] {
+		case "lastfm":
+			app.SetUserLastFM(cmdParams[2], message)
+		case "location":
+			app.SetUserLocation(message)
+		}
+
+	case "user":
+		switch cmdParams[1] {
+		case "edit":
+			switch cmdParams[2] {
+			case "level":
+				app.EditUserLevel(cmdParams[3], cmdParams[4], message)
 			}
 		}
 
