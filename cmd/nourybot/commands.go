@@ -11,6 +11,7 @@ import (
 // handleCommand takes in a twitch.PrivateMessage and then routes the message to
 // the function that is responsible for each command and knows how to deal with it accordingly.
 func (app *application) handleCommand(message twitch.PrivateMessage) {
+	var reply string
 
 	// Increments the counter how many commands have been used, called in the ping command.
 	common.CommandUsed()
@@ -35,7 +36,6 @@ func (app *application) handleCommand(message twitch.PrivateMessage) {
 	// target is the channelname the message originated from and
 	// where the TwitchClient should send the response
 	target := message.Channel
-
 	app.Log.Infow("Command received",
 		// "message", message, // Pretty taxing
 		"message.Message", message.Message,
@@ -55,22 +55,24 @@ func (app *application) handleCommand(message twitch.PrivateMessage) {
 	switch commandName {
 	case "":
 		if msgLen == 1 {
-			common.Send(target, "xd", app.TwitchClient)
-			return
+			reply = "xd"
 		}
 
 	case "nourybot":
-		common.Send(target, "Lidl Twitch bot made by @nourylul. Prefix: ()", app.TwitchClient)
-		return
+		reply = "Lidl Twitch bot made by @nourylul. Prefix: ()"
 
 	case "ping":
-		commands.Ping(target, app.TwitchClient)
-		return
+		reply = commands.Ping()
 		// ()bttv <emote name>
 
 		// ##################
 		// Check if the commandName exists as the "name" of a command in the database.
 		// if it doesnt then ignore it.
 		// ##################
+	}
+
+	if reply != "" {
+		app.Send(target, reply)
+		return
 	}
 }

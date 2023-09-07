@@ -1,4 +1,4 @@
-package common
+package main
 
 import (
 	"bytes"
@@ -8,7 +8,6 @@ import (
 	"log"
 	"net/http"
 
-	"github.com/gempir/go-twitch-irc/v4"
 	"go.uber.org/zap"
 )
 
@@ -39,7 +38,7 @@ var (
 // returns true and a string with the reason if it was banned.
 // More information:
 // https://gist.github.com/pajlada/57464e519ba8d195a97ddcd0755f9715
-func checkMessage(text string) (bool, string) {
+func (app *application) checkMessage(text string) (bool, string) {
 	sugar := zap.NewExample().Sugar()
 	defer sugar.Sync()
 
@@ -83,7 +82,7 @@ func checkMessage(text string) (bool, string) {
 
 // Send is used to send twitch replies and contains the necessary
 // safeguards and logic for that.
-func Send(target, message string, tc *twitch.Client) {
+func (app *application) Send(target, message string) {
 	sugar := zap.NewExample().Sugar()
 	defer sugar.Sync()
 
@@ -101,10 +100,10 @@ func Send(target, message string, tc *twitch.Client) {
 	}
 
 	// check the message for bad words before we say it
-	messageBanned, banReason := checkMessage(message)
+	messageBanned, banReason := app.checkMessage(message)
 	if messageBanned {
 		// Bad message, replace message and log it.
-		tc.Say(target, "[BANPHRASED] monkaS")
+		app.TwitchClient.Say(target, "[BANPHRASED] monkaS")
 		sugar.Infow("banned message detected",
 			"target channel", target,
 			"message", message,
@@ -123,13 +122,13 @@ func Send(target, message string, tc *twitch.Client) {
 			firstMessage := message[0:499]
 			secondMessage := message[499:]
 
-			tc.Say(target, firstMessage)
-			tc.Say(target, secondMessage)
+			app.TwitchClient.Say(target, firstMessage)
+			app.TwitchClient.Say(target, secondMessage)
 
 			return
 		}
 		// Message was fine.
-		tc.Say(target, message)
+		app.TwitchClient.Say(target, message)
 		return
 	}
 }
@@ -137,7 +136,7 @@ func Send(target, message string, tc *twitch.Client) {
 // SendNoLimit does not check for the maximum message size.
 // Used in sending commands from the database since the command has to have
 // been gotten in there somehow. So it fits. Still checks for banphrases.
-func SendNoLimit(target, message string, tc *twitch.Client) {
+func (app *application) SendNoLimit(target, message string) {
 	sugar := zap.NewExample().Sugar()
 	defer sugar.Sync()
 
@@ -155,10 +154,10 @@ func SendNoLimit(target, message string, tc *twitch.Client) {
 	}
 
 	// check the message for bad words before we say it
-	messageBanned, banReason := checkMessage(message)
+	messageBanned, banReason := app.checkMessage(message)
 	if messageBanned {
 		// Bad message, replace message and log it.
-		tc.Say(target, "[BANPHRASED] monkaS")
+		app.TwitchClient.Say(target, "[BANPHRASED] monkaS")
 		sugar.Infow("banned message detected",
 			"target channel", target,
 			"message", message,
@@ -174,7 +173,7 @@ func SendNoLimit(target, message string, tc *twitch.Client) {
 		// https://discuss.dev.twitch.tv/t/missing-client-side-message-length-check/21316
 		// TODO: Make it so it splits at a space instead and not in the middle of a word.
 		// Message was fine.
-		tc.Say(target, message)
+		app.TwitchClient.Say(target, message)
 		return
 	}
 }
