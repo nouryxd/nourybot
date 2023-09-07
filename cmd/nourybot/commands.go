@@ -73,9 +73,23 @@ func (app *application) handleCommand(message twitch.PrivateMessage) {
 	case "cf":
 		reply = commands.Coinflip()
 
+		// ()currency <amount> <input currency> to <output currency>
+	case "currency":
+		if msgLen < 4 {
+			reply = "Not enough arguments provided. Usage: ()currency 10 USD to EUR"
+		} else {
+			reply, _ = commands.Currency(cmdParams[1], cmdParams[2], cmdParams[4])
+		}
+
 	case "nourybot":
 		reply = "Lidl Twitch bot made by @nourylul. Prefix: ()"
 
+	case "phonetic":
+		if msgLen == 1 {
+			reply = "Not enough arguments provided. Usage: ()phonetic <text to translate>"
+		} else {
+			reply, _ = commands.Phonetic(message.Message[11:len(message.Message)])
+		}
 	case "ping":
 		reply = commands.Ping()
 		// ()bttv <emote name>
@@ -89,6 +103,16 @@ func (app *application) handleCommand(message twitch.PrivateMessage) {
 		} else {
 			reply, _ = commands.Weather(message.Message[10:len(message.Message)])
 		}
+
+		// Xkcd
+	// Random Xkcd
+	case "rxkcd":
+		reply, _ = commands.RandomXkcd()
+	case "randomxkcd":
+		reply, _ = commands.RandomXkcd()
+	// Latest Xkcd
+	case "xkcd":
+		reply, _ = commands.Xkcd()
 
 		// ##################
 		// Check if the commandName exists as the "name" of a command in the database.
