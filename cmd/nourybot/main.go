@@ -12,6 +12,7 @@ import (
 	"github.com/joho/godotenv"
 	_ "github.com/lib/pq"
 	"github.com/lyx0/nourybot/internal/common"
+	"github.com/lyx0/nourybot/internal/data"
 	"github.com/nicklaw5/helix"
 	"github.com/rs/zerolog/log"
 
@@ -37,8 +38,8 @@ type application struct {
 	HelixClient  *helix.Client
 	Log          *zap.SugaredLogger
 	Db           *sql.DB
-	// Models       data.Models
-	Scheduler *cron.Cron
+	Models       data.Models
+	Scheduler    *cron.Cron
 	// Rdb       *redis.Client
 }
 
@@ -128,6 +129,8 @@ func main() {
 		HelixClient:  helixClient,
 		Log:          sugar,
 		Db:           db,
+		Models:       data.NewModels(db),
+		Scheduler:    cron.New(),
 	}
 
 	// Received a PrivateMessage (normal chat message).
@@ -180,6 +183,12 @@ func main() {
 			"Database", db.Stats(),
 			"Helix", helixResp,
 		)
+
+		// Load the initial timers from the database.
+		app.InitialTimers()
+
+		// Start the timers.
+		app.Scheduler.Start()
 	})
 	// Actually connect to chat.
 	err = app.TwitchClient.Connect()

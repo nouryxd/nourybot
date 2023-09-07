@@ -114,7 +114,16 @@ func (app *application) handleCommand(message twitch.PrivateMessage) {
 	case "xkcd":
 		reply, _ = commands.Xkcd()
 
-		// ##################
+	case "timer":
+		switch cmdParams[1] {
+		case "add":
+			app.AddTimer(cmdParams[2], cmdParams[3], message)
+		case "edit":
+			app.EditTimer(cmdParams[2], cmdParams[3], message)
+		case "delete":
+			app.DeleteTimer(cmdParams[2], message)
+		}
+
 		// Check if the commandName exists as the "name" of a command in the database.
 		// if it doesnt then ignore it.
 		// ##################
