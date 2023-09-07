@@ -17,6 +17,7 @@ require (
 )
 
 require (
+	github.com/briandowns/openweathermap v0.19.0
 	github.com/dustin/go-humanize v1.0.1
 	github.com/golang-jwt/jwt v3.2.1+incompatible // indirect
 	github.com/joho/godotenv v1.5.1
