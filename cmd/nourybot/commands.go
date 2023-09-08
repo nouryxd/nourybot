@@ -82,7 +82,7 @@ func (app *application) handleCommand(message twitch.PrivateMessage) {
 		}
 
 	case "mail":
-		app.SendEmail()
+		app.SendEmail("Test command used!", "This is an email test")
 
 	case "lastfm":
 		if msgLen == 1 {
@@ -134,6 +134,12 @@ func (app *application) handleCommand(message twitch.PrivateMessage) {
 			app.EditTimer(cmdParams[2], cmdParams[3], message)
 		case "delete":
 			app.DeleteTimer(cmdParams[2], message)
+		}
+
+	case "debug":
+		switch cmdParams[1] {
+		case "user":
+			app.DebugUser(cmdParams[2], message)
 		}
 
 	case "command":

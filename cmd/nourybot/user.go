@@ -30,9 +30,10 @@ func (app *application) DebugUser(login string, message twitch.PrivateMessage) {
 		app.Send(message.Channel, reply)
 		return
 	} else {
-		reply := fmt.Sprintf("User %v: ID %v, Login: %s, TwitchID: %v, Level: %v", login, user.ID, user.Login, user.TwitchID, user.Level)
-		app.Send(message.Channel, reply)
-		//app.TwitchClient.Whisper(message.User.Name, reply)
+		subject := fmt.Sprintf("DEBUG for %v", login)
+		body := fmt.Sprintf("DEBUG information for user %v\n\nid=%v \nlogin=%v \nlevel=%v \nlocation=%v \nlastfm=%v", login, user.TwitchID, user.Login, user.Level, user.Location, user.LastFMUsername)
+
+		app.SendEmail(subject, body)
 		return
 	}
 }

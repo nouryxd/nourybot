@@ -214,7 +214,7 @@ func (u UserModel) SetLevel(login string, level int) error {
 // Get searches the database for a login name and returns the user struct on success.
 func (u UserModel) Get(login string) (*User, error) {
 	query := `
-	SELECT id, added_at, login, twitchid, level, location
+	SELECT id, added_at, login, twitchid, level, location, lastfm_username
 	FROM users
 	WHERE login = $1`
 
@@ -227,6 +227,7 @@ func (u UserModel) Get(login string) (*User, error) {
 		&user.TwitchID,
 		&user.Level,
 		&user.Location,
+		&user.LastFMUsername,
 	)
 
 	if err != nil {

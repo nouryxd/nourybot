@@ -9,7 +9,7 @@ import (
 )
 
 // Thanks to Twitch moving whispers again I just use email now.
-func (app *application) SendEmail() {
+func (app *application) SendEmail(subject, body string) {
 	err := godotenv.Load()
 	if err != nil {
 		app.Log.Fatal("Error loading .env")
@@ -25,8 +25,8 @@ func (app *application) SendEmail() {
 	m := gomail.NewMessage()
 	m.SetHeader("From", emailFrom)
 	m.SetHeader("To", emailTo)
-	m.SetHeader("Subject", "Test Email!")
-	m.SetBody("text/plain", "Hello!")
+	m.SetHeader("Subject", subject)
+	m.SetBody("text/plain", body)
 
 	if err := d.DialAndSend(m); err != nil {
 		panic(err)
