@@ -169,7 +169,7 @@ func (app *application) DebugCommand(name string, message twitch.PrivateMessage)
 	} else if cmd.Category == "ascii" {
 		// If the command is in the ascii category don't post the Text field
 		// otherwise it becomes too spammy and won't fit in the max message length.
-		reply := fmt.Sprintf("ID %v: Name %v, Level: %v, Category: %v Help: %v",
+		reply := fmt.Sprintf("id=%v\nname=%v\nlevel=%v\ncategory=%v\nhelp=%v\n",
 			cmd.ID,
 			cmd.Name,
 			cmd.Level,
@@ -177,10 +177,11 @@ func (app *application) DebugCommand(name string, message twitch.PrivateMessage)
 			cmd.Help,
 		)
 
-		app.Send(message.Channel, reply)
+		//app.Send(message.Channel, reply)
+		app.SendEmail(fmt.Sprintf("DEBUG for command %s", name), reply)
 		return
 	} else {
-		reply := fmt.Sprintf("ID %v: Name %v, Level: %v, Category: %v, Text: %v, Help: %v",
+		reply := fmt.Sprintf("id=%v\nname=%v\nlevel=%v\ncategory=%v\ntext=%v\nhelp=%v\n",
 			cmd.ID,
 			cmd.Name,
 			cmd.Level,
@@ -189,7 +190,8 @@ func (app *application) DebugCommand(name string, message twitch.PrivateMessage)
 			cmd.Help,
 		)
 
-		app.Send(message.Channel, reply)
+		//app.Send(message.Channel, reply)
+		app.SendEmail(fmt.Sprintf("DEBUG for command %s", name), reply)
 		return
 	}
 }

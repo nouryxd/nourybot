@@ -140,6 +140,8 @@ func (app *application) handleCommand(message twitch.PrivateMessage) {
 		switch cmdParams[1] {
 		case "user":
 			app.DebugUser(cmdParams[2], message)
+		case "command":
+			app.DebugCommand(cmdParams[2], message)
 		}
 
 	case "command":
