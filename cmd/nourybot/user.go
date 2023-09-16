@@ -30,7 +30,7 @@ func (app *application) DebugUser(login string, message twitch.PrivateMessage) {
 		app.Send(message.Channel, reply)
 		return
 	} else {
-		subject := fmt.Sprintf("DEBUG for user %v", login)
+		// subject := fmt.Sprintf("DEBUG for user %v", login)
 		body := fmt.Sprintf("id=%v \nlogin=%v \nlevel=%v \nlocation=%v \nlastfm=%v",
 			user.TwitchID,
 			user.Login,
@@ -46,7 +46,7 @@ func (app *application) DebugUser(login string, message twitch.PrivateMessage) {
 			return
 		}
 		app.Send(message.Channel, resp)
-		app.SendEmail(subject, body)
+		// app.SendEmail(subject, body)
 		return
 	}
 }

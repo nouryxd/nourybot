@@ -166,26 +166,6 @@ func (app *application) DebugCommand(name string, message twitch.PrivateMessage)
 		reply := fmt.Sprintf("Something went wrong FeelsBadMan %s", err)
 		app.Send(message.Channel, reply)
 		return
-	} else if cmd.Category == "ascii" {
-		// If the command is in the ascii category don't post the Text field
-		// otherwise it becomes too spammy and won't fit in the max message length.
-		reply := fmt.Sprintf("id=%v\nname=%v\nlevel=%v\ncategory=%v\nhelp=%v\n",
-			cmd.ID,
-			cmd.Name,
-			cmd.Level,
-			cmd.Category,
-			cmd.Help,
-		)
-
-		resp, err := app.uploadPaste(reply)
-		if err != nil {
-			app.Log.Errorln("Could not upload paste:", err)
-			app.Send(message.Channel, "Something went wrong FeelsBadMan")
-			return
-		}
-		app.Send(message.Channel, resp)
-		app.SendEmail(fmt.Sprintf("DEBUG for command %s", name), reply)
-		return
 	} else {
 		reply := fmt.Sprintf("id=%v\nname=%v\nlevel=%v\ncategory=%v\ntext=%v\nhelp=%v\n",
 			cmd.ID,
@@ -204,7 +184,7 @@ func (app *application) DebugCommand(name string, message twitch.PrivateMessage)
 			return
 		}
 		app.Send(message.Channel, resp)
-		app.SendEmail(fmt.Sprintf("DEBUG for command %s", name), reply)
+		//app.SendEmail(fmt.Sprintf("DEBUG for command %s", name), reply)
 		return
 	}
 }

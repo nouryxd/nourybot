@@ -3,7 +3,6 @@ package main
 import (
 	"bytes"
 	"encoding/json"
-	"fmt"
 	"io"
 	"net/http"
 	"time"
@@ -14,8 +13,8 @@ import (
 // this whole function was pretty much yoinked from here
 // https://github.com/zneix/haste-client/blob/master/main.go <3
 func (app *application) uploadPaste(text string) (string, error) {
-	var hasteURL = "https://haste.noury.ee"
-	var apiRoute = "/documents"
+	const hasteURL = "https://haste.noury.cc"
+	const apiRoute = "/documents"
 	var httpClient = &http.Client{Timeout: 10 * time.Second}
 
 	type pasteResponse struct {
@@ -24,15 +23,15 @@ func (app *application) uploadPaste(text string) (string, error) {
 
 	req, err := http.NewRequest("POST", hasteURL+apiRoute, bytes.NewBufferString(text))
 	if err != nil {
-		app.Log.Error("Could not upload paste:", err)
+		app.Log.Errorln("Could not upload paste:", err)
 		return "", err
 	}
 
-	req.Header.Set("User-Agent", fmt.Sprintf("nourybot"))
+	req.Header.Set("User-Agent", "nourybot")
 
 	resp, err := httpClient.Do(req)
 	if err != nil {
-		app.Log.Error("Error while sending HTTP request:", err)
+		app.Log.Errorln("Error while sending HTTP request:", err)
 		return "", err
 	}
 	defer resp.Body.Close()
@@ -50,7 +49,7 @@ func (app *application) uploadPaste(text string) (string, error) {
 
 	jsonResponse := new(pasteResponse)
 	if err := json.Unmarshal(body, jsonResponse); err != nil {
-		app.Log.Fatalln("Error while unmarshalling JSON response:", err)
+		app.Log.Errorln("Error while unmarshalling JSON response:", err)
 		return "", err
 	}
 
