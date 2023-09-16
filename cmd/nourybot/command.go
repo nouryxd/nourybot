@@ -177,7 +177,13 @@ func (app *application) DebugCommand(name string, message twitch.PrivateMessage)
 			cmd.Help,
 		)
 
-		//app.Send(message.Channel, reply)
+		resp, err := app.uploadPaste(reply)
+		if err != nil {
+			app.Log.Errorln("Could not upload paste:", err)
+			app.Send(message.Channel, "Something went wrong FeelsBadMan")
+			return
+		}
+		app.Send(message.Channel, resp)
 		app.SendEmail(fmt.Sprintf("DEBUG for command %s", name), reply)
 		return
 	} else {
@@ -191,6 +197,13 @@ func (app *application) DebugCommand(name string, message twitch.PrivateMessage)
 		)
 
 		//app.Send(message.Channel, reply)
+		resp, err := app.uploadPaste(reply)
+		if err != nil {
+			app.Log.Errorln("Could not upload paste:", err)
+			app.Send(message.Channel, "Something went wrong FeelsBadMan")
+			return
+		}
+		app.Send(message.Channel, resp)
 		app.SendEmail(fmt.Sprintf("DEBUG for command %s", name), reply)
 		return
 	}

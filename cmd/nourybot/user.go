@@ -30,9 +30,22 @@ func (app *application) DebugUser(login string, message twitch.PrivateMessage) {
 		app.Send(message.Channel, reply)
 		return
 	} else {
-		subject := fmt.Sprintf("DEBUG for %v", login)
-		body := fmt.Sprintf("DEBUG information for user %v\n\nid=%v \nlogin=%v \nlevel=%v \nlocation=%v \nlastfm=%v", login, user.TwitchID, user.Login, user.Level, user.Location, user.LastFMUsername)
+		subject := fmt.Sprintf("DEBUG for user %v", login)
+		body := fmt.Sprintf("id=%v \nlogin=%v \nlevel=%v \nlocation=%v \nlastfm=%v",
+			user.TwitchID,
+			user.Login,
+			user.Level,
+			user.Location,
+			user.LastFMUsername,
+		)
 
+		resp, err := app.uploadPaste(body)
+		if err != nil {
+			app.Log.Errorln("Could not upload paste:", err)
+			app.Send(message.Channel, "Something went wrong FeelsBadMan")
+			return
+		}
+		app.Send(message.Channel, resp)
 		app.SendEmail(subject, body)
 		return
 	}
