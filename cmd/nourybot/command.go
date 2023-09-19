@@ -180,7 +180,7 @@ func (app *application) DebugCommand(name string, message twitch.PrivateMessage)
 		resp, err := app.uploadPaste(reply)
 		if err != nil {
 			app.Log.Errorln("Could not upload paste:", err)
-			app.Send(message.Channel, "Something went wrong FeelsBadMan")
+			app.Send(message.Channel, fmt.Sprintf("Something went wrong FeelsBadMan %v", ErrDuringPasteUpload))
 			return
 		}
 		app.Send(message.Channel, resp)

@@ -42,7 +42,7 @@ func (app *application) DebugUser(login string, message twitch.PrivateMessage) {
 		resp, err := app.uploadPaste(body)
 		if err != nil {
 			app.Log.Errorln("Could not upload paste:", err)
-			app.Send(message.Channel, "Something went wrong FeelsBadMan")
+			app.Send(message.Channel, fmt.Sprintf("Something went wrong FeelsBadMan %v", ErrDuringPasteUpload))
 			return
 		}
 		app.Send(message.Channel, resp)
@@ -133,8 +133,8 @@ func (app *application) SetUserLastFM(lastfmUser string, message twitch.PrivateM
 	}
 }
 
-// GetUserLevel takes in a login name and queries the database for an entry
-// with such a name value. If there is one it returns the level value as an integer.
+// GetUserLevel takes in a twitchId and queries the database for an entry
+// with this twitchId. If there is one it returns the level value as an integer.
 // Returns 0 on an error which is the level for unregistered users.
 func (app *application) GetUserLevel(twitchId string) int {
 	userLevel, err := app.Models.Users.GetLevel(twitchId)

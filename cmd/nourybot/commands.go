@@ -33,6 +33,7 @@ func (app *application) handleCommand(message twitch.PrivateMessage) {
 	// Useful to check if enough cmdParams are provided.
 	msgLen := len(strings.SplitN(message.Message, " ", -2))
 
+	userLevel := app.GetUserLevel(message.User.ID)
 	// target is the channelname the message originated from and
 	// where the TwitchClient should send the response
 	target := message.Channel
@@ -43,6 +44,7 @@ func (app *application) handleCommand(message twitch.PrivateMessage) {
 		"commandName", commandName,
 		"cmdParams", cmdParams,
 		"msgLen", msgLen,
+		"userLevel", userLevel,
 	)
 
 	// A `commandName` is every message starting with `()`.
@@ -139,9 +141,13 @@ func (app *application) handleCommand(message twitch.PrivateMessage) {
 	case "debug":
 		switch cmdParams[1] {
 		case "user":
-			app.DebugUser(cmdParams[2], message)
+			if userLevel >= 250 {
+				app.DebugUser(cmdParams[2], message)
+			}
 		case "command":
-			app.DebugCommand(cmdParams[2], message)
+			if userLevel >= 250 {
+				app.DebugCommand(cmdParams[2], message)
+			}
 		}
 
 	case "command":
