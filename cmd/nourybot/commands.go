@@ -83,6 +83,9 @@ func (app *application) handleCommand(message twitch.PrivateMessage) {
 			reply, _ = commands.Currency(cmdParams[1], cmdParams[2], cmdParams[4])
 		}
 
+	case "dl":
+		reply, _ = app.Download(target, cmdParams[1])
+
 	case "mail":
 		app.SendEmail("Test command used!", "This is an email test")
 

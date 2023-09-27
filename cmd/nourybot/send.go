@@ -47,12 +47,14 @@ func (app *application) checkMessage(text string) (bool, string) {
 		"message": text,
 	})
 	if err != nil {
-		log.Fatal(err)
+		app.Log.Error(err)
+		return true, "could not check banphrase api"
 	}
 
 	resp, err := http.Post(banPhraseUrl, "application/json", bytes.NewBuffer(reqBody))
 	if err != nil {
-		log.Panic(err)
+		app.Log.Error(err)
+		return true, "could not check banphrase api"
 	}
 
 	defer resp.Body.Close()
