@@ -14,10 +14,17 @@ require (
 )
 
 require (
+	github.com/google/uuid v1.3.1 // indirect
+	github.com/pkg/errors v0.9.1 // indirect
+	github.com/wabarc/go-catbox v0.1.0 // indirect
+	github.com/wabarc/helper v0.0.0-20210718171053-59c70d0b20c2 // indirect
 	github.com/wader/goutubedl v0.0.0-20230924165737-427b7fa536e6 // indirect
 	go.uber.org/atomic v1.7.0 // indirect
 	go.uber.org/multierr v1.6.0 // indirect
+	golang.org/x/net v0.0.0-20210716203947-853a461950ff // indirect
+	golang.org/x/text v0.3.6 // indirect
 	gopkg.in/alexcesaro/quotedprintable.v3 v3.0.0-20150716171945-2caba252f4dc // indirect
+	mvdan.cc/xurls/v2 v2.2.0 // indirect
 )
 
 require (

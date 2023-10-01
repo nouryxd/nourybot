@@ -2,37 +2,48 @@ package main
 
 import (
 	"context"
+	"fmt"
 	"io"
 	"os"
-	"os/exec"
 
+	"github.com/google/uuid"
 	"github.com/wader/goutubedl"
 )
 
-func (app *application) Download(channel, link string) (string, error) {
+func (app *application) Download(target, link string) {
 	goutubedl.Path = "yt-dlp"
 
-	app.Send(channel, "dankCircle")
+	app.Send(target, "Downloading... dankCircle")
 	result, err := goutubedl.New(context.Background(), link, goutubedl.Options{})
 	if err != nil {
-		app.Log.Fatal(err)
+		app.Log.Errorln(err)
 	}
+	rExt := result.Info.Ext
 	downloadResult, err := result.Download(context.Background(), "best")
 	if err != nil {
-		app.Log.Fatal(err)
+		app.Log.Errorln(err)
 	}
+	app.Send(target, "Downloaded..")
 	defer downloadResult.Close()
-	f, err := os.Create("output.mp4")
+	fn, err := uuid.NewUUID()
 	if err != nil {
-		app.Log.Fatal(err)
+		app.Log.Errorln(err)
+	}
+	f, err := os.Create(fmt.Sprintf("%s.%s", fn, rExt))
+	app.Send(target, fmt.Sprintf("Filename: %s.%s", fn, rExt))
+
+	if err != nil {
+		app.Log.Errorln(err)
 	}
 	defer f.Close()
-	io.Copy(f, downloadResult)
-
-	out, err := exec.Command("curl", "-L", "-F", "file=@output.mp4", "i.yaf.ee/upload").Output()
-	if err != nil {
-		app.Log.Fatal(err)
+	if _, err = io.Copy(f, downloadResult); err != nil {
+		app.Log.Errorln(err)
 	}
-	return string(out), nil
+
+	app.UploadCatbox(target, fmt.Sprintf("%s.%s", fn, rExt))
+
+	//os.Remove(fmt.Sprintf("%s.mp4", fn))
+
+	//app.TwitchClient.Say(channel, b.String())
 
 }

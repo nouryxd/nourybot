@@ -84,7 +84,7 @@ func (app *application) handleCommand(message twitch.PrivateMessage) {
 		}
 
 	case "dl":
-		reply, _ = app.Download(target, cmdParams[1])
+		app.Download(target, cmdParams[1])
 
 	case "mail":
 		app.SendEmail("Test command used!", "This is an email test")
@@ -184,12 +184,7 @@ func (app *application) handleCommand(message twitch.PrivateMessage) {
 				app.EditUserLevel(cmdParams[3], cmdParams[4], message)
 			}
 		}
-
-		// Check if the commandName exists as the "name" of a command in the database.
-		// if it doesnt then ignore it.
-		// ##################
 	}
-
 	if reply != "" {
 		app.Send(target, reply)
 		return

@@ -44,7 +44,6 @@ type application struct {
 }
 
 var envFlag string
-var ctx = context.Background()
 
 func init() {
 	flag.StringVar(&envFlag, "env", "dev", "database connection to use: (dev/prod)")
