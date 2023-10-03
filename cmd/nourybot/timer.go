@@ -6,6 +6,7 @@ import (
 	"strings"
 
 	"github.com/gempir/go-twitch-irc/v4"
+	"github.com/google/uuid"
 	"github.com/lyx0/nourybot/internal/data"
 )
 
@@ -42,12 +43,13 @@ func (app *application) AddTimer(name, repeat string, message twitch.PrivateMess
 		)
 		return
 	}
-
+	id := uuid.NewString()
 	timer := &data.Timer{
-		Name:    name,
-		Text:    text,
-		Channel: message.Channel,
-		Repeat:  repeat,
+		Name:       name,
+		Text:       text,
+		Identifier: id,
+		Channel:    message.Channel,
+		Repeat:     repeat,
 	}
 
 	// Check if the time string we got is valid, this is important
@@ -55,10 +57,11 @@ func (app *application) AddTimer(name, repeat string, message twitch.PrivateMess
 	// time format string is supplied.
 	if validateTimeFormat {
 		timer := &data.Timer{
-			Name:    name,
-			Text:    text,
-			Channel: message.Channel,
-			Repeat:  repeat,
+			Name:       name,
+			Text:       text,
+			Identifier: id,
+			Channel:    message.Channel,
+			Repeat:     repeat,
 		}
 
 		err = app.Models.Timers.Insert(timer)
@@ -74,9 +77,8 @@ func (app *application) AddTimer(name, repeat string, message twitch.PrivateMess
 		} else {
 			// cronName is the internal, unique tag/name for the timer.
 			// A timer named "sponsor" in channel "forsen" will be named "forsensponsor"
-			cronName := fmt.Sprintf("%s%s", message.Channel, name)
 
-			app.Scheduler.AddFunc(fmt.Sprintf("@every %s", repeat), func() { app.newPrivateMessageTimer(message.Channel, text) }, cronName)
+			app.Scheduler.AddFunc(fmt.Sprintf("@every %s", repeat), func() { app.newPrivateMessageTimer(message.Channel, text) }, id)
 			app.Log.Infow("Added new timer",
 				"timer", timer,
 			)
@@ -116,14 +118,14 @@ func (app *application) EditTimer(name, repeat string, message twitch.PrivateMes
 	// -----------------------
 	// Delete the old timer
 	// -----------------------
-	cronName := fmt.Sprintf("%s%s", message.Channel, name)
-	app.Scheduler.RemoveJob(cronName)
+	identifier := old.Identifier
+	app.Scheduler.RemoveJob(identifier)
 
 	err = app.Models.Timers.Delete(name)
 	if err != nil {
 		app.Log.Errorw("Error deleting timer from database",
 			"name", name,
-			"cronName", cronName,
+			"identifier", identifier,
 			"error", err,
 		)
 
@@ -165,11 +167,13 @@ func (app *application) EditTimer(name, repeat string, message twitch.PrivateMes
 		return
 	}
 
+	id := uuid.NewString()
 	timer := &data.Timer{
-		Name:    name,
-		Text:    text,
-		Channel: message.Channel,
-		Repeat:  repeat,
+		Name:       name,
+		Text:       text,
+		Identifier: id,
+		Channel:    message.Channel,
+		Repeat:     repeat,
 	}
 
 	// Check if the time string we got is valid, this is important
@@ -177,10 +181,11 @@ func (app *application) EditTimer(name, repeat string, message twitch.PrivateMes
 	// time format string is supplied.
 	if validateTimeFormat {
 		timer := &data.Timer{
-			Name:    name,
-			Text:    text,
-			Channel: message.Channel,
-			Repeat:  repeat,
+			Name:       name,
+			Text:       text,
+			Identifier: id,
+			Channel:    message.Channel,
+			Repeat:     repeat,
 		}
 
 		err = app.Models.Timers.Insert(timer)
@@ -196,9 +201,7 @@ func (app *application) EditTimer(name, repeat string, message twitch.PrivateMes
 		} else { // this is a bit scuffed. The else here is the end of a successful call.
 			// cronName is the internal, unique tag/name for the timer.
 			// A timer named "sponsor" in channel "forsen" will be named "forsensponsor"
-			cronName := fmt.Sprintf("%s%s", message.Channel, name)
-
-			app.Scheduler.AddFunc(fmt.Sprintf("@every %s", repeat), func() { app.newPrivateMessageTimer(message.Channel, text) }, cronName)
+			app.Scheduler.AddFunc(fmt.Sprintf("@every %s", repeat), func() { app.newPrivateMessageTimer(message.Channel, text) }, id)
 
 			app.Log.Infow("Updated a timer",
 				"Name", name,
@@ -247,12 +250,12 @@ func (app *application) ListTimers() string {
 		t := fmt.Sprintf(
 			"ID: \t\t%v\n"+
 				"Name: \t\t%v\n"+
-				"CronName: \t\t%v\n"+
+				"Identifier: \t%v\n"+
 				"Text: \t\t%v\n"+
 				"Channel: \t%v\n"+
 				"Repeat: \t%v\n"+
 				"\n\n",
-			v.ID, v.Name, v.CronName, v.Text, v.Channel, v.Repeat,
+			v.ID, v.Name, v.Identifier, v.Text, v.Channel, v.Repeat,
 		)
 
 		// Add new value to the slice
@@ -292,7 +295,6 @@ func (app *application) InitialTimers() {
 
 		// cronName is the internal, unique tag/name for the timer.
 		// A timer named "sponsor" in channel "forsen" will be named "forsensponsor"
-		cronName := fmt.Sprintf("%s%s", v.Channel, v.Name)
 
 		// Repeating is at what times the timer should repeat.
 		// 2 minute timer is @every 2m
@@ -301,7 +303,7 @@ func (app *application) InitialTimers() {
 		// Add new value to the slice
 		ts = append(ts, v)
 
-		app.Scheduler.AddFunc(repeating, func() { app.newPrivateMessageTimer(v.Channel, v.Text) }, cronName)
+		app.Scheduler.AddFunc(repeating, func() { app.newPrivateMessageTimer(v.Channel, v.Text) }, v.Identifier)
 	}
 
 	app.Log.Infow("Initial timers",
@@ -317,20 +319,29 @@ func (app *application) newPrivateMessageTimer(channel, text string) {
 
 // DeleteTimer takes in the name of a timer and tries to delete the timer from the database.
 func (app *application) DeleteTimer(name string, message twitch.PrivateMessage) {
-	cronName := fmt.Sprintf("%s%s", message.Channel, name)
-	app.Scheduler.RemoveJob(cronName)
+
+	identifier, err := app.Models.Timers.GetIdentifier(name)
+	if err != nil {
+		app.Log.Errorw("Error retrieving identifier rom database",
+			"name", name,
+			"identifier", identifier,
+			"error", err,
+		)
+	}
+
+	app.Scheduler.RemoveJob(identifier)
 
 	app.Log.Infow("Deleting timer",
 		"name", name,
+		"identifier", identifier,
 		"message.Channel", message.Channel,
-		"cronName", cronName,
 	)
 
-	err := app.Models.Timers.Delete(name)
+	err = app.Models.Timers.Delete(identifier)
 	if err != nil {
 		app.Log.Errorw("Error deleting timer from database",
 			"name", name,
-			"cronName", cronName,
+			"identifier", identifier,
 			"error", err,
 		)
 

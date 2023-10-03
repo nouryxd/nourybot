@@ -47,6 +47,7 @@ type Models struct {
 	}
 	Timers interface {
 		Get(name string) (*Timer, error)
+		GetIdentifier(name string) (string, error)
 		Insert(timer *Timer) error
 		Update(timer *Timer) error
 		GetAll() ([]*Timer, error)
