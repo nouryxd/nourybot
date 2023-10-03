@@ -84,7 +84,7 @@ func (app *application) handleCommand(message twitch.PrivateMessage) {
 		}
 
 	case "dl":
-		app.Download(target, cmdParams[1])
+		commands.Download(target, cmdParams[1], app.TwitchClient, app.Log)
 
 	case "mail":
 		app.SendEmail("Test command used!", "This is an email test")
