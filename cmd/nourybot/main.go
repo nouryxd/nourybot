@@ -118,11 +118,6 @@ func main() {
 			"err", err,
 		)
 	}
-
-	sugar.Infow("db.Stats",
-		"db.Stats", db.Stats(),
-	)
-
 	app := &application{
 		TwitchClient: tc,
 		HelixClient:  helixClient,
@@ -131,6 +126,10 @@ func main() {
 		Models:       data.NewModels(db),
 		Scheduler:    cron.New(),
 	}
+
+	app.Log.Infow("db.Stats",
+		"db.Stats", db.Stats(),
+	)
 
 	// Received a PrivateMessage (normal chat message).
 	app.TwitchClient.OnPrivateMessage(func(message twitch.PrivateMessage) {
@@ -194,6 +193,7 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
+
 }
 
 // openDB returns the sql.DB connection pool.

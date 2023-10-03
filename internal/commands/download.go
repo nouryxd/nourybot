@@ -26,7 +26,7 @@ func Download(target, link string, tc *twitch.Client, log *zap.SugaredLogger) (r
 		twitchClient: tc,
 	}
 
-	dloader.dlxd(target, link)
+	go dloader.dlxd(target, link)
 
 	return ""
 }
@@ -113,7 +113,7 @@ func (dl *downloader) upload(target, path string) {
 	}
 	req.Header.Set("Content-Type", form.FormDataContentType())
 
-	httpClient := http.Client{}
+	httpClient := http.DefaultClient
 	resp, err := httpClient.Do(req)
 	if err != nil {
 		dl.twitchClient.Say(target, fmt.Sprintf("Something went wrong FeelsBadMan: %q", err))
