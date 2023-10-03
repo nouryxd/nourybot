@@ -18,12 +18,14 @@ import (
 type downloader struct {
 	twitchClient *twitch.Client
 	Log          *zap.SugaredLogger
+	URL          string
 }
 
-func Download(target, link string, tc *twitch.Client, log *zap.SugaredLogger) (reply string) {
+func Download(target, link, fileUploadURL string, tc *twitch.Client, log *zap.SugaredLogger) (reply string) {
 	dloader := &downloader{
 		Log:          log,
 		twitchClient: tc,
+		URL:          fileUploadURL,
 	}
 
 	go dloader.dlxd(target, link)
@@ -39,12 +41,12 @@ func (dl *downloader) dlxd(target, link string) {
 	if err != nil {
 		dl.Log.Errorln(err)
 	}
-	rExt := "mp4"
+	rExt := result.Info.Ext
 	downloadResult, err := result.Download(context.Background(), "best")
 	if err != nil {
 		dl.Log.Errorln(err)
 	}
-	dl.twitchClient.Say(target, "Downloaded..")
+	dl.twitchClient.Say(target, "Downloaded.")
 	fn, err := uuid.NewUUID()
 	if err != nil {
 		dl.Log.Errorln(err)
@@ -71,8 +73,7 @@ func (dl *downloader) dlxd(target, link string) {
 }
 
 func (dl *downloader) upload(target, path string) {
-	const URL = "https://i.yaf.ee/upload"
-	dl.twitchClient.Say(target, "Uploading .. dankCircle")
+	dl.twitchClient.Say(target, "Uploading... dankCircle")
 	pr, pw := io.Pipe()
 	form := multipart.NewWriter(pw)
 
@@ -106,7 +107,7 @@ func (dl *downloader) upload(target, path string) {
 		form.Close()
 	}()
 
-	req, err := http.NewRequest(http.MethodPost, URL, pr)
+	req, err := http.NewRequest(http.MethodPost, dl.URL, pr)
 	if err != nil {
 		dl.twitchClient.Say(target, fmt.Sprintf("Something went wrong FeelsBadMan: %q", err))
 		return
@@ -122,7 +123,7 @@ func (dl *downloader) upload(target, path string) {
 		return
 	}
 	defer resp.Body.Close()
-	dl.twitchClient.Say(target, "Uploaded .. PogChamp")
+	dl.twitchClient.Say(target, "Uploaded PogChamp")
 
 	body, err := io.ReadAll(resp.Body)
 	if err != nil {

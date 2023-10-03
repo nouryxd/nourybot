@@ -44,6 +44,7 @@ type application struct {
 }
 
 var envFlag string
+var fileUploaderURL = "https://i.yaf.ee/upload"
 
 func init() {
 	flag.StringVar(&envFlag, "env", "dev", "database connection to use: (dev/prod)")
