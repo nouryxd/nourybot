@@ -5,10 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
-	"log"
 	"net/http"
-
-	"go.uber.org/zap"
 )
 
 // banphraseResponse is the data we receive back from
@@ -39,9 +36,6 @@ var (
 // More information:
 // https://gist.github.com/pajlada/57464e519ba8d195a97ddcd0755f9715
 func (app *application) checkMessage(text string) (bool, string) {
-	sugar := zap.NewExample().Sugar()
-	defer sugar.Sync()
-
 	// {"message": "AHAHAHAHA LUL"}
 	reqBody, err := json.Marshal(map[string]string{
 		"message": text,
@@ -61,7 +55,7 @@ func (app *application) checkMessage(text string) (bool, string) {
 
 	body, err := io.ReadAll(resp.Body)
 	if err != nil {
-		log.Panic(err)
+		app.Log.Error(err)
 	}
 
 	var responseObject banphraseResponse
@@ -85,9 +79,6 @@ func (app *application) checkMessage(text string) (bool, string) {
 // Send is used to send twitch replies and contains the necessary
 // safeguards and logic for that.
 func (app *application) Send(target, message string) {
-	sugar := zap.NewExample().Sugar()
-	defer sugar.Sync()
-
 	// Message we are trying to send is empty.
 	if len(message) == 0 {
 		return
@@ -106,7 +97,7 @@ func (app *application) Send(target, message string) {
 	if messageBanned {
 		// Bad message, replace message and log it.
 		app.TwitchClient.Say(target, "[BANPHRASED] monkaS")
-		sugar.Infow("banned message detected",
+		app.Log.Infow("banned message detected",
 			"target channel", target,
 			"message", message,
 			"ban reason", banReason,
@@ -139,9 +130,6 @@ func (app *application) Send(target, message string) {
 // Used in sending commands from the database since the command has to have
 // been gotten in there somehow. So it fits. Still checks for banphrases.
 func (app *application) SendNoLimit(target, message string) {
-	sugar := zap.NewExample().Sugar()
-	defer sugar.Sync()
-
 	// Message we are trying to send is empty.
 	if len(message) == 0 {
 		return
@@ -160,7 +148,7 @@ func (app *application) SendNoLimit(target, message string) {
 	if messageBanned {
 		// Bad message, replace message and log it.
 		app.TwitchClient.Say(target, "[BANPHRASED] monkaS")
-		sugar.Infow("banned message detected",
+		app.Log.Infow("banned message detected",
 			"target channel", target,
 			"message", message,
 			"ban reason", banReason,
