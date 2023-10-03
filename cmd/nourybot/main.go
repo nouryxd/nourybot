@@ -155,7 +155,7 @@ func main() {
 			// Check if the first 2 characters of the mesage were our prefix.
 			// if they were forward the message to the command handler.
 			if message.Message[:2] == cfg.commandPrefix {
-				app.handleCommand(message)
+				go app.handleCommand(message)
 				return
 			}
 

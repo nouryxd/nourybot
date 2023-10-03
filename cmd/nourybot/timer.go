@@ -14,13 +14,23 @@ import (
 func (app *application) AddTimer(name, repeat string, message twitch.PrivateMessage) {
 	cmdParams := strings.SplitN(message.Message, " ", 500)
 	// prefixLength is the length of `()add timer` plus +2 (for the space and zero based)
-	prefixLength := 13
+	prefix := "()add timer"
+	prefixLength := len("()add timer")
+	nameLength := len(name)
+	repeatLength := len(repeat)
+	app.Log.Infow("Lengths",
+		"prefix", prefixLength,
+		"name", nameLength,
+		"repeat", repeatLength,
+		"repeat2", len(cmdParams[2]),
+		"sum", prefixLength+nameLength+repeatLength,
+	)
 
 	// Split the message into the parts we need.
 	//
-	// message:  ()addtimer   sponsor    20m  hecking love my madmonq pills BatChest
+	// message:  ()timer add sponsor    20m  hecking love my madmonq pills BatChest
 	// parts:    | prefix  |  |name | |repeat | <----------- text ------------->   |
-	text := message.Message[prefixLength+len(name)+len(cmdParams[2]) : len(message.Message)]
+	text := message.Message[3+len(prefix)+len(name)+len(repeat) : len(message.Message)]
 
 	// validateTimeFormat will be true if the repeat parameter is in
 	// the format of either 30m, 10h, or 10h30m.
@@ -125,15 +135,24 @@ func (app *application) EditTimer(name, repeat string, message twitch.PrivateMes
 	// -----------------------
 	// Add the new timer
 	// -----------------------
-	cmdParams := strings.SplitN(message.Message, " ", 500)
+	//cmdParams := strings.SplitN(message.Message, " ", 500)
 	// prefixLength is the length of `()editcommand` plus +2 (for the space and zero based)
-	prefixLength := 14
+	prefix := "()edit timer"
+	prefixLength := len("()add timer")
+	nameLength := len(name)
+	repeatLength := len(repeat)
+	app.Log.Infow("Lengths",
+		"prefix", prefixLength,
+		"name", nameLength,
+		"repeat", repeatLength,
+		"sum", prefixLength+nameLength+repeatLength,
+	)
 
 	// Split the message into the parts we need.
 	//
 	// message:  ()addtimer   sponsor    20m  hecking love my madmonq pills BatChest
 	// parts:    | prefix  |  |name | |repeat | <----------- text ------------->   |
-	text := message.Message[prefixLength+len(name)+len(cmdParams[2]) : len(message.Message)]
+	text := message.Message[3+len(prefix)+len(name)+len(repeat) : len(message.Message)]
 
 	// validateTimeFormat will be true if the repeat parameter is in
 	// the format of either 30m, 10h, or 10h30m.
@@ -201,6 +220,54 @@ func (app *application) EditTimer(name, repeat string, message twitch.PrivateMes
 		app.Send(message.Channel, reply)
 		return
 	}
+}
+
+// InitialTimers is called on startup and queries the database for a list of
+// timers and then adds each onto the scheduler.
+func (app *application) ListTimers() string {
+	timer, err := app.Models.Timers.GetAll()
+	if err != nil {
+		app.Log.Errorw("Error trying to retrieve all timers from database", err)
+		return ""
+	}
+
+	// The slice of timers is only used to log them at
+	// the start so it looks a bit nicer.
+	var ts []string
+
+	// Iterate over all timers and then add them onto the scheduler.
+	for i, v := range timer {
+		// idk why this works but it does so no touchy touchy.
+		// https://github.com/robfig/cron/issues/420#issuecomment-940949195
+		i, v := i, v
+		_ = i
+
+		// cronName is the internal, unique tag/name for the timer.
+		// A timer named "sponsor" in channel "forsen" will be named "forsensponsor"
+		t := fmt.Sprintf(
+			"ID: \t\t%v\n"+
+				"Name: \t\t%v\n"+
+				"CronName: \t\t%v\n"+
+				"Text: \t\t%v\n"+
+				"Channel: \t%v\n"+
+				"Repeat: \t%v\n"+
+				"\n\n",
+			v.ID, v.Name, v.CronName, v.Text, v.Channel, v.Repeat,
+		)
+
+		// Add new value to the slice
+		ts = append(ts, t)
+
+		//app.Scheduler.AddFunc(repeating, func() { app.newPrivateMessageTimer(v.Channel, v.Text) }, cronName)
+	}
+
+	reply, err := app.uploadPaste(strings.Join(ts, ""))
+	if err != nil {
+		app.Log.Errorw("Error trying to retrieve all timers from database", err)
+		return ""
+	}
+
+	return reply
 }
 
 // InitialTimers is called on startup and queries the database for a list of

@@ -139,6 +139,8 @@ func (app *application) handleCommand(message twitch.PrivateMessage) {
 			app.EditTimer(cmdParams[2], cmdParams[3], message)
 		case "delete":
 			app.DeleteTimer(cmdParams[2], message)
+		case "list":
+			reply = app.ListTimers()
 		}
 
 	case "debug":
