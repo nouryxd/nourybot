@@ -83,6 +83,9 @@ func (app *application) handleCommand(message twitch.PrivateMessage) {
 			reply, _ = commands.Currency(cmdParams[1], cmdParams[2], cmdParams[4])
 		}
 
+	case "cb":
+		go commands.DownloadCatbox(target, cmdParams[1], app.TwitchClient, app.Log)
+
 	case "dl":
 		go commands.Download(target, cmdParams[1], fileUploaderURL, app.TwitchClient, app.Log)
 
