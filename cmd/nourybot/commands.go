@@ -83,11 +83,17 @@ func (app *application) handleCommand(message twitch.PrivateMessage) {
 			reply, _ = commands.Currency(cmdParams[1], cmdParams[2], cmdParams[4])
 		}
 
-	case "cb":
+	case "catbox":
 		go commands.NewDownload("catbox", target, cmdParams[1], app.TwitchClient, app.Log)
 
-	case "dl":
-		go commands.NewDownload("custom", target, cmdParams[1], app.TwitchClient, app.Log)
+	case "kappa":
+		go commands.NewDownload("kappa", target, cmdParams[1], app.TwitchClient, app.Log)
+
+	case "yaf":
+		go commands.NewDownload("yaf", target, cmdParams[1], app.TwitchClient, app.Log)
+
+	case "gofile":
+		go commands.NewDownload("gofile", target, cmdParams[1], app.TwitchClient, app.Log)
 
 	case "mail":
 		app.SendEmail("Test command used!", "This is an email test")
