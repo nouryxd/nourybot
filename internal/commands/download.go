@@ -4,10 +4,7 @@ import (
 	"context"
 	"fmt"
 	"io"
-	"mime/multipart"
-	"net/http"
 	"os"
-	"time"
 
 	"github.com/gempir/go-twitch-irc/v4"
 	"github.com/google/uuid"
@@ -15,28 +12,29 @@ import (
 	"go.uber.org/zap"
 )
 
-type downloader struct {
-	twitchClient *twitch.Client
+type Downloader struct {
+	TwitchClient *twitch.Client
 	Log          *zap.SugaredLogger
-	URL          string
 }
 
-func Download(target, link, fileUploadURL string, tc *twitch.Client, log *zap.SugaredLogger) (reply string) {
-	dloader := &downloader{
+func NewDownload(destination, target, link string, tc *twitch.Client, log *zap.SugaredLogger) {
+	dl := &Downloader{
+		TwitchClient: tc,
 		Log:          log,
-		twitchClient: tc,
-		URL:          fileUploadURL,
 	}
 
-	go dloader.dlxd(target, link)
-
-	return ""
+	switch destination {
+	case "catbox":
+		dl.CatboxDownload(target, link)
+	case "custom":
+		dl.CustomDownload(target, link)
+	}
 }
 
-func (dl *downloader) dlxd(target, link string) {
+func (dl *Downloader) CustomDownload(target, link string) {
 	goutubedl.Path = "yt-dlp"
 
-	dl.twitchClient.Say(target, "Downloading... dankCircle")
+	dl.TwitchClient.Say(target, "[custom] Downloading... dankCircle")
 	result, err := goutubedl.New(context.Background(), link, goutubedl.Options{})
 	if err != nil {
 		dl.Log.Errorln(err)
@@ -46,13 +44,14 @@ func (dl *downloader) dlxd(target, link string) {
 	if err != nil {
 		dl.Log.Errorln(err)
 	}
-	dl.twitchClient.Say(target, "Downloaded.")
-	fn, err := uuid.NewUUID()
+	dl.TwitchClient.Say(target, "Downloaded.")
+	uuidFilename, err := uuid.NewUUID()
 	if err != nil {
 		dl.Log.Errorln(err)
 	}
-	f, err := os.Create(fmt.Sprintf("%s.%s", fn, rExt))
-	dl.twitchClient.Say(target, fmt.Sprintf("Filename: %s.%s", fn, rExt))
+	fileName := fmt.Sprintf("%s.%s", uuidFilename, rExt)
+	f, err := os.Create(fileName)
+	dl.TwitchClient.Say(target, fmt.Sprintf("Filename: %s", fileName))
 
 	if err != nil {
 		dl.Log.Errorln(err)
@@ -68,82 +67,49 @@ func (dl *downloader) dlxd(target, link string) {
 	// dl.twitchClient.Say(target, "ResidentSleeper ..")
 	// time.Sleep(duration)
 
-	dl.upload(target, fmt.Sprintf("%s.%s", fn, rExt))
+	go NewUpload("custom", fileName, target, dl.TwitchClient, dl.Log)
 
 }
 
-func (dl *downloader) upload(target, path string) {
-	dl.twitchClient.Say(target, "Uploading... dankCircle")
-	pr, pw := io.Pipe()
-	form := multipart.NewWriter(pw)
+func (dl *Downloader) CatboxDownload(target, link string) {
+	goutubedl.Path = "yt-dlp"
+	var fileName string
 
-	go func() {
-		defer pw.Close()
-
-		err := form.WriteField("name", "xd")
-		if err != nil {
-			dl.twitchClient.Say(target, fmt.Sprintf("Something went wrong FeelsBadMan: %q", err))
-			os.Remove(path)
-			return
-		}
-
-		file, err := os.Open(path) // path to image file
-		if err != nil {
-			dl.twitchClient.Say(target, fmt.Sprintf("Something went wrong FeelsBadMan: %q", err))
-			os.Remove(path)
-			return
-		}
-
-		w, err := form.CreateFormFile("file", path)
-		if err != nil {
-			dl.twitchClient.Say(target, fmt.Sprintf("Something went wrong FeelsBadMan: %q", err))
-			os.Remove(path)
-			return
-		}
-
-		_, err = io.Copy(w, file)
-		if err != nil {
-			dl.twitchClient.Say(target, fmt.Sprintf("Something went wrong FeelsBadMan: %q", err))
-			os.Remove(path)
-			return
-		}
-
-		form.Close()
-	}()
-
-	req, err := http.NewRequest(http.MethodPost, dl.URL, pr)
+	dl.TwitchClient.Say(target, "Downloading... dankCircle")
+	result, err := goutubedl.New(context.Background(), link, goutubedl.Options{})
 	if err != nil {
-		dl.twitchClient.Say(target, fmt.Sprintf("Something went wrong FeelsBadMan: %q", err))
-		os.Remove(path)
-		return
+		dl.Log.Errorln(err)
 	}
-	req.Header.Set("Content-Type", form.FormDataContentType())
 
-	httpClient := http.Client{
-		Timeout: 300 * time.Second,
-	}
-	resp, err := httpClient.Do(req)
+	// I don't know why but I need to set it to mp4, otherwise if
+	// I use `result.Into.Ext` catbox won't play the video in the
+	// browser and say this message:
+	// `No video with supported format and MIME type found.`
+	rExt := "mp4"
+
+	downloadResult, err := result.Download(context.Background(), "best")
 	if err != nil {
-		dl.twitchClient.Say(target, fmt.Sprintf("Something went wrong FeelsBadMan: %q", err))
-		os.Remove(path)
-		dl.Log.Errorln("Error while sending HTTP request:", err)
-
-		return
+		dl.Log.Errorln(err)
 	}
-	defer resp.Body.Close()
-	dl.twitchClient.Say(target, "Uploaded PogChamp")
-
-	body, err := io.ReadAll(resp.Body)
+	dl.TwitchClient.Say(target, "Downloaded.")
+	uuidFilename, err := uuid.NewUUID()
 	if err != nil {
-		dl.twitchClient.Say(target, fmt.Sprintf("Something went wrong FeelsBadMan: %q", err))
-		os.Remove(path)
-		dl.Log.Errorln("Error while reading response:", err)
-		return
+		dl.Log.Errorln(err)
+	}
+	fileName = fmt.Sprintf("%s.%s", uuidFilename, rExt)
+	f, err := os.Create(fileName)
+	dl.TwitchClient.Say(target, fmt.Sprintf("Filename: %s", fileName))
+
+	if err != nil {
+		dl.Log.Errorln(err)
+	}
+	defer f.Close()
+	if _, err = io.Copy(f, downloadResult); err != nil {
+		dl.Log.Errorln(err)
 	}
 
-	var reply = string(body[:])
+	downloadResult.Close()
+	f.Close()
 
-	dl.twitchClient.Say(target, fmt.Sprintf("Removing file: %s", path))
-	os.Remove(path)
-	dl.twitchClient.Say(target, reply)
+	go NewUpload("catbox", fileName, target, dl.TwitchClient, dl.Log)
 }
