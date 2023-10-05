@@ -42,16 +42,22 @@ func (dl *Downloader) YafDownload(target, link string) {
 	result, err := goutubedl.New(context.Background(), link, goutubedl.Options{})
 	if err != nil {
 		dl.Log.Errorln(err)
+		dl.TwitchClient.Say(target, fmt.Sprintf("Something went wrong FeelsBadMan: %q", err))
+		return
 	}
 	rExt := result.Info.Ext
 	downloadResult, err := result.Download(context.Background(), "best")
 	if err != nil {
 		dl.Log.Errorln(err)
+		dl.TwitchClient.Say(target, fmt.Sprintf("Something went wrong FeelsBadMan: %q", err))
+		return
 	}
 	dl.TwitchClient.Say(target, "Downloaded.")
 	uuidFilename, err := uuid.NewUUID()
 	if err != nil {
 		dl.Log.Errorln(err)
+		dl.TwitchClient.Say(target, fmt.Sprintf("Something went wrong FeelsBadMan: %q", err))
+		return
 	}
 	fileName := fmt.Sprintf("%s.%s", uuidFilename, rExt)
 	f, err := os.Create(fileName)
@@ -59,10 +65,14 @@ func (dl *Downloader) YafDownload(target, link string) {
 
 	if err != nil {
 		dl.Log.Errorln(err)
+		dl.TwitchClient.Say(target, fmt.Sprintf("Something went wrong FeelsBadMan: %q", err))
+		return
 	}
 	defer f.Close()
 	if _, err = io.Copy(f, downloadResult); err != nil {
 		dl.Log.Errorln(err)
+		dl.TwitchClient.Say(target, fmt.Sprintf("Something went wrong FeelsBadMan: %q", err))
+		return
 	}
 
 	downloadResult.Close()
@@ -82,16 +92,22 @@ func (dl *Downloader) KappaDownload(target, link string) {
 	result, err := goutubedl.New(context.Background(), link, goutubedl.Options{})
 	if err != nil {
 		dl.Log.Errorln(err)
+		dl.TwitchClient.Say(target, fmt.Sprintf("Something went wrong FeelsBadMan: %q", err))
+		return
 	}
 	rExt := result.Info.Ext
 	downloadResult, err := result.Download(context.Background(), "best")
 	if err != nil {
 		dl.Log.Errorln(err)
+		dl.TwitchClient.Say(target, fmt.Sprintf("Something went wrong FeelsBadMan: %q", err))
+		return
 	}
 	dl.TwitchClient.Say(target, "Downloaded.")
 	uuidFilename, err := uuid.NewUUID()
 	if err != nil {
 		dl.Log.Errorln(err)
+		dl.TwitchClient.Say(target, fmt.Sprintf("Something went wrong FeelsBadMan: %q", err))
+		return
 	}
 	fileName := fmt.Sprintf("%s.%s", uuidFilename, rExt)
 	f, err := os.Create(fileName)
@@ -99,10 +115,14 @@ func (dl *Downloader) KappaDownload(target, link string) {
 
 	if err != nil {
 		dl.Log.Errorln(err)
+		dl.TwitchClient.Say(target, fmt.Sprintf("Something went wrong FeelsBadMan: %q", err))
+		return
 	}
 	defer f.Close()
 	if _, err = io.Copy(f, downloadResult); err != nil {
 		dl.Log.Errorln(err)
+		dl.TwitchClient.Say(target, fmt.Sprintf("Something went wrong FeelsBadMan: %q", err))
+		return
 	}
 
 	downloadResult.Close()
@@ -122,27 +142,32 @@ func (dl *Downloader) GofileDownload(target, link string) {
 	result, err := goutubedl.New(context.Background(), link, goutubedl.Options{})
 	if err != nil {
 		dl.Log.Errorln(err)
+		dl.TwitchClient.Say(target, fmt.Sprintf("Something went wrong FeelsBadMan: %q", err))
+		return
 	}
+	safeFilename := fmt.Sprintf("download_%s", result.Info.Title)
 	rExt := result.Info.Ext
 	downloadResult, err := result.Download(context.Background(), "best")
 	if err != nil {
 		dl.Log.Errorln(err)
+		dl.TwitchClient.Say(target, fmt.Sprintf("Something went wrong FeelsBadMan: %q", err))
+		return
 	}
 	dl.TwitchClient.Say(target, "Downloaded.")
-	uuidFilename, err := uuid.NewUUID()
-	if err != nil {
-		dl.Log.Errorln(err)
-	}
-	fileName := fmt.Sprintf("%s.%s", uuidFilename, rExt)
+	fileName := fmt.Sprintf("%s.%s", safeFilename, rExt)
 	f, err := os.Create(fileName)
 	dl.TwitchClient.Say(target, fmt.Sprintf("Filename: %s", fileName))
 
 	if err != nil {
 		dl.Log.Errorln(err)
+		dl.TwitchClient.Say(target, fmt.Sprintf("Something went wrong FeelsBadMan: %q", err))
+		return
 	}
 	defer f.Close()
 	if _, err = io.Copy(f, downloadResult); err != nil {
 		dl.Log.Errorln(err)
+		dl.TwitchClient.Say(target, fmt.Sprintf("Something went wrong FeelsBadMan: %q", err))
+		return
 	}
 
 	downloadResult.Close()
@@ -163,6 +188,8 @@ func (dl *Downloader) CatboxDownload(target, link string) {
 	result, err := goutubedl.New(context.Background(), link, goutubedl.Options{})
 	if err != nil {
 		dl.Log.Errorln(err)
+		dl.TwitchClient.Say(target, fmt.Sprintf("Something went wrong FeelsBadMan: %q", err))
+		return
 	}
 
 	// I don't know why but I need to set it to mp4, otherwise if
@@ -174,11 +201,15 @@ func (dl *Downloader) CatboxDownload(target, link string) {
 	downloadResult, err := result.Download(context.Background(), "best")
 	if err != nil {
 		dl.Log.Errorln(err)
+		dl.TwitchClient.Say(target, fmt.Sprintf("Something went wrong FeelsBadMan: %q", err))
+		return
 	}
 	dl.TwitchClient.Say(target, "Downloaded.")
 	uuidFilename, err := uuid.NewUUID()
 	if err != nil {
 		dl.Log.Errorln(err)
+		dl.TwitchClient.Say(target, fmt.Sprintf("Something went wrong FeelsBadMan: %q", err))
+		return
 	}
 	fileName = fmt.Sprintf("%s.%s", uuidFilename, rExt)
 	f, err := os.Create(fileName)
@@ -186,10 +217,14 @@ func (dl *Downloader) CatboxDownload(target, link string) {
 
 	if err != nil {
 		dl.Log.Errorln(err)
+		dl.TwitchClient.Say(target, fmt.Sprintf("Something went wrong FeelsBadMan: %q", err))
+		return
 	}
 	defer f.Close()
 	if _, err = io.Copy(f, downloadResult); err != nil {
 		dl.Log.Errorln(err)
+		dl.TwitchClient.Say(target, fmt.Sprintf("Something went wrong FeelsBadMan: %q", err))
+		return
 	}
 
 	downloadResult.Close()
