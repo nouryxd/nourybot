@@ -145,7 +145,7 @@ func (app *application) GofileDownload(target, link string) {
 	app.Send(target, "Downloaded.")
 	fileName := fmt.Sprintf("%s.%s", safeFilename, rExt)
 	f, err := os.Create(fileName)
-	app.TwitchClient.Say(target, fmt.Sprintf("Filename: %s", fileName))
+	app.Send(target, fmt.Sprintf("Filename: %s", fileName))
 
 	if err != nil {
 		app.Log.Errorln(err)
