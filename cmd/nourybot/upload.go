@@ -27,22 +27,22 @@ const (
 	YAF_ENDPOINT    = "https://i.yaf.ee/upload"
 )
 
-func (app *application) NewUpload(destination, fileName, target string) {
+func (app *application) NewUpload(destination, fileName, target, identifier string) {
 
 	switch destination {
 	case "catbox":
-		go app.CatboxUpload(target, fileName)
+		go app.CatboxUpload(target, fileName, identifier)
 	case "yaf":
-		go app.YafUpload(target, fileName)
+		go app.YafUpload(target, fileName, identifier)
 	case "kappa":
-		go app.KappaUpload(target, fileName)
+		go app.KappaUpload(target, fileName, identifier)
 	case "gofile":
-		go app.GofileUpload(target, fileName)
+		go app.GofileUpload(target, fileName, identifier)
 
 	}
 }
 
-func (app *application) CatboxUpload(target, fileName string) {
+func (app *application) CatboxUpload(target, fileName, identifier string) {
 	defer os.Remove(fileName)
 	file, err := os.Open(fileName)
 	if err != nil {
@@ -97,11 +97,12 @@ func (app *application) CatboxUpload(target, fileName string) {
 	}
 
 	reply := string(body)
+	go app.Models.Uploads.UpdateUploadURL(identifier, reply)
 	app.Send(target, fmt.Sprintf("Removing file: %s", fileName))
 	app.Send(target, reply)
 }
 
-func (app *application) GofileUpload(target, path string) {
+func (app *application) GofileUpload(target, path, identifier string) {
 	defer os.Remove(path)
 	app.Send(target, "Uploading to gofile.io... dankCircle")
 	pr, pw := io.Pipe()
@@ -187,11 +188,12 @@ func (app *application) GofileUpload(target, path string) {
 
 	var reply = jsonResponse.Data.DownloadPage
 
+	go app.Models.Uploads.UpdateUploadURL(identifier, reply)
 	app.Send(target, fmt.Sprintf("Removing file: %s", path))
 	app.Send(target, reply)
 }
 
-func (app *application) KappaUpload(target, path string) {
+func (app *application) KappaUpload(target, path, identifier string) {
 	defer os.Remove(path)
 	app.Send(target, "Uploading to kappa.lol... dankCircle")
 	pr, pw := io.Pipe()
@@ -274,10 +276,12 @@ func (app *application) KappaUpload(target, path string) {
 
 	var reply = jsonResponse.Link
 
+	go app.Models.Uploads.UpdateUploadURL(identifier, reply)
 	app.Send(target, fmt.Sprintf("Removing file: %s", path))
 	app.Send(target, reply)
 }
-func (app *application) YafUpload(target, path string) {
+
+func (app *application) YafUpload(target, path, identifier string) {
 	defer os.Remove(path)
 	app.Send(target, "Uploading to yaf.ee... dankCircle")
 	pr, pw := io.Pipe()
@@ -348,6 +352,7 @@ func (app *application) YafUpload(target, path string) {
 
 	var reply = string(body[:])
 
+	go app.Models.Uploads.UpdateUploadURL(identifier, reply)
 	app.Send(target, fmt.Sprintf("Removing file: %s", path))
 	app.Send(target, reply)
 }

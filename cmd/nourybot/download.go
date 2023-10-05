@@ -6,25 +6,37 @@ import (
 	"io"
 	"os"
 
+	"github.com/gempir/go-twitch-irc/v4"
 	"github.com/google/uuid"
 	"github.com/wader/goutubedl"
 )
 
-func (app *application) NewDownload(destination, target, link string) {
+func (app *application) NewDownload(destination, target, link string, msg twitch.PrivateMessage) {
+	identifier := uuid.NewString()
+	go app.Models.Uploads.Insert(
+		msg.User.Name,
+		msg.User.ID,
+		msg.Channel,
+		msg.Message,
+		destination,
+		link,
+		identifier,
+	)
+	app.Send(target, "xd")
 
 	switch destination {
 	case "catbox":
-		app.CatboxDownload(target, link)
+		app.CatboxDownload(target, link, identifier)
 	case "yaf":
-		app.YafDownload(target, link)
+		app.YafDownload(target, link, identifier)
 	case "kappa":
-		app.KappaDownload(target, link)
+		app.KappaDownload(target, link, identifier)
 	case "gofile":
-		app.GofileDownload(target, link)
+		app.GofileDownload(target, link, identifier)
 	}
 }
 
-func (app *application) YafDownload(target, link string) {
+func (app *application) YafDownload(target, link, identifier string) {
 	goutubedl.Path = "yt-dlp"
 
 	app.Send(target, "Downloading... dankCircle")
@@ -42,13 +54,7 @@ func (app *application) YafDownload(target, link string) {
 		return
 	}
 	app.Send(target, "Downloaded.")
-	uuidFilename, err := uuid.NewUUID()
-	if err != nil {
-		app.Log.Errorln(err)
-		app.Send(target, fmt.Sprintf("Something went wrong FeelsBadMan: %q", err))
-		return
-	}
-	fileName := fmt.Sprintf("%s.%s", uuidFilename, rExt)
+	fileName := fmt.Sprintf("%s.%s", identifier, rExt)
 	f, err := os.Create(fileName)
 	app.Send(target, fmt.Sprintf("Filename: %s", fileName))
 
@@ -70,11 +76,11 @@ func (app *application) YafDownload(target, link string) {
 	// dl.twitchClient.Say(target, "ResidentSleeper ..")
 	// time.Sleep(duration)
 
-	go app.NewUpload("yaf", fileName, target)
+	go app.NewUpload("yaf", fileName, target, identifier)
 
 }
 
-func (app *application) KappaDownload(target, link string) {
+func (app *application) KappaDownload(target, link, identifier string) {
 	goutubedl.Path = "yt-dlp"
 
 	app.Send(target, "Downloading... dankCircle")
@@ -92,13 +98,7 @@ func (app *application) KappaDownload(target, link string) {
 		return
 	}
 	app.Send(target, "Downloaded.")
-	uuidFilename, err := uuid.NewUUID()
-	if err != nil {
-		app.Log.Errorln(err)
-		app.Send(target, fmt.Sprintf("Something went wrong FeelsBadMan: %q", err))
-		return
-	}
-	fileName := fmt.Sprintf("%s.%s", uuidFilename, rExt)
+	fileName := fmt.Sprintf("%s.%s", identifier, rExt)
 	f, err := os.Create(fileName)
 	app.Send(target, fmt.Sprintf("Filename: %s", fileName))
 
@@ -120,11 +120,11 @@ func (app *application) KappaDownload(target, link string) {
 	// dl.twitchClient.Say(target, "ResidentSleeper ..")
 	// time.Sleep(duration)
 
-	go app.NewUpload("kappa", fileName, target)
+	go app.NewUpload("kappa", fileName, target, identifier)
 
 }
 
-func (app *application) GofileDownload(target, link string) {
+func (app *application) GofileDownload(target, link, identifier string) {
 	goutubedl.Path = "yt-dlp"
 
 	app.Send(target, "Downloading... dankCircle")
@@ -165,11 +165,11 @@ func (app *application) GofileDownload(target, link string) {
 	// dl.twitchClient.Say(target, "ResidentSleeper ..")
 	// time.Sleep(duration)
 
-	go app.NewUpload("gofile", fileName, target)
+	go app.NewUpload("gofile", fileName, target, identifier)
 
 }
 
-func (app *application) CatboxDownload(target, link string) {
+func (app *application) CatboxDownload(target, link, identifier string) {
 	goutubedl.Path = "yt-dlp"
 	var fileName string
 
@@ -194,13 +194,7 @@ func (app *application) CatboxDownload(target, link string) {
 		return
 	}
 	app.Send(target, "Downloaded.")
-	uuidFilename, err := uuid.NewUUID()
-	if err != nil {
-		app.Log.Errorln(err)
-		app.Send(target, fmt.Sprintf("Something went wrong FeelsBadMan: %q", err))
-		return
-	}
-	fileName = fmt.Sprintf("%s.%s", uuidFilename, rExt)
+	fileName = fmt.Sprintf("%s.%s", identifier, rExt)
 	f, err := os.Create(fileName)
 	app.Send(target, fmt.Sprintf("Filename: %s", fileName))
 
@@ -219,5 +213,5 @@ func (app *application) CatboxDownload(target, link string) {
 	downloadResult.Close()
 	f.Close()
 
-	go app.NewUpload("catbox", fileName, target)
+	go app.NewUpload("catbox", fileName, target, identifier)
 }

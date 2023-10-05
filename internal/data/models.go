@@ -53,6 +53,10 @@ type Models struct {
 		GetAll() ([]*Timer, error)
 		Delete(name string) error
 	}
+	Uploads interface {
+		Insert(twitchLogin, twitchID, twitchMessage, twitchChannel, filehoster, downloadURL, identifier string)
+		UpdateUploadURL(identifier, uploadURL string)
+	}
 }
 
 func NewModels(db *sql.DB) Models {
@@ -61,5 +65,6 @@ func NewModels(db *sql.DB) Models {
 		Users:    UserModel{DB: db},
 		Commands: CommandModel{DB: db},
 		Timers:   TimerModel{DB: db},
+		Uploads:  UploadModel{DB: db},
 	}
 }
