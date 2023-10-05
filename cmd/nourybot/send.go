@@ -94,17 +94,7 @@ func (app *application) Send(target, message string) {
 
 	// check the message for bad words before we say it
 	messageBanned, banReason := app.checkMessage(message)
-	if messageBanned {
-		// Bad message, replace message and log it.
-		app.TwitchClient.Say(target, "[BANPHRASED] monkaS")
-		app.Log.Infow("banned message detected",
-			"target channel", target,
-			"message", message,
-			"ban reason", banReason,
-		)
-
-		return
-	} else {
+	if !messageBanned {
 		// In case the message we are trying to send is longer than the
 		// maximum allowed message length on twitch we split the message in two parts.
 		// Twitch has a maximum length for messages of 510 characters so to be safe
@@ -119,9 +109,20 @@ func (app *application) Send(target, message string) {
 			app.TwitchClient.Say(target, secondMessage)
 
 			return
+		} else {
+			// Message was fine.
+			app.TwitchClient.Say(target, message)
+			return
 		}
-		// Message was fine.
-		app.TwitchClient.Say(target, message)
+	} else {
+		// Bad message, replace message and log it.
+		app.TwitchClient.Say(target, "[BANPHRASED] monkaS")
+		app.Log.Infow("banned message detected",
+			"target channel", target,
+			"message", message,
+			"ban reason", banReason,
+		)
+
 		return
 	}
 }
