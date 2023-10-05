@@ -64,9 +64,9 @@ func (dl *downloader) dlxd(target, link string) {
 
 	downloadResult.Close()
 	f.Close()
-	duration := 5 * time.Second
-	dl.twitchClient.Say(target, "ResidentSleeper ..")
-	time.Sleep(duration)
+	// duration := 5 * time.Second
+	// dl.twitchClient.Say(target, "ResidentSleeper ..")
+	// time.Sleep(duration)
 
 	dl.upload(target, fmt.Sprintf("%s.%s", fn, rExt))
 
@@ -83,24 +83,28 @@ func (dl *downloader) upload(target, path string) {
 		err := form.WriteField("name", "xd")
 		if err != nil {
 			dl.twitchClient.Say(target, fmt.Sprintf("Something went wrong FeelsBadMan: %q", err))
+			os.Remove(path)
 			return
 		}
 
 		file, err := os.Open(path) // path to image file
 		if err != nil {
 			dl.twitchClient.Say(target, fmt.Sprintf("Something went wrong FeelsBadMan: %q", err))
+			os.Remove(path)
 			return
 		}
 
 		w, err := form.CreateFormFile("file", path)
 		if err != nil {
 			dl.twitchClient.Say(target, fmt.Sprintf("Something went wrong FeelsBadMan: %q", err))
+			os.Remove(path)
 			return
 		}
 
 		_, err = io.Copy(w, file)
 		if err != nil {
 			dl.twitchClient.Say(target, fmt.Sprintf("Something went wrong FeelsBadMan: %q", err))
+			os.Remove(path)
 			return
 		}
 
@@ -110,14 +114,18 @@ func (dl *downloader) upload(target, path string) {
 	req, err := http.NewRequest(http.MethodPost, dl.URL, pr)
 	if err != nil {
 		dl.twitchClient.Say(target, fmt.Sprintf("Something went wrong FeelsBadMan: %q", err))
+		os.Remove(path)
 		return
 	}
 	req.Header.Set("Content-Type", form.FormDataContentType())
 
-	httpClient := http.DefaultClient
+	httpClient := http.Client{
+		Timeout: 300 * time.Second,
+	}
 	resp, err := httpClient.Do(req)
 	if err != nil {
 		dl.twitchClient.Say(target, fmt.Sprintf("Something went wrong FeelsBadMan: %q", err))
+		os.Remove(path)
 		dl.Log.Errorln("Error while sending HTTP request:", err)
 
 		return
@@ -128,6 +136,7 @@ func (dl *downloader) upload(target, path string) {
 	body, err := io.ReadAll(resp.Body)
 	if err != nil {
 		dl.twitchClient.Say(target, fmt.Sprintf("Something went wrong FeelsBadMan: %q", err))
+		os.Remove(path)
 		dl.Log.Errorln("Error while reading response:", err)
 		return
 	}
