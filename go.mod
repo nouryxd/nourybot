@@ -4,27 +4,22 @@ go 1.20
 
 require (
 	github.com/gempir/go-twitch-irc/v4 v4.0.0
+	github.com/google/uuid v1.3.1
 	github.com/jakecoffman/cron v0.0.0-20190106200828-7e2009c226a5
 	github.com/lib/pq v1.10.9
-	github.com/nicklaw5/helix v1.25.0
 	github.com/rs/zerolog v1.29.1
 	github.com/shkh/lastfm-go v0.0.0-20191215035245-89a801c244e0
+	github.com/wader/goutubedl v0.0.0-20230924165737-427b7fa536e6
 	go.uber.org/zap v1.24.0
 	gopkg.in/gomail.v2 v2.0.0-20160411212932-81ebce5c23df
 )
 
 require (
-	github.com/google/uuid v1.3.1 // indirect
-	github.com/pkg/errors v0.9.1 // indirect
-	github.com/wabarc/go-catbox v0.1.0 // indirect
-	github.com/wabarc/helper v0.0.0-20210718171053-59c70d0b20c2 // indirect
-	github.com/wader/goutubedl v0.0.0-20230924165737-427b7fa536e6 // indirect
+	github.com/golang-jwt/jwt/v4 v4.0.0 // indirect
+	github.com/nicklaw5/helix/v2 v2.25.1 // indirect
 	go.uber.org/atomic v1.7.0 // indirect
 	go.uber.org/multierr v1.6.0 // indirect
-	golang.org/x/net v0.0.0-20210716203947-853a461950ff // indirect
-	golang.org/x/text v0.3.6 // indirect
 	gopkg.in/alexcesaro/quotedprintable.v3 v3.0.0-20150716171945-2caba252f4dc // indirect
-	mvdan.cc/xurls/v2 v2.2.0 // indirect
 )
 
 require (
