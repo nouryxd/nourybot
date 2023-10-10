@@ -57,8 +57,6 @@ func (u UploadModel) Insert(twitchLogin, twitchID, twitchChannel, twitchMessage,
 	if rowsAffected == 0 {
 		return
 	}
-
-	return
 }
 
 func (u UploadModel) UpdateUploadURL(identifier, uploadURL string) {

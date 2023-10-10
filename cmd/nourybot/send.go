@@ -6,6 +6,8 @@ import (
 	"fmt"
 	"io"
 	"net/http"
+
+	"github.com/google/uuid"
 )
 
 // banphraseResponse is the data we receive back from
@@ -84,6 +86,9 @@ func (app *application) Send(target, message string) {
 		return
 	}
 
+	identifier := uuid.NewString()
+	go app.Models.SentMessagesLogs.Insert(target, message, identifier)
+
 	// Since messages starting with `.` or `/` are used for special actions
 	// (ban, whisper, timeout) and so on, we place an emote infront of it so
 	// the actions wouldn't execute. `!` and `$` are common bot prefixes so we
@@ -111,7 +116,7 @@ func (app *application) Send(target, message string) {
 			return
 		} else {
 			// Message was fine.
-			app.TwitchClient.Say(target, message)
+			go app.TwitchClient.Say(target, message)
 			return
 		}
 	} else {
@@ -125,6 +130,30 @@ func (app *application) Send(target, message string) {
 
 		return
 	}
+}
+
+// Send is used to send twitch replies and contains the necessary
+// safeguards and logic for that.
+func (app *application) SendNoBanphrase(target, message string) {
+	// Message we are trying to send is empty.
+	if len(message) == 0 {
+		return
+	}
+
+	identifier := uuid.NewString()
+	go app.Models.SentMessagesLogs.Insert(target, message, identifier)
+
+	// Since messages starting with `.` or `/` are used for special actions
+	// (ban, whisper, timeout) and so on, we place an emote infront of it so
+	// the actions wouldn't execute. `!` and `$` are common bot prefixes so we
+	// don't allow them either.
+	if message[0] == '.' || message[0] == '/' || message[0] == '!' || message[0] == '$' {
+		message = ":tf: " + message
+	}
+
+	// check the message for bad words before we say it
+	// Message was fine.
+	go app.TwitchClient.Say(target, message)
 }
 
 // SendNoLimit does not check for the maximum message size.
@@ -148,7 +177,7 @@ func (app *application) SendNoLimit(target, message string) {
 	messageBanned, banReason := app.checkMessage(message)
 	if messageBanned {
 		// Bad message, replace message and log it.
-		app.TwitchClient.Say(target, "[BANPHRASED] monkaS")
+		go app.TwitchClient.Say(target, "[BANPHRASED] monkaS")
 		app.Log.Infow("banned message detected",
 			"target channel", target,
 			"message", message,
@@ -164,7 +193,9 @@ func (app *application) SendNoLimit(target, message string) {
 		// https://discuss.dev.twitch.tv/t/missing-client-side-message-length-check/21316
 		// TODO: Make it so it splits at a space instead and not in the middle of a word.
 		// Message was fine.
-		app.TwitchClient.Say(target, message)
+		identifier := uuid.NewString()
+		go app.Models.SentMessagesLogs.Insert(target, message, identifier)
+		go app.TwitchClient.Say(target, message)
 		return
 	}
 }

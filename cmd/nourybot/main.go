@@ -24,6 +24,7 @@ type config struct {
 	twitchOauth        string
 	twitchClientId     string
 	twitchClientSecret string
+	twitchID           string
 	commandPrefix      string
 	db                 struct {
 		dsn          string
@@ -74,6 +75,7 @@ func main() {
 	cfg.twitchClientId = os.Getenv("TWITCH_CLIENT_ID")
 	cfg.twitchClientSecret = os.Getenv("TWITCH_CLIENT_SECRET")
 	cfg.commandPrefix = os.Getenv("TWITCH_COMMAND_PREFIX")
+	cfg.twitchID = os.Getenv("TWITCH_ID")
 	tc := twitch.NewClient(cfg.twitchUsername, cfg.twitchOauth)
 
 	switch envFlag {
@@ -133,12 +135,12 @@ func main() {
 
 	// Received a PrivateMessage (normal chat message).
 	app.TwitchClient.OnPrivateMessage(func(message twitch.PrivateMessage) {
-		// sugar.Infow("New Twitch PrivateMessage",
-		// 	"message.Channel", message.Channel,
-		// 	"message.User.DisplayName", message.User.DisplayName,
-		// 	"message.User.ID", message.User.ID,
-		// 	"message.Message", message.Message,
-		// )
+		sugar.Infow("New Twitch PrivateMessage",
+			"message.Channel", message.Channel,
+			"message.User.DisplayName", message.User.DisplayName,
+			"message.User.ID", message.User.ID,
+			"message.Message", message.Message,
+		)
 
 		// roomId is the Twitch UserID of the channel the message originated from.
 		// If there is no roomId something went really wrong.

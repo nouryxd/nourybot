@@ -70,7 +70,7 @@ func (app *application) GetCommand(target, commandName string, userLevel int) (s
 			// Cannot use app.Send() here since the command is a ascii pasta and will be
 			// timed out, thus not passing the banphrase check app.Send() does before actually
 			// sending the message.
-			app.TwitchClient.Say(target, command.Text)
+			app.SendNoBanphrase(target, command.Text)
 
 			return "", nil
 		} else {
