@@ -18,7 +18,7 @@ var (
 // as app.models.Channels.Get(login)
 type Models struct {
 	Channels interface {
-		Insert(channel *Channel) error
+		Insert(login, id string) error
 		Get(login string) (*Channel, error)
 		GetAll() ([]*Channel, error)
 		GetJoinable() ([]string, error)

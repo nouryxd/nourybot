@@ -6,6 +6,7 @@ import (
 	"github.com/gempir/go-twitch-irc/v4"
 	"github.com/lyx0/nourybot/internal/commands"
 	"github.com/lyx0/nourybot/internal/common"
+	"github.com/lyx0/nourybot/internal/ivr"
 )
 
 // handleCommand takes in a twitch.PrivateMessage and then routes the message to
@@ -236,6 +237,15 @@ func (app *application) handleCommand(message twitch.PrivateMessage) {
 				app.EditUserLevel(cmdParams[3], cmdParams[4], message)
 			}
 		}
+
+	case "join":
+		go app.AddChannel(cmdParams[1], message)
+
+	case "part":
+		go app.DeleteChannel(cmdParams[1], message)
+
+	case "uid":
+		reply = ivr.IDByUsername(cmdParams[1])
 
 	default:
 		r, err := app.GetCommand(target, commandName, userLevel)
