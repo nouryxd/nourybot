@@ -2,9 +2,9 @@ package commands
 
 import "fmt"
 
-	"github.com/gempir/go-twitch-irc/v4"
-	"github.com/lyx0/nourybot/internal/common"
-)
+func Ffz(query string) string {
+	reply := fmt.Sprintf("https://www.frankerfacez.com/emoticons/?q=%s&sort=count-desc&days=0", query)
 
 	return reply
 }
+
