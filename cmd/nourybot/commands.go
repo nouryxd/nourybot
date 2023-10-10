@@ -14,7 +14,9 @@ func (app *application) handleCommand(message twitch.PrivateMessage) {
 	var reply string
 
 	// Increments the counter how many commands have been used, called in the ping command.
-	common.CommandUsed()
+	go common.CommandUsed()
+
+	go app.InitUser(message.User.Name, message.User.ID)
 
 	// commandName is the actual name of the command without the prefix.
 	// e.g. `()ping` would be `ping`.

@@ -10,9 +10,9 @@ import (
 
 // AddUser calls GetIdByLogin to get the twitch id of the login name and then adds
 // the login name, twitch id and supplied level to the database.
-func (app *application) InitUser(login, twitchId string, message twitch.PrivateMessage) {
+func (app *application) InitUser(login, twitchId string) {
 	_, err := app.Models.Users.Check(twitchId)
-	app.Log.Error(err)
+	//app.Log.Error(err)
 	if err != nil {
 		app.Models.Users.Insert(login, twitchId)
 

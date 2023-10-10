@@ -62,11 +62,6 @@ func (app *application) GetCommand(target, commandName string, userLevel int) (s
 		return "", err
 	}
 
-	app.Log.Infow("levels",
-		"commandName", commandName,
-		"userLevel", userLevel,
-		"command.Level", command.Level,
-	)
 	if command.Level == 0 {
 		return command.Text, nil
 	} else if userLevel >= command.Level {
