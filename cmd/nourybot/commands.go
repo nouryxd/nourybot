@@ -195,6 +195,13 @@ func (app *application) handleCommand(message twitch.PrivateMessage) {
 				app.EditUserLevel(cmdParams[3], cmdParams[4], message)
 			}
 		}
+
+	default:
+		r, err := app.GetCommand(target, commandName, userLevel)
+		if err != nil {
+			return
+		}
+		reply = r
 	}
 	if reply != "" {
 		go app.Send(target, reply)

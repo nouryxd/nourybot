@@ -54,31 +54,37 @@ func (app *application) AddCommand(name string, message twitch.PrivateMessage) {
 // If the Command.Level is not 0 it queries the database for the level of the
 // user who sent the message. If the users level is equal or higher
 // the command.Text field is returned.
-func (app *application) GetCommand(name, username string) (string, error) {
+func (app *application) GetCommand(target, commandName string, userLevel int) (string, error) {
 	// Fetch the command from the database if it exists.
-	command, err := app.Models.Commands.Get(name)
+	command, err := app.Models.Commands.Get(commandName)
 	if err != nil {
 		// It probably did not exist
 		return "", err
 	}
 
-	// If the command has no level set just return the text.
-	// Otherwise check if the level is high enough.
+	app.Log.Infow("levels",
+		"commandName", commandName,
+		"userLevel", userLevel,
+		"command.Level", command.Level,
+	)
 	if command.Level == 0 {
 		return command.Text, nil
-	} else {
-		// Get the user from the database to check if the userlevel is equal
-		// or higher than the command.Level.
-		user, err := app.Models.Users.Get(username)
-		if err != nil {
-			return "", err
-		}
-		if user.Level >= command.Level {
+	} else if userLevel >= command.Level {
+		if command.Category == "ascii" {
+			// Cannot use app.Send() here since the command is a ascii pasta and will be
+			// timed out, thus not passing the banphrase check app.Send() does before actually
+			// sending the message.
+			app.TwitchClient.Say(target, command.Text)
+
+			return "", nil
+		} else {
 			// Userlevel is sufficient so return the command.Text
 			return command.Text, nil
 		}
-	}
 
+		// If the command has no level set just return the text.
+		// Otherwise check if the level is high enough.
+	}
 	// Userlevel was not enough so return an empty string and error.
 	return "", ErrUserInsufficientLevel
 }
