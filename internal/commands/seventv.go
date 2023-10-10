@@ -2,8 +2,9 @@ package commands
 
 import "fmt"
 
-func SevenTV(query string) string {
-	reply := fmt.Sprintf("https://7tv.app/emotes?page=1&query=%s", query)
+	"github.com/gempir/go-twitch-irc/v4"
+	"github.com/lyx0/nourybot/internal/common"
+)
 
 	return reply
 }

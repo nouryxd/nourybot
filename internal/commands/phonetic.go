@@ -1,6 +1,8 @@
 package commands
 
-import "fmt"
+import (
+	"fmt"
+)
 
 var cm = map[string]string{
 	"`": "ё",
