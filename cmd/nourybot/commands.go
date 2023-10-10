@@ -109,6 +109,11 @@ func (app *application) handleCommand(message twitch.PrivateMessage) {
 			reply = commands.LastFmUserRecent(target, cmdParams[1])
 		}
 
+	case "help":
+		if msgLen > 1 {
+			app.commandHelp(target, cmdParams[1], message.User.Name)
+		}
+
 	case "nourybot":
 		reply = "Lidl Twitch bot made by @nourylul. Prefix: ()"
 
@@ -209,4 +214,52 @@ func (app *application) handleCommand(message twitch.PrivateMessage) {
 		go app.Send(target, reply)
 		return
 	}
+}
+
+// Map of known commands with their help texts.
+var helpText = map[string]string{
+	"bttv":       "Returns the search URL for a given BTTV emote. Example usage: ()bttv <emote name>",
+	"coin":       "Flips a coin! Aliases: coinflip, coin, cf",
+	"cf":         "Flips a coin! Aliases: coinflip, coin, cf",
+	"coinflip":   "Flips a coin! Aliases: coinflip, coin, cf",
+	"currency":   "Returns the exchange rate for two currencies. Only three letter abbreviations are supported ( List of supported currencies: https://decapi.me/misc/currency?list ). Example usage: ()currency 10 USD to EUR",
+	"ffz":        "Returns the search URL for a given FFZ emote. Example usage: ()ffz <emote name>",
+	"followage":  "Returns how long a given user has been following a channel. Example usage: ()followage <channel> <username>",
+	"firstline":  "Returns the first message a user has sent in a given channel. Aliases: firstline, fl. Example usage: ()firstline <channel> <username>",
+	"fl":         "Returns the first message a user has sent in a given channel. Aliases: firstline, fl. Example usage: ()fl <channel> <username>",
+	"help":       "Returns more information about a command and its usage. 4Head Example usage: ()help <command name>",
+	"ping":       "Hopefully returns a Pong! monkaS",
+	"preview":    "Returns a link to an (almost) live screenshot of a live channel. Alias: preview, thumbnail. Example usage: ()preview <channel>",
+	"phonetic":   "Translates the input to the text equivalent on a phonetic russian keyboard layout. Layout and general functionality is the same as https://russian.typeit.org/",
+	"ph":         "Translates the input to the text equivalent on a phonetic russian keyboard layout. Layout and general functionality is the same as https://russian.typeit.org/",
+	"thumbnail":  "Returns a link to an (almost) live screenshot of a live channel. Alias: preview, thumbnail. Example usage: ()thumbnail <channel>",
+	"tweet":      "Returns the latest tweet for a provided user. Example usage: ()tweet <username>",
+	"seventv":    "Returns the search URL for a given SevenTV emote. Aliases: seventv, 7tv. Example usage: ()seventv FeelsDankMan",
+	"7tv":        "Returns the search URL for a given SevenTV emote. Aliases: seventv, 7tv. Example usage: ()7tv FeelsDankMan",
+	"weather":    "Returns the weather for a given location. Example usage: ()weather Vilnius",
+	"randomxkcd": "Returns a link to a random xkcd comic. Alises: randomxkcd, rxkcd. Example usage: ()randomxkcd",
+	"rxkcd":      "Returns a link to a random xkcd comic. Alises: randomxkcd, rxkcd. Example usage: ()rxkcd",
+	"xkcd":       "Returns a link to the latest xkcd comic. Example usage: ()xkcd",
+}
+
+// Help checks if a help text for a given command exists and replies with it.
+func (app *application) commandHelp(target, name, username string) {
+	// Check if the `helpText` map has an entry for `name`. If it does return it's value entry
+	// and send that as a reply.
+	i, ok := helpText[name]
+	if !ok {
+		// If it doesn't check the database for a command with that `name`. If there is one
+		// reply with that commands `help` entry.
+		c, err := app.GetCommandHelp(name, username)
+		if err != nil {
+			app.Log.Infow("commandHelp: no such command found",
+				"err", err)
+			return
+		}
+
+		app.Send(target, c)
+		return
+	}
+
+	app.Send(target, i)
 }
