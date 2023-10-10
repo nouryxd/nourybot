@@ -97,6 +97,39 @@ func (app *application) handleCommand(message twitch.PrivateMessage) {
 	case "gofile":
 		go app.NewDownload("gofile", target, cmdParams[1], message)
 
+	case "osrs":
+		reply = commands.OSRS(message.Message[7:len(message.Message)])
+
+	case "preview":
+		reply = commands.Preview(cmdParams[1])
+
+	case "thumbnail":
+		reply = commands.Preview(cmdParams[1])
+
+	case "ffz":
+		reply = commands.Ffz(cmdParams[1])
+
+	case "ddg":
+		reply = commands.DuckDuckGo(message.Message[6:len(message.Message)])
+
+	case "youtube":
+		reply = commands.Youtube(message.Message[10:len(message.Message)])
+
+	case "godocs":
+		reply = commands.Godocs(message.Message[9:len(message.Message)])
+
+	case "google":
+		reply = commands.Google(message.Message[9:len(message.Message)])
+
+	case "duckduckgo":
+		reply = commands.DuckDuckGo(message.Message[13:len(message.Message)])
+
+	case "seventv":
+		reply = commands.SevenTV(cmdParams[1])
+
+	case "7tv":
+		reply = commands.SevenTV(cmdParams[1])
+
 	case "mail":
 		app.SendEmail("Test command used!", "This is an email test")
 
