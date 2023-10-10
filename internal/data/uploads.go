@@ -81,6 +81,4 @@ func (u UploadModel) UpdateUploadURL(identifier, uploadURL string) {
 			return
 		}
 	}
-
-	return
 }

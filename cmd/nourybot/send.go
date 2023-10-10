@@ -63,7 +63,10 @@ func (app *application) checkMessage(text string) (bool, string) {
 	}
 
 	var responseObject banphraseResponse
-	json.Unmarshal(body, &responseObject)
+	if err := json.Unmarshal(body, &responseObject); err != nil {
+		app.Log.Error(err)
+		return true, "could not check banphrase api"
+	}
 
 	// Bad Message
 	//
@@ -144,7 +147,6 @@ func (app *application) Send(target, message string, msgContext twitch.PrivateMe
 
 	commandName := strings.ToLower(strings.SplitN(msgContext.Message, " ", 3)[0][2:])
 	identifier := uuid.NewString()
-	app.Log.Info("xd xd")
 	go app.Models.SentMessagesLogs.Insert(target, message, commandName, msgContext.User.Name, msgContext.User.ID, msgContext.Message, identifier, msgContext.Raw)
 
 	// Since messages starting with `.` or `/` are used for special actions

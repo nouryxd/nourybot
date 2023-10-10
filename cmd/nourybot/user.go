@@ -14,7 +14,7 @@ func (app *application) InitUser(login, twitchId string) {
 	_, err := app.Models.Users.Check(twitchId)
 	//app.Log.Error(err)
 	if err != nil {
-		app.Models.Users.Insert(login, twitchId)
+		go app.Models.Users.Insert(login, twitchId)
 
 		return
 	}

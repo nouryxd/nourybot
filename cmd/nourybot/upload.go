@@ -65,8 +65,16 @@ func (app *application) CatboxUpload(target, fileName, identifier string, msg tw
 		defer w.Close()
 		defer m.Close()
 
-		m.WriteField("reqtype", "fileupload")
-		m.WriteField("time", "24h")
+		err := m.WriteField("reqtype", "fileupload")
+		if err != nil {
+			app.Send(target, fmt.Sprintf("Something went wrong FeelsBadMan: %q", err), msg)
+			return
+		}
+		err = m.WriteField("time", "24h")
+		if err != nil {
+			app.Send(target, fmt.Sprintf("Something went wrong FeelsBadMan: %q", err), msg)
+			return
+		}
 		part, err := m.CreateFormFile("fileToUpload", filepath.Base(file.Name()))
 		if err != nil {
 			app.Send(target, fmt.Sprintf("Something went wrong FeelsBadMan: %q", err), msg)
