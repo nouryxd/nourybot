@@ -186,6 +186,7 @@ func main() {
 			"Helix", helixResp,
 		)
 
+		app.InitialJoin()
 		// Load the initial timers from the database.
 		app.InitialTimers()
 
