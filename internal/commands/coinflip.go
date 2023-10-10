@@ -1,23 +1,21 @@
 package commands
 
 import (
-	"github.com/gempir/go-twitch-irc/v4"
 	"github.com/lyx0/nourybot/internal/common"
 )
 
-func Coinflip(target string, tc *twitch.Client) {
+func Coinflip() string {
 	flip := common.GenerateRandomNumber(2)
+	var reply string
 
 	switch flip {
 	case 0:
-		common.Send(target, "Heads!", tc)
-		return
+		reply = "Heads!"
 	case 1:
-		common.Send(target, "Tails!", tc)
-		return
+		reply = "Tails!"
 	default:
-		common.Send(target, "Heads!", tc)
-		return
+		reply = "Heads!"
 	}
 
+	return reply
 }

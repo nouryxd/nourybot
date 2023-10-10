@@ -5,35 +5,31 @@ import (
 	"os"
 
 	owm "github.com/briandowns/openweathermap"
-	"github.com/gempir/go-twitch-irc/v4"
 	"github.com/joho/godotenv"
-	"github.com/lyx0/nourybot/internal/common"
-	"go.uber.org/zap"
 )
 
 // Weather queries the OpenWeatherMap Api for the given location and sends the
 // current weather response to the target twitch chat.
-func Weather(target, location string, tc *twitch.Client) {
-	sugar := zap.NewExample().Sugar()
-	defer sugar.Sync()
-
+func Weather(location string) (string, error) {
 	err := godotenv.Load()
 	if err != nil {
-		sugar.Error("Error loading OpenWeatherMap API key from .env file")
+		return "", ErrInternalServerError
 	}
 	owmKey := os.Getenv("OWM_KEY")
 
 	w, err := owm.NewCurrent("C", "en", owmKey)
 	if err != nil {
-		sugar.Error(err)
+		return "", ErrInternalServerError
 	}
-	w.CurrentByName(location)
+
+	if err := w.CurrentByName(location); err != nil {
+		return "", ErrInternalServerError
+	}
 
 	// Longitude and Latitude are returned as 0 when the supplied location couldn't be
 	// assigned to a OpenWeatherMap location.
 	if w.GeoPos.Longitude == 0 && w.GeoPos.Latitude == 0 {
-		reply := "Location not found FeelsBadMan"
-		common.Send(target, reply, tc)
+		return "", ErrWeatherLocationNotFound
 	} else {
 		// Weather for Vilnius, LT: Feels like: 29.67°C. Currently 29.49°C with a high of 29.84°C and a low of 29.49°C, humidity: 45%, wind: 6.17m/s.
 		reply := fmt.Sprintf("Weather for %s, %s: Feels like: %v°C. Currently %v°C with a high of %v°C and a low of %v°C, humidity: %v%%, wind: %vm/s.",
@@ -46,6 +42,6 @@ func Weather(target, location string, tc *twitch.Client) {
 			w.Main.Humidity,
 			w.Wind.Speed,
 		)
-		common.Send(target, reply, tc)
+		return reply, nil
 	}
 }

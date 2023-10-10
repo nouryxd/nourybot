@@ -23,14 +23,14 @@ type UserModel struct {
 // Insert inserts a user model into the database.
 func (u UserModel) Insert(login, twitchId string) error {
 	query := `
-	INSERT INTO users(login, twitchid)
-	VALUES ($1, $2)
+	INSERT INTO users(login, twitchid, level, location, lastfm_username)
+	VALUES ($1, $2, $3, $4, $5)
 	ON CONFLICT (login)
 	DO NOTHING
 	RETURNING id, added_at;
 	`
 
-	args := []interface{}{login, twitchId}
+	args := []interface{}{login, twitchId, "0", "", ""}
 
 	// Execute the query returning the number of affected rows.
 	result, err := u.DB.Exec(query, args...)
@@ -214,7 +214,7 @@ func (u UserModel) SetLevel(login string, level int) error {
 // Get searches the database for a login name and returns the user struct on success.
 func (u UserModel) Get(login string) (*User, error) {
 	query := `
-	SELECT id, added_at, login, twitchid, level, location
+	SELECT id, added_at, login, twitchid, level, location, lastfm_username
 	FROM users
 	WHERE login = $1`
 
@@ -227,6 +227,7 @@ func (u UserModel) Get(login string) (*User, error) {
 		&user.TwitchID,
 		&user.Level,
 		&user.Location,
+		&user.LastFMUsername,
 	)
 
 	if err != nil {

@@ -3,7 +3,7 @@ package humanize
 import (
 	"time"
 
-	"github.com/dustin/go-humanize"
+	humanize "github.com/dustin/go-humanize"
 )
 
 func Time(t time.Time) string {

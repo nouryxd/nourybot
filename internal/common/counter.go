@@ -14,3 +14,4 @@ func CommandUsed() {
 func GetCommandsUsed() int {
 	return tempCommands
 }
+

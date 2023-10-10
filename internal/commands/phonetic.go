@@ -2,9 +2,6 @@ package commands
 
 import (
 	"fmt"
-
-	"github.com/gempir/go-twitch-irc/v4"
-	"github.com/lyx0/nourybot/internal/common"
 )
 
 var cm = map[string]string{
@@ -49,6 +46,7 @@ var cm = map[string]string{
 	"b": "б",
 	"n": "н",
 	"m": "м",
+
 	"Q": "Я",
 	"W": "Ш",
 	"E": "Е",
@@ -77,7 +75,7 @@ var cm = map[string]string{
 	"M": "М",
 }
 
-func Phonetic(target, message string, tc *twitch.Client) {
+func Phonetic(message string) (string, error) {
 	var ts string
 
 	for _, c := range message {
@@ -87,8 +85,7 @@ func Phonetic(target, message string, tc *twitch.Client) {
 			ts = ts + string(c)
 
 		}
-		//ts = append(ts, cm[string(c)])
 	}
 
-	common.Send(target, fmt.Sprint(ts), tc)
+	return fmt.Sprint(ts), nil
 }

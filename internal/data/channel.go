@@ -49,7 +49,7 @@ func (c ChannelModel) Get(login string) (*Channel, error) {
 }
 
 // Insert takes in a channel struct and inserts it into the database.
-func (c ChannelModel) Insert(channel *Channel) error {
+func (c ChannelModel) Insert(login, id string) error {
 	query := `
 	INSERT INTO channels(login, twitchid)
 	VALUES ($1, $2)
@@ -58,7 +58,7 @@ func (c ChannelModel) Insert(channel *Channel) error {
 	RETURNING id, added_at;
 	`
 
-	args := []interface{}{channel.Login, channel.TwitchID}
+	args := []interface{}{login, id}
 
 	// Execute the query returning the number of affected rows.
 	result, err := c.DB.Exec(query, args...)

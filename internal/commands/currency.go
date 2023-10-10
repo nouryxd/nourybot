@@ -1,21 +1,30 @@
 package commands
 
 import (
-	"github.com/gempir/go-twitch-irc/v4"
-	"github.com/lyx0/nourybot/internal/commands/decapi"
-	"github.com/lyx0/nourybot/internal/common"
-	"go.uber.org/zap"
+	"fmt"
+	"io"
+	"net/http"
 )
 
-// ()currency 10 USD to EUR
-func Currency(target, currAmount, currFrom, currTo string, tc *twitch.Client) {
-	sugar := zap.NewExample().Sugar()
-	defer sugar.Sync()
+func Currency(currAmount, currFrom, currTo string) (string, error) {
+	basePath := "https://decapi.me/misc/currency/"
+	from := fmt.Sprintf("?from=%s", currFrom)
+	to := fmt.Sprintf("&to=%s", currTo)
+	value := fmt.Sprintf("&value=%s", currAmount)
 
-	resp, err := decapi.Currency(currAmount, currFrom, currTo)
+	// https://decapi.me/misc/currency/?from=usd&to=usd&value=10
+	resp, err := http.Get(fmt.Sprint(basePath + from + to + value))
 	if err != nil {
-		sugar.Error(err)
+		return "", ErrInternalServerError
 	}
 
-	common.Send(target, resp, tc)
+	defer resp.Body.Close()
+
+	body, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return "", ErrInternalServerError
+	}
+
+	reply := string(body)
+	return reply, nil
 }

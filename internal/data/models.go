@@ -18,7 +18,7 @@ var (
 // as app.models.Channels.Get(login)
 type Models struct {
 	Channels interface {
-		Insert(channel *Channel) error
+		Insert(login, id string) error
 		Get(login string) (*Channel, error)
 		GetAll() ([]*Channel, error)
 		GetJoinable() ([]string, error)
@@ -47,18 +47,32 @@ type Models struct {
 	}
 	Timers interface {
 		Get(name string) (*Timer, error)
+		GetIdentifier(name string) (string, error)
 		Insert(timer *Timer) error
 		Update(timer *Timer) error
 		GetAll() ([]*Timer, error)
 		Delete(name string) error
 	}
+	Uploads interface {
+		Insert(twitchLogin, twitchID, twitchMessage, twitchChannel, filehoster, downloadURL, identifier string)
+		UpdateUploadURL(identifier, uploadURL string)
+	}
+	CommandsLogs interface {
+		Insert(twitchLogin, twitchId, twitchChannel, twitchMessage, commandName string, uLvl int, identifier, rawMsg string)
+	}
+	SentMessagesLogs interface {
+		Insert(twitchChannel, twitchMessage, ctxCommandName, ctxUser, ctxUserID, ctxMsg, identifier, ctxRaw string)
+	}
 }
 
 func NewModels(db *sql.DB) Models {
 	return Models{
-		Channels: ChannelModel{DB: db},
-		Users:    UserModel{DB: db},
-		Commands: CommandModel{DB: db},
-		Timers:   TimerModel{DB: db},
+		Channels:         ChannelModel{DB: db},
+		Users:            UserModel{DB: db},
+		Commands:         CommandModel{DB: db},
+		Timers:           TimerModel{DB: db},
+		Uploads:          UploadModel{DB: db},
+		CommandsLogs:     CommandsLogModel{DB: db},
+		SentMessagesLogs: SentMessagesLogModel{DB: db},
 	}
 }

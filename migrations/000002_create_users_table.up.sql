@@ -8,12 +8,9 @@ CREATE TABLE IF NOT EXISTS users (
 	lastfm_username text
 );
 
-INSERT INTO users (added_at,login,twitchid,"level") VALUES
-	 (NOW(),'nourylul','31437432',1000),
-	 (NOW(),'nourybot','596581605',1000),
-	 (NOW(),'uudelleenkytkeytynyt','465178364',1000),
-	 (NOW(),'xnoury','197780373',500),
-	 (NOW(),'noemience','135447564',500);
-
-UPDATE users SET location = 'vilnius' WHERE login = 'nourylul';
-UPDATE users SET lastfm_username = 'nouryqt' WHERE login = 'nourylul';
+INSERT INTO users (added_at,login,twitchid,"level",location,lastfm_username) VALUES
+	 (NOW(),'nourylul','31437432',1000,'vilnius','nouryqt'),
+	 (NOW(),'nourybot','596581605',1000,'',''),
+	 (NOW(),'uudelleenkytkeytynyt','465178364',1000,'',''),
+	 (NOW(),'xnoury','197780373',500,'',''),
+	 (NOW(),'noemience','135447564',500,'','');
