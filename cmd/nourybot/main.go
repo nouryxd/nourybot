@@ -169,7 +169,9 @@ func main() {
 		common.StartTime()
 
 		app.TwitchClient.Join("nourylul")
+		app.TwitchClient.Join("nourybot")
 		app.Send("nourylul", "xD!")
+		app.Send("nourybot", "gopherDance")
 
 		// Successfully connected to Twitch
 		app.Log.Infow("Successfully connected to Twitch Servers",

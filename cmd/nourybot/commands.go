@@ -49,6 +49,7 @@ func (app *application) handleCommand(message twitch.PrivateMessage) {
 		"userLevel", userLevel,
 	)
 
+	go app.LogCommand(message, commandName, userLevel)
 	// A `commandName` is every message starting with `()`.
 	// Hardcoded commands have a priority over database commands.
 	// Switch over the commandName and see if there is a hardcoded case for it.

@@ -57,14 +57,18 @@ type Models struct {
 		Insert(twitchLogin, twitchID, twitchMessage, twitchChannel, filehoster, downloadURL, identifier string)
 		UpdateUploadURL(identifier, uploadURL string)
 	}
+	CommandsLogs interface {
+		Insert(twitchLogin, twitchId, twitchChannel, twitchMessage, commandName string, uLvl int, identifier, rawMsg string)
+	}
 }
 
 func NewModels(db *sql.DB) Models {
 	return Models{
-		Channels: ChannelModel{DB: db},
-		Users:    UserModel{DB: db},
-		Commands: CommandModel{DB: db},
-		Timers:   TimerModel{DB: db},
-		Uploads:  UploadModel{DB: db},
+		Channels:     ChannelModel{DB: db},
+		Users:        UserModel{DB: db},
+		Commands:     CommandModel{DB: db},
+		Timers:       TimerModel{DB: db},
+		Uploads:      UploadModel{DB: db},
+		CommandsLogs: CommandsLogModel{DB: db},
 	}
 }

@@ -5,6 +5,7 @@ import (
 	"strconv"
 
 	"github.com/gempir/go-twitch-irc/v4"
+	"github.com/google/uuid"
 	"github.com/lyx0/nourybot/internal/data"
 )
 
@@ -233,4 +234,15 @@ func (app *application) DeleteCommand(name string, message twitch.PrivateMessage
 
 	reply := fmt.Sprintf("Deleted command %s", name)
 	app.Send(message.Channel, reply)
+}
+
+func (app *application) LogCommand(msg twitch.PrivateMessage, commandName string, userLevel int) {
+	twitchLogin := msg.User.Name
+	twitchID := msg.User.ID
+	twitchMessage := msg.Message
+	twitchChannel := msg.Channel
+	identifier := uuid.NewString()
+	rawMsg := msg.Raw
+
+	go app.Models.CommandsLogs.Insert(twitchLogin, twitchID, twitchChannel, twitchMessage, commandName, userLevel, identifier, rawMsg)
 }
