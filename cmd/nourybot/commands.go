@@ -145,7 +145,7 @@ func (app *application) handleCommand(message twitch.PrivateMessage) {
 
 	case "help":
 		if msgLen > 1 {
-			app.commandHelp(target, cmdParams[1], message.User.Name)
+			app.commandHelp(target, cmdParams[1], message.User.Name, message)
 		}
 
 	case "nourybot":
@@ -245,7 +245,7 @@ func (app *application) handleCommand(message twitch.PrivateMessage) {
 		reply = r
 	}
 	if reply != "" {
-		go app.Send(target, reply)
+		go app.Send(target, reply, message)
 		return
 	}
 }
@@ -277,7 +277,7 @@ var helpText = map[string]string{
 }
 
 // Help checks if a help text for a given command exists and replies with it.
-func (app *application) commandHelp(target, name, username string) {
+func (app *application) commandHelp(target, name, username string, message twitch.PrivateMessage) {
 	// Check if the `helpText` map has an entry for `name`. If it does return it's value entry
 	// and send that as a reply.
 	i, ok := helpText[name]
@@ -291,9 +291,9 @@ func (app *application) commandHelp(target, name, username string) {
 			return
 		}
 
-		app.Send(target, c)
+		app.Send(target, c, message)
 		return
 	}
 
-	app.Send(target, i)
+	app.Send(target, i, message)
 }

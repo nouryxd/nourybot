@@ -18,6 +18,8 @@ import (
 	"os"
 	"path/filepath"
 	"time"
+
+	"github.com/gempir/go-twitch-irc/v4"
 )
 
 const (
@@ -27,30 +29,30 @@ const (
 	YAF_ENDPOINT    = "https://i.yaf.ee/upload"
 )
 
-func (app *application) NewUpload(destination, fileName, target, identifier string) {
+func (app *application) NewUpload(destination, fileName, target, identifier string, msg twitch.PrivateMessage) {
 
 	switch destination {
 	case "catbox":
-		go app.CatboxUpload(target, fileName, identifier)
+		go app.CatboxUpload(target, fileName, identifier, msg)
 	case "yaf":
-		go app.YafUpload(target, fileName, identifier)
+		go app.YafUpload(target, fileName, identifier, msg)
 	case "kappa":
-		go app.KappaUpload(target, fileName, identifier)
+		go app.KappaUpload(target, fileName, identifier, msg)
 	case "gofile":
-		go app.GofileUpload(target, fileName, identifier)
+		go app.GofileUpload(target, fileName, identifier, msg)
 
 	}
 }
 
-func (app *application) CatboxUpload(target, fileName, identifier string) {
+func (app *application) CatboxUpload(target, fileName, identifier string, msg twitch.PrivateMessage) {
 	defer os.Remove(fileName)
 	file, err := os.Open(fileName)
 	if err != nil {
-		app.Send(target, fmt.Sprintf("Something went wrong FeelsBadMan: %q", err))
+		app.Send(target, fmt.Sprintf("Something went wrong FeelsBadMan: %q", err), msg)
 		return
 	}
 	defer file.Close()
-	app.Send(target, "Uploading to catbox.moe... dankCircle")
+	app.Send(target, "Uploading to catbox.moe... dankCircle", msg)
 
 	// if size := helper.FileSize(fileName); size > 209715200 {
 	// 	return "", fmt.Errorf("file too large, size: %d MB", size/1024/1024)
@@ -67,7 +69,7 @@ func (app *application) CatboxUpload(target, fileName, identifier string) {
 		m.WriteField("time", "24h")
 		part, err := m.CreateFormFile("fileToUpload", filepath.Base(file.Name()))
 		if err != nil {
-			app.Send(target, fmt.Sprintf("Something went wrong FeelsBadMan: %q", err))
+			app.Send(target, fmt.Sprintf("Something went wrong FeelsBadMan: %q", err), msg)
 			return
 		}
 
@@ -85,26 +87,26 @@ func (app *application) CatboxUpload(target, fileName, identifier string) {
 
 	resp, err := client.Do(req)
 	if err != nil {
-		app.Send(target, fmt.Sprintf("Something went wrong FeelsBadMan: %q", err))
+		app.Send(target, fmt.Sprintf("Something went wrong FeelsBadMan: %q", err), msg)
 		return
 	}
 	defer resp.Body.Close()
 
 	body, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
-		app.Send(target, fmt.Sprintf("Something went wrong FeelsBadMan: %q", err))
+		app.Send(target, fmt.Sprintf("Something went wrong FeelsBadMan: %q", err), msg)
 		return
 	}
 
 	reply := string(body)
 	go app.Models.Uploads.UpdateUploadURL(identifier, reply)
-	app.Send(target, fmt.Sprintf("Removing file: %s", fileName))
-	app.Send(target, reply)
+	app.Send(target, fmt.Sprintf("Removing file: %s", fileName), msg)
+	app.Send(target, reply, msg)
 }
 
-func (app *application) GofileUpload(target, path, identifier string) {
+func (app *application) GofileUpload(target, path, identifier string, msg twitch.PrivateMessage) {
 	defer os.Remove(path)
-	app.Send(target, "Uploading to gofile.io... dankCircle")
+	app.Send(target, "Uploading to gofile.io... dankCircle", msg)
 	pr, pw := io.Pipe()
 	form := multipart.NewWriter(pw)
 
@@ -127,21 +129,21 @@ func (app *application) GofileUpload(target, path, identifier string) {
 
 		file, err := os.Open(path) // path to image file
 		if err != nil {
-			app.Send(target, fmt.Sprintf("Something went wrong FeelsBadMan: %q", err))
+			app.Send(target, fmt.Sprintf("Something went wrong FeelsBadMan: %q", err), msg)
 			os.Remove(path)
 			return
 		}
 
 		w, err := form.CreateFormFile("file", path)
 		if err != nil {
-			app.Send(target, fmt.Sprintf("Something went wrong FeelsBadMan: %q", err))
+			app.Send(target, fmt.Sprintf("Something went wrong FeelsBadMan: %q", err), msg)
 			os.Remove(path)
 			return
 		}
 
 		_, err = io.Copy(w, file)
 		if err != nil {
-			app.Send(target, fmt.Sprintf("Something went wrong FeelsBadMan: %q", err))
+			app.Send(target, fmt.Sprintf("Something went wrong FeelsBadMan: %q", err), msg)
 			os.Remove(path)
 			return
 		}
@@ -151,7 +153,7 @@ func (app *application) GofileUpload(target, path, identifier string) {
 
 	req, err := http.NewRequest(http.MethodPost, GOFILE_ENDPOINT, pr)
 	if err != nil {
-		app.Send(target, fmt.Sprintf("Something went wrong FeelsBadMan: %q", err))
+		app.Send(target, fmt.Sprintf("Something went wrong FeelsBadMan: %q", err), msg)
 		os.Remove(path)
 		return
 	}
@@ -162,18 +164,18 @@ func (app *application) GofileUpload(target, path, identifier string) {
 	}
 	resp, err := httpClient.Do(req)
 	if err != nil {
-		app.Send(target, fmt.Sprintf("Something went wrong FeelsBadMan: %q", err))
+		app.Send(target, fmt.Sprintf("Something went wrong FeelsBadMan: %q", err), msg)
 		os.Remove(path)
 		app.Log.Errorln("Error while sending HTTP request:", err)
 
 		return
 	}
 	defer resp.Body.Close()
-	app.Send(target, "Uploaded PogChamp")
+	app.Send(target, "Uploaded PogChamp", msg)
 
 	body, err := io.ReadAll(resp.Body)
 	if err != nil {
-		app.Send(target, fmt.Sprintf("Something went wrong FeelsBadMan: %q", err))
+		app.Send(target, fmt.Sprintf("Something went wrong FeelsBadMan: %q", err), msg)
 		os.Remove(path)
 		app.Log.Errorln("Error while reading response:", err)
 		return
@@ -181,7 +183,7 @@ func (app *application) GofileUpload(target, path, identifier string) {
 
 	jsonResponse := new(gofileResponse)
 	if err := json.Unmarshal(body, jsonResponse); err != nil {
-		app.Send(target, fmt.Sprintf("Something went wrong FeelsBadMan: %q", err))
+		app.Send(target, fmt.Sprintf("Something went wrong FeelsBadMan: %q", err), msg)
 		app.Log.Errorln("Error while unmarshalling JSON response:", err)
 		return
 	}
@@ -189,13 +191,13 @@ func (app *application) GofileUpload(target, path, identifier string) {
 	var reply = jsonResponse.Data.DownloadPage
 
 	go app.Models.Uploads.UpdateUploadURL(identifier, reply)
-	app.Send(target, fmt.Sprintf("Removing file: %s", path))
-	app.Send(target, reply)
+	app.Send(target, fmt.Sprintf("Removing file: %s", path), msg)
+	app.Send(target, reply, msg)
 }
 
-func (app *application) KappaUpload(target, path, identifier string) {
+func (app *application) KappaUpload(target, path, identifier string, msg twitch.PrivateMessage) {
 	defer os.Remove(path)
-	app.Send(target, "Uploading to kappa.lol... dankCircle")
+	app.Send(target, "Uploading to kappa.lol... dankCircle", msg)
 	pr, pw := io.Pipe()
 	form := multipart.NewWriter(pw)
 
@@ -208,28 +210,28 @@ func (app *application) KappaUpload(target, path, identifier string) {
 
 		err := form.WriteField("name", "xd")
 		if err != nil {
-			app.Send(target, fmt.Sprintf("Something went wrong FeelsBadMan: %q", err))
+			app.Send(target, fmt.Sprintf("Something went wrong FeelsBadMan: %q", err), msg)
 			os.Remove(path)
 			return
 		}
 
 		file, err := os.Open(path) // path to image file
 		if err != nil {
-			app.Send(target, fmt.Sprintf("Something went wrong FeelsBadMan: %q", err))
+			app.Send(target, fmt.Sprintf("Something went wrong FeelsBadMan: %q", err), msg)
 			os.Remove(path)
 			return
 		}
 
 		w, err := form.CreateFormFile("file", path)
 		if err != nil {
-			app.Send(target, fmt.Sprintf("Something went wrong FeelsBadMan: %q", err))
+			app.Send(target, fmt.Sprintf("Something went wrong FeelsBadMan: %q", err), msg)
 			os.Remove(path)
 			return
 		}
 
 		_, err = io.Copy(w, file)
 		if err != nil {
-			app.Send(target, fmt.Sprintf("Something went wrong FeelsBadMan: %q", err))
+			app.Send(target, fmt.Sprintf("Something went wrong FeelsBadMan: %q", err), msg)
 			os.Remove(path)
 			return
 		}
@@ -239,7 +241,7 @@ func (app *application) KappaUpload(target, path, identifier string) {
 
 	req, err := http.NewRequest(http.MethodPost, KAPPA_ENDPOINT, pr)
 	if err != nil {
-		app.Send(target, fmt.Sprintf("Something went wrong FeelsBadMan: %q", err))
+		app.Send(target, fmt.Sprintf("Something went wrong FeelsBadMan: %q", err), msg)
 		os.Remove(path)
 		return
 	}
@@ -250,18 +252,18 @@ func (app *application) KappaUpload(target, path, identifier string) {
 	}
 	resp, err := httpClient.Do(req)
 	if err != nil {
-		app.Send(target, fmt.Sprintf("Something went wrong FeelsBadMan: %q", err))
+		app.Send(target, fmt.Sprintf("Something went wrong FeelsBadMan: %q", err), msg)
 		os.Remove(path)
 		app.Log.Errorln("Error while sending HTTP request:", err)
 
 		return
 	}
 	defer resp.Body.Close()
-	app.Send(target, "Uploaded PogChamp")
+	app.Send(target, "Uploaded PogChamp", msg)
 
 	body, err := io.ReadAll(resp.Body)
 	if err != nil {
-		app.Send(target, fmt.Sprintf("Something went wrong FeelsBadMan: %q", err))
+		app.Send(target, fmt.Sprintf("Something went wrong FeelsBadMan: %q", err), msg)
 		os.Remove(path)
 		app.Log.Errorln("Error while reading response:", err)
 		return
@@ -269,7 +271,7 @@ func (app *application) KappaUpload(target, path, identifier string) {
 
 	jsonResponse := new(kappaResponse)
 	if err := json.Unmarshal(body, jsonResponse); err != nil {
-		app.Send(target, fmt.Sprintf("Something went wrong FeelsBadMan: %q", err))
+		app.Send(target, fmt.Sprintf("Something went wrong FeelsBadMan: %q", err), msg)
 		app.Log.Errorln("Error while unmarshalling JSON response:", err)
 		return
 	}
@@ -277,13 +279,13 @@ func (app *application) KappaUpload(target, path, identifier string) {
 	var reply = jsonResponse.Link
 
 	go app.Models.Uploads.UpdateUploadURL(identifier, reply)
-	app.Send(target, fmt.Sprintf("Removing file: %s", path))
-	app.Send(target, reply)
+	app.Send(target, fmt.Sprintf("Removing file: %s", path), msg)
+	app.Send(target, reply, msg)
 }
 
-func (app *application) YafUpload(target, path, identifier string) {
+func (app *application) YafUpload(target, path, identifier string, msg twitch.PrivateMessage) {
 	defer os.Remove(path)
-	app.Send(target, "Uploading to yaf.ee... dankCircle")
+	app.Send(target, "Uploading to yaf.ee... dankCircle", msg)
 	pr, pw := io.Pipe()
 	form := multipart.NewWriter(pw)
 
@@ -292,28 +294,28 @@ func (app *application) YafUpload(target, path, identifier string) {
 
 		err := form.WriteField("name", "xd")
 		if err != nil {
-			app.Send(target, fmt.Sprintf("Something went wrong FeelsBadMan: %q", err))
+			app.Send(target, fmt.Sprintf("Something went wrong FeelsBadMan: %q", err), msg)
 			os.Remove(path)
 			return
 		}
 
 		file, err := os.Open(path) // path to image file
 		if err != nil {
-			app.Send(target, fmt.Sprintf("Something went wrong FeelsBadMan: %q", err))
+			app.Send(target, fmt.Sprintf("Something went wrong FeelsBadMan: %q", err), msg)
 			os.Remove(path)
 			return
 		}
 
 		w, err := form.CreateFormFile("file", path)
 		if err != nil {
-			app.Send(target, fmt.Sprintf("Something went wrong FeelsBadMan: %q", err))
+			app.Send(target, fmt.Sprintf("Something went wrong FeelsBadMan: %q", err), msg)
 			os.Remove(path)
 			return
 		}
 
 		_, err = io.Copy(w, file)
 		if err != nil {
-			app.Send(target, fmt.Sprintf("Something went wrong FeelsBadMan: %q", err))
+			app.Send(target, fmt.Sprintf("Something went wrong FeelsBadMan: %q", err), msg)
 			os.Remove(path)
 			return
 		}
@@ -323,7 +325,7 @@ func (app *application) YafUpload(target, path, identifier string) {
 
 	req, err := http.NewRequest(http.MethodPost, YAF_ENDPOINT, pr)
 	if err != nil {
-		app.Send(target, fmt.Sprintf("Something went wrong FeelsBadMan: %q", err))
+		app.Send(target, fmt.Sprintf("Something went wrong FeelsBadMan: %q", err), msg)
 		os.Remove(path)
 		return
 	}
@@ -334,7 +336,7 @@ func (app *application) YafUpload(target, path, identifier string) {
 	}
 	resp, err := httpClient.Do(req)
 	if err != nil {
-		app.Send(target, fmt.Sprintf("Something went wrong FeelsBadMan: %q", err))
+		app.Send(target, fmt.Sprintf("Something went wrong FeelsBadMan: %q", err), msg)
 		os.Remove(path)
 		app.Log.Errorln("Error while sending HTTP request:", err)
 
@@ -344,7 +346,7 @@ func (app *application) YafUpload(target, path, identifier string) {
 
 	body, err := io.ReadAll(resp.Body)
 	if err != nil {
-		app.Send(target, fmt.Sprintf("Something went wrong FeelsBadMan: %q", err))
+		app.Send(target, fmt.Sprintf("Something went wrong FeelsBadMan: %q", err), msg)
 		os.Remove(path)
 		app.Log.Errorln("Error while reading response:", err)
 		return
@@ -353,6 +355,6 @@ func (app *application) YafUpload(target, path, identifier string) {
 	var reply = string(body[:])
 
 	go app.Models.Uploads.UpdateUploadURL(identifier, reply)
-	app.Send(target, fmt.Sprintf("Removing file: %s", path))
-	app.Send(target, reply)
+	app.Send(target, fmt.Sprintf("Removing file: %s", path), msg)
+	app.Send(target, reply, msg)
 }

@@ -22,51 +22,51 @@ func (app *application) NewDownload(destination, target, link string, msg twitch
 		link,
 		identifier,
 	)
-	app.Send(target, "xd")
+	app.Send(target, "xd", msg)
 
 	switch destination {
 	case "catbox":
-		app.CatboxDownload(target, link, identifier)
+		app.CatboxDownload(target, link, identifier, msg)
 	case "yaf":
-		app.YafDownload(target, link, identifier)
+		app.YafDownload(target, link, identifier, msg)
 	case "kappa":
-		app.KappaDownload(target, link, identifier)
+		app.KappaDownload(target, link, identifier, msg)
 	case "gofile":
-		app.GofileDownload(target, link, identifier)
+		app.GofileDownload(target, link, identifier, msg)
 	}
 }
 
-func (app *application) YafDownload(target, link, identifier string) {
+func (app *application) YafDownload(target, link, identifier string, msg twitch.PrivateMessage) {
 	goutubedl.Path = "yt-dlp"
 
-	app.Send(target, "Downloading... dankCircle")
+	app.Send(target, "Downloading... dankCircle", msg)
 	result, err := goutubedl.New(context.Background(), link, goutubedl.Options{})
 	if err != nil {
 		app.Log.Errorln(err)
-		app.Send(target, fmt.Sprintf("Something went wrong FeelsBadMan: %q", err))
+		app.Send(target, fmt.Sprintf("Something went wrong FeelsBadMan: %q", err), msg)
 		return
 	}
 	rExt := result.Info.Ext
 	downloadResult, err := result.Download(context.Background(), "best")
 	if err != nil {
 		app.Log.Errorln(err)
-		app.Send(target, fmt.Sprintf("Something went wrong FeelsBadMan: %q", err))
+		app.Send(target, fmt.Sprintf("Something went wrong FeelsBadMan: %q", err), msg)
 		return
 	}
-	app.Send(target, "Downloaded.")
+	app.Send(target, "Downloaded.", msg)
 	fileName := fmt.Sprintf("%s.%s", identifier, rExt)
 	f, err := os.Create(fileName)
-	app.Send(target, fmt.Sprintf("Filename: %s", fileName))
+	app.Send(target, fmt.Sprintf("Filename: %s", fileName), msg)
 
 	if err != nil {
 		app.Log.Errorln(err)
-		app.Send(target, fmt.Sprintf("Something went wrong FeelsBadMan: %q", err))
+		app.Send(target, fmt.Sprintf("Something went wrong FeelsBadMan: %q", err), msg)
 		return
 	}
 	defer f.Close()
 	if _, err = io.Copy(f, downloadResult); err != nil {
 		app.Log.Errorln(err)
-		app.Send(target, fmt.Sprintf("Something went wrong FeelsBadMan: %q", err))
+		app.Send(target, fmt.Sprintf("Something went wrong FeelsBadMan: %q", err), msg)
 		return
 	}
 
@@ -76,41 +76,41 @@ func (app *application) YafDownload(target, link, identifier string) {
 	// dl.twitchClient.Say(target, "ResidentSleeper ..")
 	// time.Sleep(duration)
 
-	go app.NewUpload("yaf", fileName, target, identifier)
+	go app.NewUpload("yaf", fileName, target, identifier, msg)
 
 }
 
-func (app *application) KappaDownload(target, link, identifier string) {
+func (app *application) KappaDownload(target, link, identifier string, msg twitch.PrivateMessage) {
 	goutubedl.Path = "yt-dlp"
 
-	app.Send(target, "Downloading... dankCircle")
+	app.Send(target, "Downloading... dankCircle", msg)
 	result, err := goutubedl.New(context.Background(), link, goutubedl.Options{})
 	if err != nil {
 		app.Log.Errorln(err)
-		app.Send(target, fmt.Sprintf("Something went wrong FeelsBadMan: %q", err))
+		app.Send(target, fmt.Sprintf("Something went wrong FeelsBadMan: %q", err), msg)
 		return
 	}
 	rExt := result.Info.Ext
 	downloadResult, err := result.Download(context.Background(), "best")
 	if err != nil {
 		app.Log.Errorln(err)
-		app.Send(target, fmt.Sprintf("Something went wrong FeelsBadMan: %q", err))
+		app.Send(target, fmt.Sprintf("Something went wrong FeelsBadMan: %q", err), msg)
 		return
 	}
-	app.Send(target, "Downloaded.")
+	app.Send(target, "Downloaded.", msg)
 	fileName := fmt.Sprintf("%s.%s", identifier, rExt)
 	f, err := os.Create(fileName)
-	app.Send(target, fmt.Sprintf("Filename: %s", fileName))
+	app.Send(target, fmt.Sprintf("Filename: %s", fileName), msg)
 
 	if err != nil {
 		app.Log.Errorln(err)
-		app.Send(target, fmt.Sprintf("Something went wrong FeelsBadMan: %q", err))
+		app.Send(target, fmt.Sprintf("Something went wrong FeelsBadMan: %q", err), msg)
 		return
 	}
 	defer f.Close()
 	if _, err = io.Copy(f, downloadResult); err != nil {
 		app.Log.Errorln(err)
-		app.Send(target, fmt.Sprintf("Something went wrong FeelsBadMan: %q", err))
+		app.Send(target, fmt.Sprintf("Something went wrong FeelsBadMan: %q", err), msg)
 		return
 	}
 
@@ -120,18 +120,18 @@ func (app *application) KappaDownload(target, link, identifier string) {
 	// dl.twitchClient.Say(target, "ResidentSleeper ..")
 	// time.Sleep(duration)
 
-	go app.NewUpload("kappa", fileName, target, identifier)
+	go app.NewUpload("kappa", fileName, target, identifier, msg)
 
 }
 
-func (app *application) GofileDownload(target, link, identifier string) {
+func (app *application) GofileDownload(target, link, identifier string, msg twitch.PrivateMessage) {
 	goutubedl.Path = "yt-dlp"
 
-	app.Send(target, "Downloading... dankCircle")
+	app.Send(target, "Downloading... dankCircle", msg)
 	result, err := goutubedl.New(context.Background(), link, goutubedl.Options{})
 	if err != nil {
 		app.Log.Errorln(err)
-		app.Send(target, fmt.Sprintf("Something went wrong FeelsBadMan: %q", err))
+		app.Send(target, fmt.Sprintf("Something went wrong FeelsBadMan: %q", err), msg)
 		return
 	}
 	safeFilename := fmt.Sprintf("download_%s", result.Info.Title)
@@ -139,23 +139,23 @@ func (app *application) GofileDownload(target, link, identifier string) {
 	downloadResult, err := result.Download(context.Background(), "best")
 	if err != nil {
 		app.Log.Errorln(err)
-		app.Send(target, fmt.Sprintf("Something went wrong FeelsBadMan: %q", err))
+		app.Send(target, fmt.Sprintf("Something went wrong FeelsBadMan: %q", err), msg)
 		return
 	}
-	app.Send(target, "Downloaded.")
+	app.Send(target, "Downloaded.", msg)
 	fileName := fmt.Sprintf("%s.%s", safeFilename, rExt)
 	f, err := os.Create(fileName)
-	app.Send(target, fmt.Sprintf("Filename: %s", fileName))
+	app.Send(target, fmt.Sprintf("Filename: %s", fileName), msg)
 
 	if err != nil {
 		app.Log.Errorln(err)
-		app.Send(target, fmt.Sprintf("Something went wrong FeelsBadMan: %q", err))
+		app.Send(target, fmt.Sprintf("Something went wrong FeelsBadMan: %q", err), msg)
 		return
 	}
 	defer f.Close()
 	if _, err = io.Copy(f, downloadResult); err != nil {
 		app.Log.Errorln(err)
-		app.Send(target, fmt.Sprintf("Something went wrong FeelsBadMan: %q", err))
+		app.Send(target, fmt.Sprintf("Something went wrong FeelsBadMan: %q", err), msg)
 		return
 	}
 
@@ -165,19 +165,19 @@ func (app *application) GofileDownload(target, link, identifier string) {
 	// dl.twitchClient.Say(target, "ResidentSleeper ..")
 	// time.Sleep(duration)
 
-	go app.NewUpload("gofile", fileName, target, identifier)
+	go app.NewUpload("gofile", fileName, target, identifier, msg)
 
 }
 
-func (app *application) CatboxDownload(target, link, identifier string) {
+func (app *application) CatboxDownload(target, link, identifier string, msg twitch.PrivateMessage) {
 	goutubedl.Path = "yt-dlp"
 	var fileName string
 
-	app.Send(target, "Downloading... dankCircle")
+	app.Send(target, "Downloading... dankCircle", msg)
 	result, err := goutubedl.New(context.Background(), link, goutubedl.Options{})
 	if err != nil {
 		app.Log.Errorln(err)
-		app.Send(target, fmt.Sprintf("Something went wrong FeelsBadMan: %q", err))
+		app.Send(target, fmt.Sprintf("Something went wrong FeelsBadMan: %q", err), msg)
 		return
 	}
 
@@ -190,28 +190,28 @@ func (app *application) CatboxDownload(target, link, identifier string) {
 	downloadResult, err := result.Download(context.Background(), "best")
 	if err != nil {
 		app.Log.Errorln(err)
-		app.Send(target, fmt.Sprintf("Something went wrong FeelsBadMan: %q", err))
+		app.Send(target, fmt.Sprintf("Something went wrong FeelsBadMan: %q", err), msg)
 		return
 	}
-	app.Send(target, "Downloaded.")
+	app.Send(target, "Downloaded.", msg)
 	fileName = fmt.Sprintf("%s.%s", identifier, rExt)
 	f, err := os.Create(fileName)
-	app.Send(target, fmt.Sprintf("Filename: %s", fileName))
+	app.Send(target, fmt.Sprintf("Filename: %s", fileName), msg)
 
 	if err != nil {
 		app.Log.Errorln(err)
-		app.Send(target, fmt.Sprintf("Something went wrong FeelsBadMan: %q", err))
+		app.Send(target, fmt.Sprintf("Something went wrong FeelsBadMan: %q", err), msg)
 		return
 	}
 	defer f.Close()
 	if _, err = io.Copy(f, downloadResult); err != nil {
 		app.Log.Errorln(err)
-		app.Send(target, fmt.Sprintf("Something went wrong FeelsBadMan: %q", err))
+		app.Send(target, fmt.Sprintf("Something went wrong FeelsBadMan: %q", err), msg)
 		return
 	}
 
 	downloadResult.Close()
 	f.Close()
 
-	go app.NewUpload("catbox", fileName, target, identifier)
+	go app.NewUpload("catbox", fileName, target, identifier, msg)
 }

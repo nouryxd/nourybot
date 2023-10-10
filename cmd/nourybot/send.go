@@ -6,7 +6,9 @@ import (
 	"fmt"
 	"io"
 	"net/http"
+	"strings"
 
+	"github.com/gempir/go-twitch-irc/v4"
 	"github.com/google/uuid"
 )
 
@@ -80,14 +82,70 @@ func (app *application) checkMessage(text string) (bool, string) {
 
 // Send is used to send twitch replies and contains the necessary
 // safeguards and logic for that.
-func (app *application) Send(target, message string) {
+func (app *application) SendNoContext(target, message string) {
 	// Message we are trying to send is empty.
 	if len(message) == 0 {
 		return
 	}
 
 	identifier := uuid.NewString()
-	go app.Models.SentMessagesLogs.Insert(target, message, identifier)
+	go app.Models.SentMessagesLogs.Insert(target, message, "unavailable", "unavailable", "unavailable", "unavailable", identifier, "unavailable")
+
+	// Since messages starting with `.` or `/` are used for special actions
+	// (ban, whisper, timeout) and so on, we place an emote infront of it so
+	// the actions wouldn't execute. `!` and `$` are common bot prefixes so we
+	// don't allow them either.
+	if message[0] == '.' || message[0] == '/' || message[0] == '!' || message[0] == '$' {
+		message = ":tf: " + message
+	}
+
+	// check the message for bad words before we say it
+	messageBanned, banReason := app.checkMessage(message)
+	if !messageBanned {
+		// In case the message we are trying to send is longer than the
+		// maximum allowed message length on twitch we split the message in two parts.
+		// Twitch has a maximum length for messages of 510 characters so to be safe
+		// we split and check at 500 characters.
+		// https://discuss.dev.twitch.tv/t/missing-client-side-message-length-check/21316
+		// TODO: Make it so it splits at a space instead and not in the middle of a word.
+		if len(message) > 500 {
+			firstMessage := message[0:499]
+			secondMessage := message[499:]
+
+			app.TwitchClient.Say(target, firstMessage)
+			app.TwitchClient.Say(target, secondMessage)
+
+			return
+		} else {
+			// Message was fine.
+			go app.TwitchClient.Say(target, message)
+			return
+		}
+	} else {
+		// Bad message, replace message and log it.
+		app.TwitchClient.Say(target, "[BANPHRASED] monkaS")
+		app.Log.Infow("banned message detected",
+			"target channel", target,
+			"message", message,
+			"ban reason", banReason,
+		)
+
+		return
+	}
+}
+
+// Send is used to send twitch replies and contains the necessary
+// safeguards and logic for that.
+func (app *application) Send(target, message string, msgContext twitch.PrivateMessage) {
+	// Message we are trying to send is empty.
+	if len(message) == 0 {
+		return
+	}
+
+	commandName := strings.ToLower(strings.SplitN(msgContext.Message, " ", 3)[0][2:])
+	identifier := uuid.NewString()
+	app.Log.Info("xd xd")
+	go app.Models.SentMessagesLogs.Insert(target, message, commandName, msgContext.User.Name, msgContext.User.ID, msgContext.Message, identifier, msgContext.Raw)
 
 	// Since messages starting with `.` or `/` are used for special actions
 	// (ban, whisper, timeout) and so on, we place an emote infront of it so
@@ -141,7 +199,7 @@ func (app *application) SendNoBanphrase(target, message string) {
 	}
 
 	identifier := uuid.NewString()
-	go app.Models.SentMessagesLogs.Insert(target, message, identifier)
+	go app.Models.SentMessagesLogs.Insert(target, message, "unavailable", "unavailable", "unavailable", "unavailable", identifier, "unavailable")
 
 	// Since messages starting with `.` or `/` are used for special actions
 	// (ban, whisper, timeout) and so on, we place an emote infront of it so
@@ -194,7 +252,7 @@ func (app *application) SendNoLimit(target, message string) {
 		// TODO: Make it so it splits at a space instead and not in the middle of a word.
 		// Message was fine.
 		identifier := uuid.NewString()
-		go app.Models.SentMessagesLogs.Insert(target, message, identifier)
+		go app.Models.SentMessagesLogs.Insert(target, message, "unavailable", "unavailable", "unavailable", "unavailable", identifier, "unavailable")
 		go app.TwitchClient.Say(target, message)
 		return
 	}

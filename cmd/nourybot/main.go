@@ -162,7 +162,7 @@ func main() {
 
 			// Special rule for #pajlada.
 			if message.Message == "!nourybot" {
-				app.Send(message.Channel, "Lidl Twitch bot made by @nourylul. Prefix: ()")
+				app.Send(message.Channel, "Lidl Twitch bot made by @nourylul. Prefix: ()", message)
 			}
 		}
 	})
@@ -172,8 +172,8 @@ func main() {
 
 		app.TwitchClient.Join("nourylul")
 		app.TwitchClient.Join("nourybot")
-		app.Send("nourylul", "xD!")
-		app.Send("nourybot", "gopherDance")
+		app.TwitchClient.Say("nourylul", "xD!")
+		app.TwitchClient.Say("nourybot", "gopherDance")
 
 		// Successfully connected to Twitch
 		app.Log.Infow("Successfully connected to Twitch Servers",

@@ -40,11 +40,11 @@ func (app *application) AddCommand(name string, message twitch.PrivateMessage) {
 
 	if err != nil {
 		reply := fmt.Sprintf("Something went wrong FeelsBadMan %s", err)
-		app.Send(message.Channel, reply)
+		app.Send(message.Channel, reply, message)
 		return
 	} else {
 		reply := fmt.Sprintf("Successfully added command: %s", name)
-		app.Send(message.Channel, reply)
+		app.Send(message.Channel, reply, message)
 		return
 	}
 }
@@ -126,19 +126,19 @@ func (app *application) EditCommandLevel(name, lvl string, message twitch.Privat
 	level, err := strconv.Atoi(lvl)
 	if err != nil {
 		app.Log.Error(err)
-		app.Send(message.Channel, fmt.Sprintf("Something went wrong FeelsBadMan %s", ErrCommandLevelNotInteger))
+		app.Send(message.Channel, fmt.Sprintf("Something went wrong FeelsBadMan %s", ErrCommandLevelNotInteger), message)
 		return
 	}
 
 	err = app.Models.Commands.SetLevel(name, level)
 
 	if err != nil {
-		app.Send(message.Channel, fmt.Sprintf("Something went wrong FeelsBadMan %s", ErrRecordNotFound))
+		app.Send(message.Channel, fmt.Sprintf("Something went wrong FeelsBadMan %s", ErrRecordNotFound), message)
 		app.Log.Error(err)
 		return
 	} else {
 		reply := fmt.Sprintf("Updated command %s to level %v", name, level)
-		app.Send(message.Channel, reply)
+		app.Send(message.Channel, reply, message)
 		return
 	}
 }
@@ -149,12 +149,12 @@ func (app *application) EditCommandCategory(name, category string, message twitc
 	err := app.Models.Commands.SetCategory(name, category)
 
 	if err != nil {
-		app.Send(message.Channel, fmt.Sprintf("Something went wrong FeelsBadMan %s", ErrRecordNotFound))
+		app.Send(message.Channel, fmt.Sprintf("Something went wrong FeelsBadMan %s", ErrRecordNotFound), message)
 		app.Log.Error(err)
 		return
 	} else {
 		reply := fmt.Sprintf("Updated command %s to category %v", name, category)
-		app.Send(message.Channel, reply)
+		app.Send(message.Channel, reply, message)
 		return
 	}
 }
@@ -166,7 +166,7 @@ func (app *application) DebugCommand(name string, message twitch.PrivateMessage)
 	cmd, err := app.Models.Commands.Get(name)
 	if err != nil {
 		reply := fmt.Sprintf("Something went wrong FeelsBadMan %s", err)
-		app.Send(message.Channel, reply)
+		app.Send(message.Channel, reply, message)
 		return
 	} else {
 		reply := fmt.Sprintf("id=%v\nname=%v\nlevel=%v\ncategory=%v\ntext=%v\nhelp=%v\n",
@@ -182,10 +182,10 @@ func (app *application) DebugCommand(name string, message twitch.PrivateMessage)
 		resp, err := app.uploadPaste(reply)
 		if err != nil {
 			app.Log.Errorln("Could not upload paste:", err)
-			app.Send(message.Channel, fmt.Sprintf("Something went wrong FeelsBadMan %v", ErrDuringPasteUpload))
+			app.Send(message.Channel, fmt.Sprintf("Something went wrong FeelsBadMan %v", ErrDuringPasteUpload), message)
 			return
 		}
-		app.Send(message.Channel, resp)
+		app.Send(message.Channel, resp, message)
 		//app.SendEmail(fmt.Sprintf("DEBUG for command %s", name), reply)
 		return
 	}
@@ -213,12 +213,12 @@ func (app *application) EditCommandHelp(name string, message twitch.PrivateMessa
 	err := app.Models.Commands.SetHelp(name, text)
 
 	if err != nil {
-		app.Send(message.Channel, fmt.Sprintf("Something went wrong FeelsBadMan %s", ErrRecordNotFound))
+		app.Send(message.Channel, fmt.Sprintf("Something went wrong FeelsBadMan %s", ErrRecordNotFound), message)
 		app.Log.Error(err)
 		return
 	} else {
 		reply := fmt.Sprintf("Updated help text for command %s to: %v", name, text)
-		app.Send(message.Channel, reply)
+		app.Send(message.Channel, reply, message)
 		return
 	}
 }
@@ -227,13 +227,13 @@ func (app *application) EditCommandHelp(name string, message twitch.PrivateMessa
 func (app *application) DeleteCommand(name string, message twitch.PrivateMessage) {
 	err := app.Models.Commands.Delete(name)
 	if err != nil {
-		app.Send(message.Channel, "Something went wrong FeelsBadMan")
+		app.Send(message.Channel, "Something went wrong FeelsBadMan", message)
 		app.Log.Error(err)
 		return
 	}
 
 	reply := fmt.Sprintf("Deleted command %s", name)
-	app.Send(message.Channel, reply)
+	app.Send(message.Channel, reply, message)
 }
 
 func (app *application) LogCommand(msg twitch.PrivateMessage, commandName string, userLevel int) {

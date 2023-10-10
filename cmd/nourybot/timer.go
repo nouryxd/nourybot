@@ -72,7 +72,7 @@ func (app *application) AddTimer(name, repeat string, message twitch.PrivateMess
 			)
 
 			reply := fmt.Sprintln("Something went wrong FeelsBadMan")
-			app.Send(message.Channel, reply)
+			app.Send(message.Channel, reply, message)
 			return
 		} else {
 			// cronName is the internal, unique tag/name for the timer.
@@ -84,7 +84,7 @@ func (app *application) AddTimer(name, repeat string, message twitch.PrivateMess
 			)
 
 			reply := fmt.Sprintf("Successfully added timer %s repeating every %s", name, repeat)
-			app.Send(message.Channel, reply)
+			app.Send(message.Channel, reply, message)
 			return
 		}
 	} else {
@@ -93,7 +93,7 @@ func (app *application) AddTimer(name, repeat string, message twitch.PrivateMess
 			"error", err,
 		)
 		reply := "Something went wrong FeelsBadMan received wrong time format. Allowed formats: 30m, 10h, 10h30m"
-		app.Send(message.Channel, reply)
+		app.Send(message.Channel, reply, message)
 		return
 	}
 }
@@ -111,7 +111,7 @@ func (app *application) EditTimer(name, repeat string, message twitch.PrivateMes
 			"error", err,
 		)
 		reply := "Something went wrong FeelsBadMan"
-		app.Send(message.Channel, reply)
+		app.Send(message.Channel, reply, message)
 		return
 	}
 
@@ -130,7 +130,7 @@ func (app *application) EditTimer(name, repeat string, message twitch.PrivateMes
 		)
 
 		reply := fmt.Sprintln("Something went wrong FeelsBadMan")
-		app.Send(message.Channel, reply)
+		app.Send(message.Channel, reply, message)
 		return
 	}
 
@@ -196,7 +196,7 @@ func (app *application) EditTimer(name, repeat string, message twitch.PrivateMes
 			)
 
 			reply := fmt.Sprintln("Something went wrong FeelsBadMan")
-			app.Send(message.Channel, reply)
+			app.Send(message.Channel, reply, message)
 			return
 		} else { // this is a bit scuffed. The else here is the end of a successful call.
 			// cronName is the internal, unique tag/name for the timer.
@@ -211,7 +211,7 @@ func (app *application) EditTimer(name, repeat string, message twitch.PrivateMes
 			)
 
 			reply := fmt.Sprintf("Successfully updated timer %s", name)
-			app.Send(message.Channel, reply)
+			app.Send(message.Channel, reply, message)
 			return
 		}
 	} else {
@@ -220,7 +220,7 @@ func (app *application) EditTimer(name, repeat string, message twitch.PrivateMes
 			"error", err,
 		)
 		reply := "Something went wrong FeelsBadMan received wrong time format. Allowed formats: 30s, 30m, 10h, 10h30m"
-		app.Send(message.Channel, reply)
+		app.Send(message.Channel, reply, message)
 		return
 	}
 }
@@ -314,7 +314,7 @@ func (app *application) InitialTimers() {
 // newPrivateMessageTimer is a helper function to set timers
 // which trigger into sending a twitch PrivateMessage.
 func (app *application) newPrivateMessageTimer(channel, text string) {
-	app.Send(channel, text)
+	app.SendNoContext(channel, text)
 }
 
 // DeleteTimer takes in the name of a timer and tries to delete the timer from the database.
@@ -346,10 +346,10 @@ func (app *application) DeleteTimer(name string, message twitch.PrivateMessage) 
 		)
 
 		reply := fmt.Sprintln("Something went wrong FeelsBadMan")
-		app.Send(message.Channel, reply)
+		app.Send(message.Channel, reply, message)
 		return
 	}
 
 	reply := fmt.Sprintf("Deleted timer with name %s", name)
-	app.Send(message.Channel, reply)
+	app.Send(message.Channel, reply, message)
 }

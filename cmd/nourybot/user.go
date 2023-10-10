@@ -27,7 +27,7 @@ func (app *application) DebugUser(login string, message twitch.PrivateMessage) {
 
 	if err != nil {
 		reply := fmt.Sprintf("Something went wrong FeelsBadMan %s", err)
-		app.Send(message.Channel, reply)
+		app.Send(message.Channel, reply, message)
 		return
 	} else {
 		// subject := fmt.Sprintf("DEBUG for user %v", login)
@@ -42,10 +42,10 @@ func (app *application) DebugUser(login string, message twitch.PrivateMessage) {
 		resp, err := app.uploadPaste(body)
 		if err != nil {
 			app.Log.Errorln("Could not upload paste:", err)
-			app.Send(message.Channel, fmt.Sprintf("Something went wrong FeelsBadMan %v", ErrDuringPasteUpload))
+			app.Send(message.Channel, fmt.Sprintf("Something went wrong FeelsBadMan %v", ErrDuringPasteUpload), message)
 			return
 		}
-		app.Send(message.Channel, resp)
+		app.Send(message.Channel, resp, message)
 		// app.SendEmail(subject, body)
 		return
 	}
@@ -56,13 +56,13 @@ func (app *application) DebugUser(login string, message twitch.PrivateMessage) {
 func (app *application) DeleteUser(login string, message twitch.PrivateMessage) {
 	err := app.Models.Users.Delete(login)
 	if err != nil {
-		app.Send(message.Channel, "Something went wrong FeelsBadMan")
+		app.Send(message.Channel, "Something went wrong FeelsBadMan", message)
 		app.Log.Error(err)
 		return
 	}
 
 	reply := fmt.Sprintf("Deleted user %s", login)
-	app.Send(message.Channel, reply)
+	app.Send(message.Channel, reply, message)
 }
 
 // EditUserLevel tries to update the database record for the supplied
@@ -73,18 +73,18 @@ func (app *application) EditUserLevel(login, lvl string, message twitch.PrivateM
 	level, err := strconv.Atoi(lvl)
 	if err != nil {
 		app.Log.Error(err)
-		app.Send(message.Channel, fmt.Sprintf("Something went wrong FeelsBadMan %s", ErrUserLevelNotInteger))
+		app.Send(message.Channel, fmt.Sprintf("Something went wrong FeelsBadMan %s", ErrUserLevelNotInteger), message)
 		return
 	}
 
 	err = app.Models.Users.SetLevel(login, level)
 	if err != nil {
-		app.Send(message.Channel, fmt.Sprintf("Something went wrong FeelsBadMan %s", ErrRecordNotFound))
+		app.Send(message.Channel, fmt.Sprintf("Something went wrong FeelsBadMan %s", ErrRecordNotFound), message)
 		app.Log.Error(err)
 		return
 	} else {
 		reply := fmt.Sprintf("Updated user %s to level %v", login, level)
-		app.Send(message.Channel, reply)
+		app.Send(message.Channel, reply, message)
 		return
 	}
 }
@@ -106,12 +106,12 @@ func (app *application) SetUserLocation(message twitch.PrivateMessage) {
 
 	err := app.Models.Users.SetLocation(twitchId, location)
 	if err != nil {
-		app.Send(message.Channel, fmt.Sprintf("Something went wrong FeelsBadMan %s", ErrRecordNotFound))
+		app.Send(message.Channel, fmt.Sprintf("Something went wrong FeelsBadMan %s", ErrRecordNotFound), message)
 		app.Log.Error(err)
 		return
 	} else {
 		reply := fmt.Sprintf("Successfully set your location to %v", location)
-		app.Send(message.Channel, reply)
+		app.Send(message.Channel, reply, message)
 		return
 	}
 }
@@ -123,12 +123,12 @@ func (app *application) SetUserLastFM(lastfmUser string, message twitch.PrivateM
 
 	err := app.Models.Users.SetLastFM(login, lastfmUser)
 	if err != nil {
-		app.Send(message.Channel, fmt.Sprintf("Something went wrong FeelsBadMan %s", ErrRecordNotFound))
+		app.Send(message.Channel, fmt.Sprintf("Something went wrong FeelsBadMan %s", ErrRecordNotFound), message)
 		app.Log.Error(err)
 		return
 	} else {
 		reply := fmt.Sprintf("Successfully set your lastfm username to %v", lastfmUser)
-		app.Send(message.Channel, reply)
+		app.Send(message.Channel, reply, message)
 		return
 	}
 }
@@ -157,12 +157,12 @@ func (app *application) UserCheckWeather(message twitch.PrivateMessage) {
 			"twitchId:", twitchId,
 		)
 		reply := "No location for your account set in my database. Use ()set location <location> to register. Otherwise use ()weather <location> without registering."
-		app.Send(message.Channel, reply)
+		app.Send(message.Channel, reply, message)
 		return
 	}
 
 	reply, _ := commands.Weather(location)
-	app.Send(target, reply)
+	app.Send(target, reply, message)
 }
 
 func (app *application) UserCheckLastFM(message twitch.PrivateMessage) string {

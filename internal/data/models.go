@@ -61,7 +61,7 @@ type Models struct {
 		Insert(twitchLogin, twitchId, twitchChannel, twitchMessage, commandName string, uLvl int, identifier, rawMsg string)
 	}
 	SentMessagesLogs interface {
-		Insert(twitchChannel, twitchMessage, identifier string)
+		Insert(twitchChannel, twitchMessage, ctxCommandName, ctxUser, ctxUserID, ctxMsg, identifier, ctxRaw string)
 	}
 }
 
