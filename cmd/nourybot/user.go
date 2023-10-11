@@ -146,24 +146,18 @@ func (app *application) GetUserLevel(msg twitch.PrivateMessage) int {
 	}
 	if msg.User.Badges["moderator"] == 1 ||
 		msg.User.Badges["broadcaster"] == 1 {
-		twitchUserLevel = 500
-	} else if msg.User.Badges["vip"] == 1 {
 		twitchUserLevel = 250
+	} else if msg.User.Badges["vip"] == 1 {
+		twitchUserLevel = 100
 	} else {
 		twitchUserLevel = 0
 	}
-
-	app.Log.Infow("Userlevel:",
-		"dbUserLevel", dbUserLevel,
-		"twitchUserLevel", twitchUserLevel,
-	)
 
 	if dbUserLevel > twitchUserLevel {
 		return dbUserLevel
 	} else {
 		return twitchUserLevel
 	}
-
 }
 
 func (app *application) UserCheckWeather(message twitch.PrivateMessage) {

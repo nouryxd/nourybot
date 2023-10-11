@@ -182,37 +182,72 @@ func (app *application) handleCommand(message twitch.PrivateMessage) {
 		}
 
 		// --------------------------------
-		// 250 user level
+		// 100 user level
+		// trusted
+		// vip
 		// --------------------------------
-
 	case "debug":
 		switch cmdParams[1] {
 		case "user":
-			if userLevel >= 250 {
+			if userLevel >= 100 {
 				app.DebugUser(cmdParams[2], message)
 			}
 		case "command":
-			if userLevel >= 250 {
+			if userLevel >= 100 {
 				app.DebugCommand(cmdParams[2], message)
 			}
 		}
 
+		// --------------------------------
+		// 250 user level
+		// twitch mod/broadcaster
+		// --------------------------------
+		// empty for now
+
+		// --------------------------------
+		// 420 user level
+		// dank
+		// --------------------------------
+	case "catbox":
+		if userLevel >= 420 {
+			go app.NewDownload("catbox", target, cmdParams[1], message)
+		}
+
+	case "kappa":
+		if userLevel >= 420 {
+			go app.NewDownload("kappa", target, cmdParams[1], message)
+		}
+
+	case "yaf":
+		if userLevel >= 420 {
+			go app.NewDownload("yaf", target, cmdParams[1], message)
+		}
+
+	case "gofile":
+		if userLevel >= 420 {
+			go app.NewDownload("gofile", target, cmdParams[1], message)
+		}
+
+		//----------------------------------
+		// 500 User Level
+		// trusted
+		//---------------------------------
 	case "timer":
 		switch cmdParams[1] {
 		case "add":
-			if userLevel >= 250 {
+			if userLevel >= 500 {
 				app.AddTimer(cmdParams[2], cmdParams[3], message)
 			}
 		case "edit":
-			if userLevel >= 250 {
+			if userLevel >= 500 {
 				app.EditTimer(cmdParams[2], cmdParams[3], message)
 			}
 		case "delete":
-			if userLevel >= 250 {
+			if userLevel >= 500 {
 				app.DeleteTimer(cmdParams[2], message)
 			}
 		case "list":
-			if userLevel >= 250 {
+			if userLevel >= 500 {
 				reply = app.ListTimers()
 			}
 		}
@@ -220,51 +255,29 @@ func (app *application) handleCommand(message twitch.PrivateMessage) {
 	case "command":
 		switch cmdParams[1] {
 		case "add":
-			if userLevel >= 250 {
+			if userLevel >= 500 {
 				app.AddCommand(cmdParams[2], message)
 			}
 		case "delete":
-			if userLevel >= 250 {
+			if userLevel >= 500 {
 				app.DeleteCommand(cmdParams[2], message)
 			}
 		case "edit":
 			switch cmdParams[2] {
 			case "level":
-				if userLevel >= 250 {
+				if userLevel >= 500 {
 					app.EditCommandLevel(cmdParams[3], cmdParams[4], message)
 				}
 			case "category":
-				if userLevel >= 250 {
+				if userLevel >= 500 {
 					app.EditCommandCategory(cmdParams[3], cmdParams[4], message)
 				}
 			}
 		}
 
-		//----------------------------------
-		// 500 User Level
-		//---------------------------------
-	case "catbox":
-		if userLevel >= 500 {
-			go app.NewDownload("catbox", target, cmdParams[1], message)
-		}
-
-	case "kappa":
-		if userLevel >= 500 {
-			go app.NewDownload("kappa", target, cmdParams[1], message)
-		}
-
-	case "yaf":
-		if userLevel >= 500 {
-			go app.NewDownload("yaf", target, cmdParams[1], message)
-		}
-
-	case "gofile":
-		if userLevel >= 500 {
-			go app.NewDownload("gofile", target, cmdParams[1], message)
-		}
-
 		//------------------------------------
 		// 1000 User Level
+		// Admin
 		//------------------------------------
 	case "join":
 		if userLevel >= 1000 {
