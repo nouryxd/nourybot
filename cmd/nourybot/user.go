@@ -134,16 +134,36 @@ func (app *application) SetUserLastFM(lastfmUser string, message twitch.PrivateM
 	}
 }
 
-// GetUserLevel takes in a twitchId and queries the database for an entry
-// with this twitchId. If there is one it returns the level value as an integer.
-// Returns 0 on an error which is the level for unregistered users.
-func (app *application) GetUserLevel(twitchId string) int {
-	userLevel, err := app.Models.Users.GetLevel(twitchId)
+func (app *application) GetUserLevel(msg twitch.PrivateMessage) int {
+	var dbUserLevel int
+	var twitchUserLevel int
+
+	lvl, err := app.Models.Users.GetLevel(msg.User.ID)
 	if err != nil {
-		return 0
+		dbUserLevel = 0
 	} else {
-		return userLevel
+		dbUserLevel = lvl
 	}
+	if msg.User.Badges["moderator"] == 1 ||
+		msg.User.Badges["broadcaster"] == 1 {
+		twitchUserLevel = 500
+	} else if msg.User.Badges["vip"] == 1 {
+		twitchUserLevel = 250
+	} else {
+		twitchUserLevel = 0
+	}
+
+	app.Log.Infow("Userlevel:",
+		"dbUserLevel", dbUserLevel,
+		"twitchUserLevel", twitchUserLevel,
+	)
+
+	if dbUserLevel > twitchUserLevel {
+		return dbUserLevel
+	} else {
+		return twitchUserLevel
+	}
+
 }
 
 func (app *application) UserCheckWeather(message twitch.PrivateMessage) {

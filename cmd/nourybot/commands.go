@@ -38,7 +38,7 @@ func (app *application) handleCommand(message twitch.PrivateMessage) {
 	// Useful to check if enough cmdParams are provided.
 	msgLen := len(strings.SplitN(message.Message, " ", -2))
 
-	userLevel := app.GetUserLevel(message.User.ID)
+	userLevel := app.GetUserLevel(message)
 
 	// target is the channelname the message originated from and
 	// where the TwitchClient should send the response
