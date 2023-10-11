@@ -37,6 +37,7 @@ func (app *application) handleCommand(message twitch.PrivateMessage) {
 	msgLen := len(strings.SplitN(message.Message, " ", -2))
 
 	userLevel := app.GetUserLevel(message.User.ID)
+
 	// target is the channelname the message originated from and
 	// where the TwitchClient should send the response
 	target := message.Channel
@@ -63,7 +64,9 @@ func (app *application) handleCommand(message twitch.PrivateMessage) {
 		if msgLen == 1 {
 			reply = "xd"
 		}
-
+		// --------------------------------
+		// pleb commands
+		// --------------------------------
 	case "bttv":
 		if msgLen < 2 {
 			reply = "Not enough arguments provided. Usage: ()bttv <emote name>"
@@ -86,18 +89,6 @@ func (app *application) handleCommand(message twitch.PrivateMessage) {
 		} else {
 			reply, _ = commands.Currency(cmdParams[1], cmdParams[2], cmdParams[4])
 		}
-
-	case "catbox":
-		go app.NewDownload("catbox", target, cmdParams[1], message)
-
-	case "kappa":
-		go app.NewDownload("kappa", target, cmdParams[1], message)
-
-	case "yaf":
-		go app.NewDownload("yaf", target, cmdParams[1], message)
-
-	case "gofile":
-		go app.NewDownload("gofile", target, cmdParams[1], message)
 
 	case "osrs":
 		reply = commands.OSRS(message.Message[7:len(message.Message)])
@@ -131,9 +122,6 @@ func (app *application) handleCommand(message twitch.PrivateMessage) {
 
 	case "7tv":
 		reply = commands.SevenTV(cmdParams[1])
-
-	case "mail":
-		app.SendEmail("Test command used!", "This is an email test")
 
 	case "lastfm":
 		if msgLen == 1 {
@@ -172,8 +160,6 @@ func (app *application) handleCommand(message twitch.PrivateMessage) {
 			reply, _ = commands.Weather(message.Message[10:len(message.Message)])
 		}
 
-		// Xkcd
-	// Random Xkcd
 	case "rxkcd":
 		reply, _ = commands.RandomXkcd()
 	case "randomxkcd":
@@ -182,17 +168,20 @@ func (app *application) handleCommand(message twitch.PrivateMessage) {
 	case "xkcd":
 		reply, _ = commands.Xkcd()
 
-	case "timer":
+	case "uid":
+		reply = ivr.IDByUsername(cmdParams[1])
+
+	case "set":
 		switch cmdParams[1] {
-		case "add":
-			app.AddTimer(cmdParams[2], cmdParams[3], message)
-		case "edit":
-			app.EditTimer(cmdParams[2], cmdParams[3], message)
-		case "delete":
-			app.DeleteTimer(cmdParams[2], message)
-		case "list":
-			reply = app.ListTimers()
+		case "lastfm":
+			app.SetUserLastFM(cmdParams[2], message)
+		case "location":
+			app.SetUserLocation(message)
 		}
+
+		// --------------------------------
+		// 250 user level
+		// --------------------------------
 
 	case "debug":
 		switch cmdParams[1] {
@@ -206,27 +195,83 @@ func (app *application) handleCommand(message twitch.PrivateMessage) {
 			}
 		}
 
-	case "command":
+	case "timer":
 		switch cmdParams[1] {
 		case "add":
-			app.AddCommand(cmdParams[2], message)
-		case "delete":
-			app.DeleteCommand(cmdParams[2], message)
+			if userLevel >= 250 {
+				app.AddTimer(cmdParams[2], cmdParams[3], message)
+			}
 		case "edit":
-			switch cmdParams[2] {
-			case "level":
-				app.EditCommandLevel(cmdParams[3], cmdParams[4], message)
-			case "category":
-				app.EditCommandCategory(cmdParams[3], cmdParams[4], message)
+			if userLevel >= 250 {
+				app.EditTimer(cmdParams[2], cmdParams[3], message)
+			}
+		case "delete":
+			if userLevel >= 250 {
+				app.DeleteTimer(cmdParams[2], message)
+			}
+		case "list":
+			if userLevel >= 250 {
+				reply = app.ListTimers()
 			}
 		}
 
-	case "set":
+	case "command":
 		switch cmdParams[1] {
-		case "lastfm":
-			app.SetUserLastFM(cmdParams[2], message)
-		case "location":
-			app.SetUserLocation(message)
+		case "add":
+			if userLevel >= 250 {
+				app.AddCommand(cmdParams[2], message)
+			}
+		case "delete":
+			if userLevel >= 250 {
+				app.DeleteCommand(cmdParams[2], message)
+			}
+		case "edit":
+			switch cmdParams[2] {
+			case "level":
+				if userLevel >= 250 {
+					app.EditCommandLevel(cmdParams[3], cmdParams[4], message)
+				}
+			case "category":
+				if userLevel >= 250 {
+					app.EditCommandCategory(cmdParams[3], cmdParams[4], message)
+				}
+			}
+		}
+
+		//----------------------------------
+		// 500 User Level
+		//---------------------------------
+	case "catbox":
+		if userLevel >= 500 {
+			go app.NewDownload("catbox", target, cmdParams[1], message)
+		}
+
+	case "kappa":
+		if userLevel >= 500 {
+			go app.NewDownload("kappa", target, cmdParams[1], message)
+		}
+
+	case "yaf":
+		if userLevel >= 500 {
+			go app.NewDownload("yaf", target, cmdParams[1], message)
+		}
+
+	case "gofile":
+		if userLevel >= 500 {
+			go app.NewDownload("gofile", target, cmdParams[1], message)
+		}
+
+		//------------------------------------
+		// 1000 User Level
+		//------------------------------------
+	case "join":
+		if userLevel >= 1000 {
+			go app.AddChannel(cmdParams[1], message)
+		}
+
+	case "part":
+		if userLevel >= 1000 {
+			go app.DeleteChannel(cmdParams[1], message)
 		}
 
 	case "user":
@@ -234,18 +279,18 @@ func (app *application) handleCommand(message twitch.PrivateMessage) {
 		case "edit":
 			switch cmdParams[2] {
 			case "level":
-				app.EditUserLevel(cmdParams[3], cmdParams[4], message)
+				if userLevel >= 1000 {
+					app.EditUserLevel(cmdParams[3], cmdParams[4], message)
+				}
+			}
+		case "set":
+			switch cmdParams[2] {
+			case "level":
+				if userLevel >= 1000 {
+					app.EditUserLevel(cmdParams[3], cmdParams[4], message)
+				}
 			}
 		}
-
-	case "join":
-		go app.AddChannel(cmdParams[1], message)
-
-	case "part":
-		go app.DeleteChannel(cmdParams[1], message)
-
-	case "uid":
-		reply = ivr.IDByUsername(cmdParams[1])
 
 	default:
 		r, err := app.GetCommand(target, commandName, userLevel)
