@@ -10,7 +10,9 @@ import (
 func Ping() string {
 	botUptime := humanize.Time(common.GetUptime())
 	commandsUsed := common.GetCommandsUsed()
+	commit := common.GetVersion()
 
-	reply := fmt.Sprintf("Pong! :) Commands used: %v, Last restart: %v", commandsUsed, botUptime)
+	reply := fmt.Sprintf("Pong! :) Commands used: %v, Last restart: %v, Running on commit: %v", commandsUsed, botUptime, commit)
+
 	return reply
 }
