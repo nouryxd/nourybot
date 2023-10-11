@@ -4,7 +4,7 @@ import (
 	"fmt"
 
 	"github.com/gempir/go-twitch-irc/v4"
-	"github.com/lyx0/nourybot/internal/ivr"
+	"github.com/lyx0/nourybot/pkg/ivr"
 )
 
 // AddChannel takes in a channel name, then calls GetIdByLogin for the

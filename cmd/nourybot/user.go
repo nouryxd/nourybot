@@ -5,7 +5,8 @@ import (
 	"strconv"
 
 	"github.com/gempir/go-twitch-irc/v4"
-	"github.com/lyx0/nourybot/internal/commands"
+	"github.com/lyx0/nourybot/pkg/lastfm"
+	"github.com/lyx0/nourybot/pkg/owm"
 )
 
 // AddUser calls GetIdByLogin to get the twitch id of the login name and then adds
@@ -161,7 +162,7 @@ func (app *application) UserCheckWeather(message twitch.PrivateMessage) {
 		return
 	}
 
-	reply, _ := commands.Weather(location)
+	reply, _ := owm.Weather(location)
 	app.Send(target, reply, message)
 }
 
@@ -178,6 +179,6 @@ func (app *application) UserCheckLastFM(message twitch.PrivateMessage) string {
 		return reply
 	}
 
-	reply := commands.LastFmUserRecent(target, lastfmUser)
+	reply := lastfm.LastFmUserRecent(target, lastfmUser)
 	return reply
 }

@@ -1,11 +1,17 @@
-package commands
+package owm
 
 import (
+	"errors"
 	"fmt"
 	"os"
 
 	owm "github.com/briandowns/openweathermap"
 	"github.com/joho/godotenv"
+)
+
+var (
+	ErrInternalServerError     = errors.New("internal server error")
+	ErrWeatherLocationNotFound = errors.New("location not found")
 )
 
 // Weather queries the OpenWeatherMap Api for the given location and sends the

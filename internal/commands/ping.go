@@ -4,7 +4,7 @@ import (
 	"fmt"
 
 	"github.com/lyx0/nourybot/internal/common"
-	"github.com/lyx0/nourybot/internal/humanize"
+	"github.com/lyx0/nourybot/pkg/humanize"
 )
 
 func Ping() string {

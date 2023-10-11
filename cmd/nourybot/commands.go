@@ -6,7 +6,9 @@ import (
 	"github.com/gempir/go-twitch-irc/v4"
 	"github.com/lyx0/nourybot/internal/commands"
 	"github.com/lyx0/nourybot/internal/common"
-	"github.com/lyx0/nourybot/internal/ivr"
+	"github.com/lyx0/nourybot/pkg/ivr"
+	"github.com/lyx0/nourybot/pkg/lastfm"
+	"github.com/lyx0/nourybot/pkg/owm"
 )
 
 // handleCommand takes in a twitch.PrivateMessage and then routes the message to
@@ -129,7 +131,7 @@ func (app *application) handleCommand(message twitch.PrivateMessage) {
 		} else {
 			// Default to first argument supplied being the name
 			// of the user to look up recently played.
-			reply = commands.LastFmUserRecent(target, cmdParams[1])
+			reply = lastfm.LastFmUserRecent(target, cmdParams[1])
 		}
 
 	case "help":
@@ -157,7 +159,7 @@ func (app *application) handleCommand(message twitch.PrivateMessage) {
 		} else if msgLen < 2 {
 			reply = "Not enough arguments provided."
 		} else {
-			reply, _ = commands.Weather(message.Message[10:len(message.Message)])
+			reply, _ = owm.Weather(message.Message[10:len(message.Message)])
 		}
 
 	case "rxkcd":
