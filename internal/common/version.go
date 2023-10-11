@@ -37,7 +37,5 @@ func GetVersion() string {
 		return fmt.Sprintf("%s-dirty", revision)
 	}
 
-	fmt.Println(revision)
-
 	return revision
 }
