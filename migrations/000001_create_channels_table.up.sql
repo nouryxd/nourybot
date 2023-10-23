@@ -6,7 +6,7 @@ CREATE TABLE IF NOT EXISTS channels (
 );
 
 INSERT INTO channels (added_at,login,twitchid) VALUES
-	 (NOW(),'nourylul','31437432'),
+	 (NOW(),'nouryxd','31437432'),
 	 (NOW(),'nourybot','596581605'),
 	 (NOW(),'uudelleenkytkeytynyt','465178364'),
 	 (NOW(),'xnoury','197780373');

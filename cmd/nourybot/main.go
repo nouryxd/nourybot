@@ -80,7 +80,7 @@ func main() {
 
 	switch envFlag {
 	case "dev":
-		cfg.db.dsn = os.Getenv("DEV_DSN")
+		cfg.db.dsn = os.Getenv("LOCAL_DSN")
 	case "prod":
 		cfg.db.dsn = os.Getenv("REMOTE_DSN")
 	}
@@ -162,7 +162,7 @@ func main() {
 
 			// Special rule for #pajlada.
 			if message.Message == "!nourybot" {
-				app.Send(message.Channel, "Lidl Twitch bot made by @nourylul. Prefix: ()", message)
+				app.Send(message.Channel, "Lidl Twitch bot made by @nouryxd. Prefix: ()", message)
 			}
 		}
 	})
@@ -170,9 +170,9 @@ func main() {
 	app.TwitchClient.OnConnect(func() {
 		common.StartTime()
 
-		app.TwitchClient.Join("nourylul")
+		app.TwitchClient.Join("nouryxd")
 		app.TwitchClient.Join("nourybot")
-		app.TwitchClient.Say("nourylul", "xD!")
+		app.TwitchClient.Say("nouryxd", "xD!")
 		app.TwitchClient.Say("nourybot", "gopherDance")
 
 		// Successfully connected to Twitch

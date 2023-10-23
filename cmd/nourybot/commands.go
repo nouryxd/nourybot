@@ -140,7 +140,7 @@ func (app *application) handleCommand(message twitch.PrivateMessage) {
 		}
 
 	case "nourybot":
-		reply = "Lidl Twitch bot made by @nourylul. Prefix: ()"
+		reply = "Lidl Twitch bot made by @nouryxd. Prefix: ()"
 
 	case "phonetic":
 		if msgLen == 1 {
