@@ -170,10 +170,10 @@ func main() {
 	app.TwitchClient.OnConnect(func() {
 		common.StartTime()
 
-		app.TwitchClient.Join("nouryxd")
-		app.TwitchClient.Join("nourybot")
-		app.TwitchClient.Say("nouryxd", "xD!")
+		app.TwitchClient.Say("nouryxd", "gopherDance")
 		app.TwitchClient.Say("nourybot", "gopherDance")
+		app.TwitchClient.Say("xnoury", "alienPls")
+		app.TwitchClient.Say("uudelleenkykeytynyt", "pajaDink")
 
 		// Successfully connected to Twitch
 		app.Log.Infow("Successfully connected to Twitch Servers",
