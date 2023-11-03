@@ -14,7 +14,6 @@ import (
 	"github.com/lyx0/nourybot/internal/common"
 	"github.com/lyx0/nourybot/internal/data"
 	"github.com/nicklaw5/helix/v2"
-	"github.com/rs/zerolog/log"
 
 	"go.uber.org/zap"
 )
