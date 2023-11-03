@@ -146,7 +146,6 @@ func main() {
 		// If there is no roomId something went really wrong.
 		roomId := message.Tags["room-id"]
 		if roomId == "" {
-			log.Error().Msgf("Missing room-id in message tag: %s", roomId)
 			return
 		}
 

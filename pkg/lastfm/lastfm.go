@@ -11,7 +11,6 @@ import (
 
 func LastFmUserRecent(target, user string) string {
 	sugar := zap.NewExample().Sugar()
-	defer sugar.Sync()
 
 	err := godotenv.Load()
 	if err != nil {
