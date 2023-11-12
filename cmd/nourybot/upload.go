@@ -26,7 +26,7 @@ const (
 	CATBOX_ENDPOINT = "https://litterbox.catbox.moe/resources/internals/api.php"
 	GOFILE_ENDPOINT = "https://store1.gofile.io/uploadFile"
 	KAPPA_ENDPOINT  = "https://kappa.lol/api/upload"
-	YAF_ENDPOINT    = "https://i.yaf.ee/upload"
+	YAF_ENDPOINT    = "https://i.yaf.li/upload"
 )
 
 func (app *application) NewUpload(destination, fileName, target, identifier string, msg twitch.PrivateMessage) {
@@ -293,7 +293,7 @@ func (app *application) KappaUpload(target, path, identifier string, msg twitch.
 
 func (app *application) YafUpload(target, path, identifier string, msg twitch.PrivateMessage) {
 	defer os.Remove(path)
-	app.Send(target, "Uploading to yaf.ee... dankCircle", msg)
+	app.Send(target, "Uploading to yaf.li... dankCircle", msg)
 	pr, pw := io.Pipe()
 	form := multipart.NewWriter(pw)
 
