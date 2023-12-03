@@ -13,7 +13,7 @@ import (
 // this whole function was pretty much yoinked from here
 // https://github.com/zneix/haste-client/blob/master/main.go <3
 func (app *application) uploadPaste(text string) (string, error) {
-	const hasteURL = "https://haste.noury.cc"
+	const hasteURL = "https://haste.dank.pw"
 	const apiRoute = "/documents"
 	var httpClient = &http.Client{Timeout: 10 * time.Second}
 
