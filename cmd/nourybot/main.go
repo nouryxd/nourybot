@@ -80,9 +80,9 @@ func main() {
 
 	switch envFlag {
 	case "dev":
-		cfg.db.dsn = os.Getenv("REMOTE_DSN")
+		cfg.db.dsn = os.Getenv("DEV_DSN")
 	case "prod":
-		cfg.db.dsn = os.Getenv("REMOTE_DSN")
+		cfg.db.dsn = os.Getenv("PROD_DSN")
 	}
 	// Database config variables
 	cfg.db.maxOpenConns = 25
