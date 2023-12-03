@@ -47,7 +47,7 @@ type application struct {
 var envFlag string
 
 func init() {
-	flag.StringVar(&envFlag, "env", "dev", "database connection to use: (dev/prod)")
+	flag.StringVar(&envFlag, "env", "prod", "database connection to use: (dev/prod)")
 	flag.Parse()
 }
 func main() {
