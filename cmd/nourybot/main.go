@@ -172,10 +172,11 @@ func main() {
 		}
 
 		if message.BanDuration >= 28700 && message.Channel == "forsen" {
-			app.TwitchClient.Say("nouryxd", fmt.Sprintf("MODS https://logs.ivr.fi/?channel=forsen&username=%v", message.TargetUsername))
+			app.TwitchClient.Say("nouryxd", fmt.Sprintf("monkaS -%v https://logs.ivr.fi/?channel=forsen&username=%v", message.BanDuration, message.TargetUsername))
 		}
 
 	})
+
 	app.TwitchClient.OnConnect(func() {
 		common.StartTime()
 
