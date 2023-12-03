@@ -108,7 +108,7 @@ func (app *application) CatboxUpload(target, fileName, identifier string, msg tw
 
 	reply := string(body)
 	go app.Models.Uploads.UpdateUploadURL(identifier, reply)
-	app.Send(target, fmt.Sprintf("Removing file: %s", fileName), msg)
+	//app.Send(target, fmt.Sprintf("Removing file: %s", fileName), msg)
 	app.Send(target, reply, msg)
 }
 
@@ -179,7 +179,7 @@ func (app *application) GofileUpload(target, path, identifier string, msg twitch
 		return
 	}
 	defer resp.Body.Close()
-	app.Send(target, "Uploaded PogChamp", msg)
+	//app.Send(target, "Uploaded PogChamp", msg)
 
 	body, err := io.ReadAll(resp.Body)
 	if err != nil {
@@ -199,7 +199,7 @@ func (app *application) GofileUpload(target, path, identifier string, msg twitch
 	var reply = jsonResponse.Data.DownloadPage
 
 	go app.Models.Uploads.UpdateUploadURL(identifier, reply)
-	app.Send(target, fmt.Sprintf("Removing file: %s", path), msg)
+	//app.Send(target, fmt.Sprintf("Removing file: %s", path), msg)
 	app.Send(target, reply, msg)
 }
 
@@ -267,7 +267,7 @@ func (app *application) KappaUpload(target, path, identifier string, msg twitch.
 		return
 	}
 	defer resp.Body.Close()
-	app.Send(target, "Uploaded PogChamp", msg)
+	//app.Send(target, "Uploaded PogChamp", msg)
 
 	body, err := io.ReadAll(resp.Body)
 	if err != nil {
@@ -287,7 +287,7 @@ func (app *application) KappaUpload(target, path, identifier string, msg twitch.
 	var reply = jsonResponse.Link
 
 	go app.Models.Uploads.UpdateUploadURL(identifier, reply)
-	app.Send(target, fmt.Sprintf("Removing file: %s", path), msg)
+	//app.Send(target, fmt.Sprintf("Removing file: %s", path), msg)
 	app.Send(target, reply, msg)
 }
 
@@ -363,6 +363,6 @@ func (app *application) YafUpload(target, path, identifier string, msg twitch.Pr
 	var reply = string(body[:])
 
 	go app.Models.Uploads.UpdateUploadURL(identifier, reply)
-	app.Send(target, fmt.Sprintf("Removing file: %s", path), msg)
+	//app.Send(target, fmt.Sprintf("Removing file: %s", path), msg)
 	app.Send(target, reply, msg)
 }

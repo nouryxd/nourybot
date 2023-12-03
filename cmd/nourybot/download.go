@@ -22,7 +22,6 @@ func (app *application) NewDownload(destination, target, link string, msg twitch
 		link,
 		identifier,
 	)
-	app.Send(target, "xd", msg)
 
 	switch destination {
 	case "catbox":
@@ -53,10 +52,10 @@ func (app *application) YafDownload(target, link, identifier string, msg twitch.
 		app.Send(target, fmt.Sprintf("Something went wrong FeelsBadMan: %q", err), msg)
 		return
 	}
-	app.Send(target, "Downloaded.", msg)
+	//app.Send(target, "Downloaded.", msg)
 	fileName := fmt.Sprintf("%s.%s", identifier, rExt)
 	f, err := os.Create(fileName)
-	app.Send(target, fmt.Sprintf("Filename: %s", fileName), msg)
+	//app.Send(target, fmt.Sprintf("Filename: %s", fileName), msg)
 
 	if err != nil {
 		app.Log.Errorln(err)
@@ -97,10 +96,10 @@ func (app *application) KappaDownload(target, link, identifier string, msg twitc
 		app.Send(target, fmt.Sprintf("Something went wrong FeelsBadMan: %q", err), msg)
 		return
 	}
-	app.Send(target, "Downloaded.", msg)
+	//app.Send(target, "Downloaded.", msg)
 	fileName := fmt.Sprintf("%s.%s", identifier, rExt)
 	f, err := os.Create(fileName)
-	app.Send(target, fmt.Sprintf("Filename: %s", fileName), msg)
+	//app.Send(target, fmt.Sprintf("Filename: %s", fileName), msg)
 
 	if err != nil {
 		app.Log.Errorln(err)
@@ -142,10 +141,10 @@ func (app *application) GofileDownload(target, link, identifier string, msg twit
 		app.Send(target, fmt.Sprintf("Something went wrong FeelsBadMan: %q", err), msg)
 		return
 	}
-	app.Send(target, "Downloaded.", msg)
+	//app.Send(target, "Downloaded.", msg)
 	fileName := fmt.Sprintf("%s.%s", safeFilename, rExt)
 	f, err := os.Create(fileName)
-	app.Send(target, fmt.Sprintf("Filename: %s", fileName), msg)
+	//app.Send(target, fmt.Sprintf("Filename: %s", fileName), msg)
 
 	if err != nil {
 		app.Log.Errorln(err)
@@ -193,10 +192,10 @@ func (app *application) CatboxDownload(target, link, identifier string, msg twit
 		app.Send(target, fmt.Sprintf("Something went wrong FeelsBadMan: %q", err), msg)
 		return
 	}
-	app.Send(target, "Downloaded.", msg)
+	//app.Send(target, "Downloaded.", msg)
 	fileName = fmt.Sprintf("%s.%s", identifier, rExt)
 	f, err := os.Create(fileName)
-	app.Send(target, fmt.Sprintf("Filename: %s", fileName), msg)
+	//app.Send(target, fmt.Sprintf("Filename: %s", fileName), msg)
 
 	if err != nil {
 		app.Log.Errorln(err)
