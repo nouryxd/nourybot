@@ -4,6 +4,7 @@ import (
 	"context"
 	"database/sql"
 	"flag"
+	"fmt"
 	"os"
 	"time"
 
@@ -134,12 +135,12 @@ func main() {
 
 	// Received a PrivateMessage (normal chat message).
 	app.TwitchClient.OnPrivateMessage(func(message twitch.PrivateMessage) {
-		sugar.Infow("New Twitch PrivateMessage",
-			"message.Channel", message.Channel,
-			"message.User.DisplayName", message.User.DisplayName,
-			"message.User.ID", message.User.ID,
-			"message.Message", message.Message,
-		)
+		// sugar.Infow("New Twitch PrivateMessage",
+		// 	"message.Channel", message.Channel,
+		// 	"message.User.DisplayName", message.User.DisplayName,
+		// 	"message.User.ID", message.User.ID,
+		// 	"message.Message", message.Message,
+		// )
 
 		// roomId is the Twitch UserID of the channel the message originated from.
 		// If there is no roomId something went really wrong.
@@ -165,6 +166,16 @@ func main() {
 		}
 	})
 
+	app.TwitchClient.OnClearChatMessage(func(message twitch.ClearChatMessage) {
+		if message.BanDuration == 0 && message.Channel == "forsen" {
+			app.TwitchClient.Say("nouryxd", fmt.Sprintf("MODS https://logs.ivr.fi/?channel=forsen&username=%v", message.TargetUsername))
+		}
+
+		if message.BanDuration >= 28700 && message.Channel == "forsen" {
+			app.TwitchClient.Say("nouryxd", fmt.Sprintf("MODS https://logs.ivr.fi/?channel=forsen&username=%v", message.TargetUsername))
+		}
+
+	})
 	app.TwitchClient.OnConnect(func() {
 		common.StartTime()
 

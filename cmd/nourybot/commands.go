@@ -16,6 +16,10 @@ import (
 func (app *application) handleCommand(message twitch.PrivateMessage) {
 	var reply string
 
+	if message.Channel == "forsen" {
+		return
+	}
+
 	// Increments the counter how many commands have been used, called in the ping command.
 	go common.CommandUsed()
 

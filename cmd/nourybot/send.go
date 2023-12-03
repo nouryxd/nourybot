@@ -91,6 +91,10 @@ func (app *application) SendNoContext(target, message string) {
 		return
 	}
 
+	if target == "forsen" {
+		return
+	}
+
 	identifier := uuid.NewString()
 	go app.Models.SentMessagesLogs.Insert(target, message, "unavailable", "unavailable", "unavailable", "unavailable", identifier, "unavailable")
 
@@ -142,6 +146,10 @@ func (app *application) SendNoContext(target, message string) {
 func (app *application) Send(target, message string, msgContext twitch.PrivateMessage) {
 	// Message we are trying to send is empty.
 	if len(message) == 0 {
+		return
+	}
+
+	if target == "forsen" {
 		return
 	}
 
@@ -197,6 +205,10 @@ func (app *application) Send(target, message string, msgContext twitch.PrivateMe
 func (app *application) SendNoBanphrase(target, message string) {
 	// Message we are trying to send is empty.
 	if len(message) == 0 {
+		return
+	}
+
+	if target == "forsen" {
 		return
 	}
 
