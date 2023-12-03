@@ -266,6 +266,10 @@ func (app *application) handleCommand(message twitch.PrivateMessage) {
 			if userLevel >= 500 {
 				app.DeleteCommand(cmdParams[2], message)
 			}
+		case "list":
+			if userLevel >= 500 {
+				reply = app.ListCommands()
+			}
 		case "edit":
 			switch cmdParams[2] {
 			case "level":

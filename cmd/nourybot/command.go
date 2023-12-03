@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"strconv"
+	"strings"
 
 	"github.com/gempir/go-twitch-irc/v4"
 	"github.com/google/uuid"
@@ -17,7 +18,7 @@ func (app *application) AddCommand(name string, message twitch.PrivateMessage) {
 	//  trailing space  =  +1
 	//      zero-based  =  +1
 	//                  =  15
-	snipLength := 14
+	snipLength := 15
 
 	// Split the twitch message at `snipLength` plus length of the name of the
 	// command that we want to add.
@@ -245,4 +246,52 @@ func (app *application) LogCommand(msg twitch.PrivateMessage, commandName string
 	rawMsg := msg.Raw
 
 	go app.Models.CommandsLogs.Insert(twitchLogin, twitchID, twitchChannel, twitchMessage, commandName, userLevel, identifier, rawMsg)
+}
+
+// InitialTimers is called on startup and queries the database for a list of
+// timers and then adds each onto the scheduler.
+func (app *application) ListCommands() string {
+	command, err := app.Models.Commands.GetAll()
+	if err != nil {
+		app.Log.Errorw("Error trying to retrieve all timers from database", err)
+		return ""
+	}
+
+	// The slice of timers is only used to log them at
+	// the start so it looks a bit nicer.
+	var cs []string
+
+	// Iterate over all timers and then add them onto the scheduler.
+	for i, v := range command {
+		// idk why this works but it does so no touchy touchy.
+		// https://github.com/robfig/cron/issues/420#issuecomment-940949195
+		i, v := i, v
+		_ = i
+
+		// cronName is the internal, unique tag/name for the timer.
+		// A timer named "sponsor" in channel "forsen" will be named "forsensponsor"
+		c := fmt.Sprintf(
+			"ID: \t\t%v\n"+
+				"Name: \t\t%v\n"+
+				"Text: \t\t%v\n"+
+				"Category: \t%v\n"+
+				"Level: \t\t%v\n"+
+				"Help: \t\t%v\n"+
+				"\n\n",
+			v.ID, v.Name, v.Text, v.Category, v.Level, v.Help,
+		)
+
+		// Add new value to the slice
+		cs = append(cs, c)
+
+		//app.Scheduler.AddFunc(repeating, func() { app.newPrivateMessageTimer(v.Channel, v.Text) }, cronName)
+	}
+
+	reply, err := app.uploadPaste(strings.Join(cs, ""))
+	if err != nil {
+		app.Log.Errorw("Error trying to retrieve all timers from database", err)
+		return ""
+	}
+
+	return reply
 }

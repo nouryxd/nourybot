@@ -38,6 +38,7 @@ type Models struct {
 	}
 	Commands interface {
 		Get(name string) (*Command, error)
+		GetAll() ([]*Command, error)
 		Insert(command *Command) error
 		Update(command *Command) error
 		SetLevel(name string, level int) error

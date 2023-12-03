@@ -1,8 +1,10 @@
 package data
 
 import (
+	"context"
 	"database/sql"
 	"errors"
+	"time"
 )
 
 type Command struct {
@@ -202,4 +204,59 @@ func (c CommandModel) Delete(name string) error {
 	}
 
 	return nil
+}
+
+// GetAll() returns a pointer to a slice of all channels (`[]*Channel`) in the database.
+func (c CommandModel) GetAll() ([]*Command, error) {
+	query := `
+	SELECT id, name, text, category, level, help
+	FROM commands
+	ORDER BY id`
+
+	// Create a context with 3 seconds timeout.
+	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+	defer cancel()
+
+	// Use QueryContext() the context and query. This returns a
+	// sql.Rows resultset containing our channels.
+	rows, err := c.DB.QueryContext(ctx, query)
+	if err != nil {
+		return nil, err
+	}
+
+	// Need to defer a call to rows.Close() to ensure the resultset
+	// is closed before GetAll() returns.
+	defer rows.Close()
+
+	// Initialize an empty slice to hold the data.
+	commands := []*Command{}
+
+	// Iterate over the resultset.
+	for rows.Next() {
+		// Initialize an empty Channel struct where we put on
+		// a single channel value.
+		var command Command
+
+		// Scan the values onto the channel struct
+		err := rows.Scan(
+			&command.ID,
+			&command.Name,
+			&command.Text,
+			&command.Category,
+			&command.Level,
+			&command.Help,
+		)
+		if err != nil {
+			return nil, err
+		}
+		// Add the single movie struct onto the slice.
+		commands = append(commands, &command)
+	}
+
+	// When rows.Next() finishes call rows.Err() to retrieve any errors.
+	if err = rows.Err(); err != nil {
+		return nil, err
+	}
+
+	return commands, nil
 }
