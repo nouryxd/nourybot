@@ -2,6 +2,8 @@
 FROM golang:alpine
 
 RUN apk add --no-cache make
+RUN apk add --no-cache git
+
 # Setup folders
 RUN mkdir /app
 WORKDIR /app
