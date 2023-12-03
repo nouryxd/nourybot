@@ -80,7 +80,7 @@ func main() {
 
 	switch envFlag {
 	case "dev":
-		cfg.db.dsn = os.Getenv("LOCAL_DSN")
+		cfg.db.dsn = os.Getenv("REMOTE_DSN")
 	case "prod":
 		cfg.db.dsn = os.Getenv("REMOTE_DSN")
 	}

@@ -21,6 +21,12 @@ jqprod:
 	mv cmd/nourybot/${BINARY_NAME} ./bin/${BINARY_NAME}
 	./bin/${BINARY_NAME} -env="prod" | jq
 
+build:
+	cd cmd/nourybot && go build -o ${BINARY_NAME}  
+	mv cmd/nourybot/${BINARY_NAME} ./bin/${BINARY_NAME}
+
+run:
+	./bin/${BINARY_NAME} -env="prod"
 
 prod:
 	cd cmd/nourybot && go build -o ${BINARY_NAME}  
