@@ -3,6 +3,7 @@ FROM golang:alpine
 
 RUN apk add --no-cache make
 RUN apk add --no-cache git
+RUN apk add --no-cache yt-dlp
 
 # Setup folders
 RUN mkdir /app
