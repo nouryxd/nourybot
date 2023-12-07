@@ -3,7 +3,6 @@ package main
 import (
 	"context"
 	"database/sql"
-	"flag"
 	"fmt"
 	"os"
 	"time"
@@ -26,6 +25,7 @@ type config struct {
 	twitchClientSecret string
 	twitchID           string
 	commandPrefix      string
+	env                string
 	db                 struct {
 		dsn          string
 		maxOpenConns int
@@ -44,12 +44,6 @@ type application struct {
 	// Rdb       *redis.Client
 }
 
-var envFlag string
-
-func init() {
-	flag.StringVar(&envFlag, "env", "prod", "database connection to use: (dev/prod)")
-	flag.Parse()
-}
 func main() {
 	var cfg config
 	// Initialize a new sugared logger that we'll pass on
@@ -76,9 +70,10 @@ func main() {
 	cfg.twitchClientSecret = os.Getenv("TWITCH_CLIENT_SECRET")
 	cfg.commandPrefix = os.Getenv("TWITCH_COMMAND_PREFIX")
 	cfg.twitchID = os.Getenv("TWITCH_ID")
+	cfg.env = os.Getenv("ENV")
 	tc := twitch.NewClient(cfg.twitchUsername, cfg.twitchOauth)
 
-	switch envFlag {
+	switch cfg.env {
 	case "dev":
 		cfg.db.dsn = os.Getenv("DEV_DSN")
 	case "prod":
@@ -188,7 +183,7 @@ func main() {
 		// Successfully connected to Twitch
 		app.Log.Infow("Successfully connected to Twitch Servers",
 			"Bot username", cfg.twitchUsername,
-			"Environment", envFlag,
+			"Environment", cfg.env,
 			"Database Open Conns", cfg.db.maxOpenConns,
 			"Database Idle Conns", cfg.db.maxIdleConns,
 			"Database Idle Time", cfg.db.maxIdleTime,
