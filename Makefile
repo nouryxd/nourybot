@@ -28,6 +28,12 @@ build:
 run:
 	./bin/${BINARY_NAME} -env="prod"
 
+up:
+	docker compose up
+
+down:
+	docker compose down
+
 prod:
 	cd cmd/nourybot && go build -o ${BINARY_NAME}  
 	mv cmd/nourybot/${BINARY_NAME} ./bin/${BINARY_NAME}

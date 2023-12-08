@@ -41,6 +41,7 @@ type application struct {
 	Db           *sql.DB
 	Models       data.Models
 	Scheduler    *cron.Cron
+	Environment  string
 	// Rdb       *redis.Client
 }
 
@@ -122,6 +123,7 @@ func main() {
 		Db:           db,
 		Models:       data.NewModels(db),
 		Scheduler:    cron.New(),
+		Environment:  cfg.env,
 	}
 
 	app.Log.Infow("db.Stats",

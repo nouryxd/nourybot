@@ -200,6 +200,10 @@ func (app *application) handleCommand(message twitch.PrivateMessage) {
 			if userLevel >= 100 {
 				app.DebugCommand(cmdParams[2], message)
 			}
+		case "env":
+			if userLevel >= 100 {
+				reply = app.Environment
+			}
 		}
 
 		// --------------------------------
