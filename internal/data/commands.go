@@ -10,6 +10,7 @@ import (
 type Command struct {
 	ID       int    `json:"id"`
 	Name     string `json:"name"`
+	Channel  string `json:"channel"`
 	Text     string `json:"text,omitempty"`
 	Category string `json:"category,omitempty"`
 	Level    int    `json:"level,omitempty"`
@@ -21,17 +22,18 @@ type CommandModel struct {
 }
 
 // Get tries to find a command in the database with the provided name.
-func (c CommandModel) Get(name string) (*Command, error) {
+func (c CommandModel) Get(name, channel string) (*Command, error) {
 	query := `
-	SELECT id, name, text, category, level, help
+	SELECT *
 	FROM commands
-	WHERE name = $1`
+	WHERE name = $1 AND channel = $2`
 
 	var command Command
 
-	err := c.DB.QueryRow(query, name).Scan(
+	err := c.DB.QueryRow(query, name, channel).Scan(
 		&command.ID,
 		&command.Name,
+		&command.Channel,
 		&command.Text,
 		&command.Category,
 		&command.Level,
@@ -53,14 +55,12 @@ func (c CommandModel) Get(name string) (*Command, error) {
 // Insert adds a command into the database.
 func (c CommandModel) Insert(command *Command) error {
 	query := `
-	INSERT into commands(name, text, category, level, help)
-	VALUES ($1, $2, $3, $4, $5)
-	ON CONFLICT (name)
-	DO NOTHING
+	INSERT into commands(name, channel, text, category, level, help)
+	VALUES ($1, $2, $3, $4, $5, $6)
 	RETURNING id;
 	`
 
-	args := []interface{}{command.Name, command.Text, command.Category, command.Level, command.Help}
+	args := []interface{}{command.Name, command.Channel, command.Text, command.Category, command.Level, command.Help}
 
 	result, err := c.DB.Exec(query, args...)
 	if err != nil {
@@ -82,12 +82,13 @@ func (c CommandModel) Insert(command *Command) error {
 func (c CommandModel) Update(command *Command) error {
 	query := `
 	UPDATE commands
-	SET text = $2
-	WHERE name = $1
+	SET text = $3
+	WHERE name = $1 AND channel = $2
 	RETURNING id`
 
 	args := []interface{}{
 		command.Name,
+		command.Channel,
 		command.Text,
 	}
 
@@ -106,13 +107,13 @@ func (c CommandModel) Update(command *Command) error {
 
 // SetCategory queries the database for an entry with the provided name,
 // if there is one it updates the categories level with the provided level.
-func (c CommandModel) SetCategory(name string, category string) error {
+func (c CommandModel) SetCategory(name, channel, category string) error {
 	query := `
 	UPDATE commands
-	SET category = $2
-	WHERE name = $1`
+	SET category = $3
+	WHERE name = $1 AND channel = $2`
 
-	result, err := c.DB.Exec(query, name, category)
+	result, err := c.DB.Exec(query, name, channel, category)
 	if err != nil {
 		return err
 	}
@@ -131,13 +132,13 @@ func (c CommandModel) SetCategory(name string, category string) error {
 
 // SetLevel queries the database for an entry with the provided name,
 // if there is one it updates the entrys level with the provided level.
-func (c CommandModel) SetLevel(name string, level int) error {
+func (c CommandModel) SetLevel(name, channel string, level int) error {
 	query := `
 	UPDATE commands
-	SET level = $2
-	WHERE name = $1`
+	SET level = $3
+	WHERE name = $1 AND channel = $2`
 
-	result, err := c.DB.Exec(query, name, level)
+	result, err := c.DB.Exec(query, name, channel, level)
 	if err != nil {
 		return err
 	}
@@ -155,13 +156,13 @@ func (c CommandModel) SetLevel(name string, level int) error {
 }
 
 // SetHelp sets the help text for a given name of a command in the database.
-func (c CommandModel) SetHelp(name string, helptext string) error {
+func (c CommandModel) SetHelp(name, channel string, helptext string) error {
 	query := `
 	UPDATE commands
-	SET help = $2
-	WHERE name = $1`
+	SET help = $3
+	WHERE name = $1 AND channel = $2`
 
-	result, err := c.DB.Exec(query, name, helptext)
+	result, err := c.DB.Exec(query, name, channel, helptext)
 	if err != nil {
 		return err
 	}
@@ -180,14 +181,14 @@ func (c CommandModel) SetHelp(name string, helptext string) error {
 
 // Delete takes in a command name and queries the database for an entry with
 // the same name and tries to delete that entry.
-func (c CommandModel) Delete(name string) error {
+func (c CommandModel) Delete(name, channel string) error {
 	// Prepare the statement.
 	query := `
 	DELETE FROM commands
-	WHERE name = $1`
+	WHERE name = $1 AND channel = $2`
 
 	// Execute the query returning the number of affected rows.
-	result, err := c.DB.Exec(query, name)
+	result, err := c.DB.Exec(query, name, channel)
 	if err != nil {
 		return err
 	}
@@ -209,7 +210,7 @@ func (c CommandModel) Delete(name string) error {
 // GetAll() returns a pointer to a slice of all channels (`[]*Channel`) in the database.
 func (c CommandModel) GetAll() ([]*Command, error) {
 	query := `
-	SELECT id, name, text, category, level, help
+	SELECT id, name, channel, text, category, level, help
 	FROM commands
 	ORDER BY id`
 
@@ -241,6 +242,7 @@ func (c CommandModel) GetAll() ([]*Command, error) {
 		err := rows.Scan(
 			&command.ID,
 			&command.Name,
+			&command.Channel,
 			&command.Text,
 			&command.Category,
 			&command.Level,

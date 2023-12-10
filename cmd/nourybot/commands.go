@@ -366,7 +366,7 @@ func (app *application) commandHelp(target, name, username string, message twitc
 	if !ok {
 		// If it doesn't check the database for a command with that `name`. If there is one
 		// reply with that commands `help` entry.
-		c, err := app.GetCommandHelp(name, username)
+		c, err := app.GetCommandHelp(name, target, username)
 		if err != nil {
 			app.Log.Infow("commandHelp: no such command found",
 				"err", err)

@@ -1,10 +1,6 @@
 BINARY_NAME=Nourybot.out
 BINARY_NAME_API=NourybotApi.out
 
-xd:
-	cd cmd/nourybot && go build -o ${BINARY_NAME}  
-	mv cmd/nourybot/${BINARY_NAME} ./bin/${BINARY_NAME}
-	./bin/${BINARY_NAME} -env="dev"
 
 xdprod:
 	cd cmd/nourybot && go build -o ${BINARY_NAME}  
@@ -33,6 +29,11 @@ up:
 
 down:
 	docker compose down
+
+xd:
+	docker compose down
+	docker compose build
+	docker compose up
 
 prod:
 	cd cmd/nourybot && go build -o ${BINARY_NAME}  

@@ -31,6 +31,7 @@ func (app *application) AddCommand(name string, message twitch.PrivateMessage) {
 	text := message.Message[snipLength+len(name) : len(message.Message)]
 	command := &data.Command{
 		Name:     name,
+		Channel:  message.Channel,
 		Text:     text,
 		Category: "uncategorized",
 		Level:    0,
@@ -57,12 +58,18 @@ func (app *application) AddCommand(name string, message twitch.PrivateMessage) {
 // user who sent the message. If the users level is equal or higher
 // the command.Text field is returned.
 func (app *application) GetCommand(target, commandName string, userLevel int) (string, error) {
+	app.Log.Infow("command",
+		"target", target,
+		"commandname", commandName,
+	)
 	// Fetch the command from the database if it exists.
-	command, err := app.Models.Commands.Get(commandName)
+	command, err := app.Models.Commands.Get(commandName, target)
 	if err != nil {
 		// It probably did not exist
 		return "", err
 	}
+
+	app.Log.Info("command", command)
 
 	if command.Level == 0 {
 		return command.Text, nil
@@ -92,9 +99,9 @@ func (app *application) GetCommand(target, commandName string, userLevel int) (s
 // If the Command.Level is not 0 it queries the database for the level of the
 // user who sent the message. If the users level is equal or higher
 // the command.Text field is returned.
-func (app *application) GetCommandHelp(name, username string) (string, error) {
+func (app *application) GetCommandHelp(name, channel, username string) (string, error) {
 	// Fetch the command from the database if it exists.
-	command, err := app.Models.Commands.Get(name)
+	command, err := app.Models.Commands.Get(name, channel)
 	if err != nil {
 		// It probably did not exist
 		return "", err
@@ -131,7 +138,7 @@ func (app *application) EditCommandLevel(name, lvl string, message twitch.Privat
 		return
 	}
 
-	err = app.Models.Commands.SetLevel(name, level)
+	err = app.Models.Commands.SetLevel(name, message.Channel, level)
 
 	if err != nil {
 		app.Send(message.Channel, fmt.Sprintf("Something went wrong FeelsBadMan %s", ErrRecordNotFound), message)
@@ -147,7 +154,7 @@ func (app *application) EditCommandLevel(name, lvl string, message twitch.Privat
 // EditCommandCategory takes in a name and category string and updates the command
 // in the databse with the passed in new category.
 func (app *application) EditCommandCategory(name, category string, message twitch.PrivateMessage) {
-	err := app.Models.Commands.SetCategory(name, category)
+	err := app.Models.Commands.SetCategory(name, message.Channel, category)
 
 	if err != nil {
 		app.Send(message.Channel, fmt.Sprintf("Something went wrong FeelsBadMan %s", ErrRecordNotFound), message)
@@ -164,15 +171,16 @@ func (app *application) EditCommandCategory(name, category string, message twitc
 // and outputs information about it in the chat.
 func (app *application) DebugCommand(name string, message twitch.PrivateMessage) {
 	// Query the database for a command with the provided name
-	cmd, err := app.Models.Commands.Get(name)
+	cmd, err := app.Models.Commands.Get(name, message.Channel)
 	if err != nil {
 		reply := fmt.Sprintf("Something went wrong FeelsBadMan %s", err)
 		app.Send(message.Channel, reply, message)
 		return
 	} else {
-		reply := fmt.Sprintf("id=%v\nname=%v\nlevel=%v\ncategory=%v\ntext=%v\nhelp=%v\n",
+		reply := fmt.Sprintf("id=%v\nname=%v\nchannel=%v\nlevel=%v\ncategory=%v\ntext=%v\nhelp=%v\n",
 			cmd.ID,
 			cmd.Name,
+			cmd.Channel,
 			cmd.Level,
 			cmd.Category,
 			cmd.Text,
@@ -211,7 +219,7 @@ func (app *application) EditCommandHelp(name string, message twitch.PrivateMessa
 	//       | <---- snipLength + name ----> | <------  help text with however many characters. ----> |
 	//       | <--------- 19 + 12  --------> |
 	text := message.Message[snipLength+len(name) : len(message.Message)]
-	err := app.Models.Commands.SetHelp(name, text)
+	err := app.Models.Commands.SetHelp(name, message.Channel, text)
 
 	if err != nil {
 		app.Send(message.Channel, fmt.Sprintf("Something went wrong FeelsBadMan %s", ErrRecordNotFound), message)
@@ -226,7 +234,7 @@ func (app *application) EditCommandHelp(name string, message twitch.PrivateMessa
 
 // DeleteCommand takes in a name value and deletes the command from the database if it exists.
 func (app *application) DeleteCommand(name string, message twitch.PrivateMessage) {
-	err := app.Models.Commands.Delete(name)
+	err := app.Models.Commands.Delete(name, message.Channel)
 	if err != nil {
 		app.Send(message.Channel, "Something went wrong FeelsBadMan", message)
 		app.Log.Error(err)
@@ -273,12 +281,13 @@ func (app *application) ListCommands() string {
 		c := fmt.Sprintf(
 			"ID: \t\t%v\n"+
 				"Name: \t\t%v\n"+
+				"Channel: \t%v\n"+
 				"Text: \t\t%v\n"+
 				"Category: \t%v\n"+
 				"Level: \t\t%v\n"+
 				"Help: \t\t%v\n"+
 				"\n\n",
-			v.ID, v.Name, v.Text, v.Category, v.Level, v.Help,
+			v.ID, v.Name, v.Channel, v.Text, v.Category, v.Level, v.Help,
 		)
 
 		// Add new value to the slice

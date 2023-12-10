@@ -37,14 +37,14 @@ type Models struct {
 		Delete(login string) error
 	}
 	Commands interface {
-		Get(name string) (*Command, error)
+		Get(name, channel string) (*Command, error)
 		GetAll() ([]*Command, error)
 		Insert(command *Command) error
 		Update(command *Command) error
-		SetLevel(name string, level int) error
-		SetCategory(name, category string) error
-		SetHelp(name, helptext string) error
-		Delete(name string) error
+		SetCategory(name, channel, category string) error
+		SetLevel(name, channel string, level int) error
+		SetHelp(name, channel, helptext string) error
+		Delete(name, channel string) error
 	}
 	Timers interface {
 		Get(name string) (*Timer, error)
