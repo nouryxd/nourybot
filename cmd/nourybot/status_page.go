@@ -14,7 +14,7 @@ func (app *application) statusPage() {
 	botUptime := humanize.Time(common.GetUptime())
 
 	statusHandler := func(w http.ResponseWriter, req *http.Request) {
-		io.WriteString(w, fmt.Sprintf("up\n\nlast restart:\t %v\nenv: %v\tcommit: \t%v", botUptime, app.Environment, commit))
+		io.WriteString(w, fmt.Sprintf("up\nlast restart: %v\nenv: %v\ncommit: %v", botUptime, app.Environment, commit))
 	}
 
 	http.HandleFunc("/status", statusHandler)
