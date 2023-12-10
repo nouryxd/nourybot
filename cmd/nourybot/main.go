@@ -4,6 +4,10 @@ import (
 	"context"
 	"database/sql"
 	"fmt"
+	"html"
+	"io"
+	"log"
+	"net/http"
 	"os"
 	"time"
 
@@ -129,6 +133,15 @@ func main() {
 	app.Log.Infow("db.Stats",
 		"db.Stats", db.Stats(),
 	)
+
+	go func() {
+		statusHandler := func(w http.ResponseWriter, req *http.Request) {
+			io.WriteString(w, "up")
+		}
+
+		http.HandleFunc("/status", statusHandler)
+		sugar.Fatal(http.ListenAndServe(":8080", nil))
+	}()
 
 	// Received a PrivateMessage (normal chat message).
 	app.TwitchClient.OnPrivateMessage(func(message twitch.PrivateMessage) {
