@@ -4,8 +4,6 @@ import (
 	"context"
 	"database/sql"
 	"fmt"
-	"io"
-	"net/http"
 	"os"
 	"time"
 
@@ -132,15 +130,6 @@ func main() {
 		"db.Stats", db.Stats(),
 	)
 
-	go func() {
-		statusHandler := func(w http.ResponseWriter, req *http.Request) {
-			io.WriteString(w, "up")
-		}
-
-		http.HandleFunc("/status", statusHandler)
-		sugar.Fatal(http.ListenAndServe(":8080", nil))
-	}()
-
 	// Received a PrivateMessage (normal chat message).
 	app.TwitchClient.OnPrivateMessage(func(message twitch.PrivateMessage) {
 		// sugar.Infow("New Twitch PrivateMessage",
@@ -210,7 +199,11 @@ func main() {
 
 		// Start the timers.
 		app.Scheduler.Start()
+
+		// Start status page
+		go app.statusPage()
 	})
+
 	// Actually connect to chat.
 	err = app.TwitchClient.Connect()
 	if err != nil {
