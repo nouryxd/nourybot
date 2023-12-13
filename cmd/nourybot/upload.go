@@ -20,6 +20,7 @@ import (
 	"time"
 
 	"github.com/gempir/go-twitch-irc/v4"
+	"github.com/google/uuid"
 )
 
 const (
@@ -367,7 +368,8 @@ func (app *application) YafUpload(target, path, identifier string, msg twitch.Pr
 }
 
 func (app *application) YafUploadString(text string) string {
-	path := "output.txt"
+	path := uuid.NewString()
+	app.Log.Info(path)
 	file, err := os.Create(path)
 	if err != nil {
 		app.Log.Error("Error creating file:", err)
