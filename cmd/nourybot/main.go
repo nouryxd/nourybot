@@ -59,6 +59,8 @@ func main() {
 	}()
 	sugar := logger.Sugar()
 
+	common.StartTime()
+
 	err := godotenv.Load()
 	if err != nil {
 		sugar.Fatal("Error loading .env")
@@ -174,9 +176,14 @@ func main() {
 
 	})
 
-	app.TwitchClient.OnConnect(func() {
-		common.StartTime()
+	app.InitialJoin()
+	// Load the initial timers from the database.
+	app.InitialTimers()
 
+	// Start the timers.
+	app.Scheduler.Start()
+
+	app.TwitchClient.OnConnect(func() {
 		app.TwitchClient.Say("nouryxd", "gopherDance")
 		app.TwitchClient.Say("nourybot", "gopherDance")
 		app.TwitchClient.Say("xnoury", "alienPls")
@@ -192,13 +199,6 @@ func main() {
 			"Database", db.Stats(),
 			"Helix", helixResp,
 		)
-
-		app.InitialJoin()
-		// Load the initial timers from the database.
-		app.InitialTimers()
-
-		// Start the timers.
-		app.Scheduler.Start()
 
 	})
 
