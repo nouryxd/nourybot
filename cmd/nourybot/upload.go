@@ -9,10 +9,10 @@
 package main
 
 import (
+	"bufio"
 	"encoding/json"
 	"fmt"
 	"io"
-	"io/ioutil"
 	"mime/multipart"
 	"net/http"
 	"os"
@@ -40,7 +40,6 @@ func (app *application) NewUpload(destination, fileName, target, identifier stri
 		go app.KappaUpload(target, fileName, identifier, msg)
 	case "gofile":
 		go app.GofileUpload(target, fileName, identifier, msg)
-
 	}
 }
 
@@ -100,7 +99,7 @@ func (app *application) CatboxUpload(target, fileName, identifier string, msg tw
 	}
 	defer resp.Body.Close()
 
-	body, err := ioutil.ReadAll(resp.Body)
+	body, err := io.ReadAll(resp.Body)
 	if err != nil {
 		app.Send(target, fmt.Sprintf("Something went wrong FeelsBadMan: %q", err), msg)
 		return
@@ -365,4 +364,98 @@ func (app *application) YafUpload(target, path, identifier string, msg twitch.Pr
 	go app.Models.Uploads.UpdateUploadURL(identifier, reply)
 	//app.Send(target, fmt.Sprintf("Removing file: %s", path), msg)
 	app.Send(target, reply, msg)
+}
+
+func (app *application) YafUploadString(text string) string {
+	path := "output.txt"
+	file, err := os.Create(path)
+	if err != nil {
+		app.Log.Error("Error creating file:", err)
+		os.Remove(path)
+		return ""
+	}
+	defer file.Close()
+	defer os.Remove(path)
+	// Create a buffered writer to efficiently write to the file
+	writer := bufio.NewWriter(file)
+
+	// Write the content (string) to the file
+	_, err = writer.WriteString(text)
+	if err != nil {
+		app.Log.Error("Error writing to file:", err)
+		os.Remove(path)
+		return ""
+	}
+
+	// Flush the writer to ensure all buffered operations have been applied to the file
+	err = writer.Flush()
+	if err != nil {
+		app.Log.Error("Error flushing writer:", err)
+		os.Remove(path)
+		return ""
+	}
+
+	pr, pw := io.Pipe()
+	form := multipart.NewWriter(pw)
+
+	go func() {
+		defer pw.Close()
+
+		err := form.WriteField("name", "xd")
+		if err != nil {
+			os.Remove(path)
+			return
+		}
+
+		file, err := os.Open(path) // path to image file
+		if err != nil {
+			os.Remove(path)
+			return
+		}
+
+		w, err := form.CreateFormFile("file", path)
+		if err != nil {
+			os.Remove(path)
+			return
+		}
+
+		_, err = io.Copy(w, file)
+		if err != nil {
+			os.Remove(path)
+			return
+		}
+
+		form.Close()
+	}()
+
+	req, err := http.NewRequest(http.MethodPost, YAF_ENDPOINT, pr)
+	if err != nil {
+		os.Remove(path)
+		return ""
+	}
+	req.Header.Set("Content-Type", form.FormDataContentType())
+
+	httpClient := http.Client{
+		Timeout: 300 * time.Second,
+	}
+	resp, err := httpClient.Do(req)
+	if err != nil {
+		os.Remove(path)
+		app.Log.Errorln("Error while sending HTTP request:", err)
+
+		return ""
+	}
+	defer resp.Body.Close()
+
+	body, err := io.ReadAll(resp.Body)
+	if err != nil {
+		os.Remove(path)
+		app.Log.Errorln("Error while reading response:", err)
+		return ""
+	}
+
+	var reply = string(body[:])
+
+	//app.Send(target, fmt.Sprintf("Removing file: %s", path), msg)
+	return reply
 }

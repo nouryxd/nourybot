@@ -146,6 +146,18 @@ func (app *application) handleCommand(message twitch.PrivateMessage) {
 	case "nourybot":
 		reply = "Lidl Twitch bot made by @nouryxd. Prefix: ()"
 
+	case "predb":
+		switch cmdParams[1] {
+		case "latest":
+			if userLevel >= 100 {
+				reply = app.PreDBLatest()
+			}
+		case "search":
+			if userLevel >= 100 && len(message.Message) > 16 {
+				reply = app.PreDBSearch(message.Message[15:len(message.Message)])
+			}
+		}
+
 	case "phonetic":
 		if msgLen == 1 {
 			reply = "Not enough arguments provided. Usage: ()phonetic <text to translate>"
