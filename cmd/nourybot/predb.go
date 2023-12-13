@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"net/http"
+	"net/url"
 	"strings"
 )
 
@@ -107,10 +108,65 @@ type searchSingleResult struct {
 }
 
 func (app *application) PreDBSearch(title string) string {
-	baseUrl := fmt.Sprintf("https://api.predb.net/?q=%s&order_by=release&sort=asc&limit=100", title)
+	escaped := fmt.Sprintf("https://api.predb.net/?q=%s&order_by=release&sort=asc&limit=100", url.QueryEscape(title))
 
-	app.Log.Info(title)
-	resp, err := http.Get(baseUrl)
+	resp, err := http.Get(escaped)
+	if err != nil {
+		app.Log.Error(err)
+	}
+	app.Log.Info(resp)
+
+	defer resp.Body.Close()
+
+	body, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		app.Log.Error(err)
+	}
+	app.Log.Info(body)
+
+	var release searchFullResult
+	_ = json.Unmarshal([]byte(body), &release)
+
+	var ts []string
+	app.Log.Info(release)
+	for i := 0; i < release.Results; i++ {
+		t := fmt.Sprintf("ID: %v\nRelease timestamp: %v\nRelease: %v\nSection: %v\nFiles: %v\nSize: %v\nStatus: %v\nReason: %v\nRelease group: %v\nRelease genre: %v\npredb.net: %v\nNFO URL: %v\nNFO Image URL: %v\n\n",
+			release.Data[i].ID,
+			release.Data[i].PreTime,
+			release.Data[i].Release,
+			release.Data[i].Section,
+			release.Data[i].Files,
+			release.Data[i].Size,
+			release.Data[i].Status,
+			release.Data[i].Reason,
+			release.Data[i].Group,
+			release.Data[i].Genre,
+			fmt.Sprint("https://predb.net"+release.Data[i].URL),
+			release.Data[i].NFO,
+			release.Data[i].NFOImage,
+		)
+		ts = append(ts, t)
+
+	}
+
+	// reply, err := app.uploadPaste(strings.Join(ts, ""))
+	// if err != nil {
+	// 	app.Log.Errorw("Error trying to retrieve all timers from database", err)
+	// 	return ""
+	// }
+
+	reply := app.YafUploadString(strings.Join(ts, ""))
+	if err != nil {
+		app.Log.Errorw("Error trying to retrieve all timers from database", err)
+		return ""
+	}
+	return reply
+}
+
+func (app *application) PreDBGroup(group string) string {
+	escaped := fmt.Sprintf("https://api.predb.net/?group=%s&order_by=release&sort=asc&limit=100", url.QueryEscape(group))
+
+	resp, err := http.Get(escaped)
 	if err != nil {
 		app.Log.Error(err)
 	}

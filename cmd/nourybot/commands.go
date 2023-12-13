@@ -156,6 +156,10 @@ func (app *application) handleCommand(message twitch.PrivateMessage) {
 			if userLevel >= 100 && len(message.Message) > 16 {
 				reply = app.PreDBSearch(message.Message[15:len(message.Message)])
 			}
+		case "group":
+			if userLevel >= 100 && len(message.Message) > 15 {
+				reply = app.PreDBGroup(message.Message[14:len(message.Message)])
+			}
 		}
 
 	case "phonetic":
