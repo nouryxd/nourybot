@@ -200,9 +200,10 @@ func main() {
 		// Start the timers.
 		app.Scheduler.Start()
 
-		// Start status page
-		go app.statusPage()
 	})
+
+	// Start status page
+	go app.statusPage()
 
 	// Actually connect to chat.
 	err = app.TwitchClient.Connect()
