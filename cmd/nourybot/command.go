@@ -30,12 +30,11 @@ func (app *application) AddCommand(name string, message twitch.PrivateMessage) {
 	//       | <----- 14 + 12  ------> |
 	text := message.Message[snipLength+len(name) : len(message.Message)]
 	command := &data.Command{
-		Name:     name,
-		Channel:  message.Channel,
-		Text:     text,
-		Category: "uncategorized",
-		Level:    0,
-		Help:     "",
+		Name:        name,
+		Channel:     message.Channel,
+		Text:        text,
+		Level:       0,
+		Description: "",
 	}
 	app.Log.Info(command)
 	err := app.Models.Commands.Insert(command)
@@ -74,17 +73,8 @@ func (app *application) GetCommand(target, commandName string, userLevel int) (s
 	if command.Level == 0 {
 		return command.Text, nil
 	} else if userLevel >= command.Level {
-		if command.Category == "ascii" {
-			// Cannot use app.Send() here since the command is a ascii pasta and will be
-			// timed out, thus not passing the banphrase check app.Send() does before actually
-			// sending the message.
-			app.SendNoBanphrase(target, command.Text)
-
-			return "", nil
-		} else {
-			// Userlevel is sufficient so return the command.Text
-			return command.Text, nil
-		}
+		// Userlevel is sufficient so return the command.Text
+		return command.Text, nil
 
 		// If the command has no level set just return the text.
 		// Otherwise check if the level is high enough.
@@ -99,7 +89,7 @@ func (app *application) GetCommand(target, commandName string, userLevel int) (s
 // If the Command.Level is not 0 it queries the database for the level of the
 // user who sent the message. If the users level is equal or higher
 // the command.Text field is returned.
-func (app *application) GetCommandHelp(name, channel, username string) (string, error) {
+func (app *application) GetCommandDescription(name, channel, username string) (string, error) {
 	// Fetch the command from the database if it exists.
 	command, err := app.Models.Commands.Get(name, channel)
 	if err != nil {
@@ -110,7 +100,7 @@ func (app *application) GetCommandHelp(name, channel, username string) (string, 
 	// If the command has no level set just return the text.
 	// Otherwise check if the level is high enough.
 	if command.Level == 0 {
-		return command.Help, nil
+		return command.Description, nil
 	} else {
 		// Get the user from the database to check if the userlevel is equal
 		// or higher than the command.Level.
@@ -120,7 +110,7 @@ func (app *application) GetCommandHelp(name, channel, username string) (string, 
 		}
 		if user.Level >= command.Level {
 			// Userlevel is sufficient so return the command.Text
-			return command.Help, nil
+			return command.Description, nil
 		}
 	}
 
@@ -151,22 +141,6 @@ func (app *application) EditCommandLevel(name, lvl string, message twitch.Privat
 	}
 }
 
-// EditCommandCategory takes in a name and category string and updates the command
-// in the databse with the passed in new category.
-func (app *application) EditCommandCategory(name, category string, message twitch.PrivateMessage) {
-	err := app.Models.Commands.SetCategory(name, message.Channel, category)
-
-	if err != nil {
-		app.Send(message.Channel, fmt.Sprintf("Something went wrong FeelsBadMan %s", ErrRecordNotFound), message)
-		app.Log.Error(err)
-		return
-	} else {
-		reply := fmt.Sprintf("Updated command %s to category %v", name, category)
-		app.Send(message.Channel, reply, message)
-		return
-	}
-}
-
 // DebugCommand checks if a command with the provided name exists in the database
 // and outputs information about it in the chat.
 func (app *application) DebugCommand(name string, message twitch.PrivateMessage) {
@@ -177,14 +151,13 @@ func (app *application) DebugCommand(name string, message twitch.PrivateMessage)
 		app.Send(message.Channel, reply, message)
 		return
 	} else {
-		reply := fmt.Sprintf("id=%v\nname=%v\nchannel=%v\nlevel=%v\ncategory=%v\ntext=%v\nhelp=%v\n",
+		reply := fmt.Sprintf("id=%v\nname=%v\nchannel=%v\nlevel=%v\ntext=%v\ndescription=%v\n",
 			cmd.ID,
 			cmd.Name,
 			cmd.Channel,
 			cmd.Level,
-			cmd.Category,
 			cmd.Text,
-			cmd.Help,
+			cmd.Description,
 		)
 
 		//app.Send(message.Channel, reply)
@@ -219,7 +192,7 @@ func (app *application) EditCommandHelp(name string, message twitch.PrivateMessa
 	//       | <---- snipLength + name ----> | <------  help text with however many characters. ----> |
 	//       | <--------- 19 + 12  --------> |
 	text := message.Message[snipLength+len(name) : len(message.Message)]
-	err := app.Models.Commands.SetHelp(name, message.Channel, text)
+	err := app.Models.Commands.SetDescription(name, message.Channel, text)
 
 	if err != nil {
 		app.Send(message.Channel, fmt.Sprintf("Something went wrong FeelsBadMan %s", ErrRecordNotFound), message)
@@ -283,11 +256,10 @@ func (app *application) ListCommands() string {
 				"Name: \t\t%v\n"+
 				"Channel: \t%v\n"+
 				"Text: \t\t%v\n"+
-				"Category: \t%v\n"+
 				"Level: \t\t%v\n"+
-				"Help: \t\t%v\n"+
+				"Description: %v\n"+
 				"\n\n",
-			v.ID, v.Name, v.Channel, v.Text, v.Category, v.Level, v.Help,
+			v.ID, v.Name, v.Channel, v.Text, v.Level, v.Description,
 		)
 
 		// Add new value to the slice
@@ -308,6 +280,8 @@ func (app *application) ListCommands() string {
 // InitialTimers is called on startup and queries the database for a list of
 // timers and then adds each onto the scheduler.
 func (app *application) ListChannelCommands(channel string) string {
+	channelUrl := fmt.Sprintf("https://bot.noury.is/commands/%s", channel)
+	commandUrl := "https://bot.noury.is/commands"
 	command, err := app.Models.Commands.GetAllChannel(channel)
 	if err != nil {
 		app.Log.Errorw("Error trying to retrieve all timers from database", err)
@@ -330,35 +304,20 @@ func (app *application) ListChannelCommands(channel string) string {
 		_ = i
 		var c string
 
-		if v.Category == "ascii" {
-			c = fmt.Sprintf(
-				"Name: \t%v\n"+
-					"Help: \t%v\n"+
-					"Level: \t%v\n"+
-					"\n",
-				v.Name, v.Help, v.Level,
-			)
-		} else {
-			c = fmt.Sprintf(
-				"Name: \t%v\n"+
-					"Help: \t%v\n"+
-					"Level: \t%v\n"+
-					"Text: \t%v\n"+
-					"\n",
-				v.Name, v.Help, v.Level, v.Text,
-			)
-		}
+		c = fmt.Sprintf(
+			"Name: \t%v\n"+
+				"Description: %v\n"+
+				"Level: \t%v\n"+
+				"Text: \t%v\n"+
+				"\n",
+			v.Name, v.Description, v.Level, v.Text,
+		)
 
 		// Add new value to the slice
 		cs = append(cs, c)
 
 	}
 
-	reply, err := app.uploadPaste(strings.Join(cs, ""))
-	if err != nil {
-		app.Log.Errorw("Error trying to retrieve all timers from database", err)
-		return ""
-	}
-
+	reply := fmt.Sprintf("Channel commands: %s, General commands: %s", channelUrl, commandUrl)
 	return reply
 }

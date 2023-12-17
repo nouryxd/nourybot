@@ -13,9 +13,23 @@ func (app *application) startRouter() {
 	router := httprouter.New()
 	router.GET("/status", app.statusPageRoute)
 	router.GET("/commands/:channel", app.channelCommandsRoute)
+	router.GET("/commands", app.commandsRoute)
 	router.GET("/timer/:channel", app.channelTimersRoute)
 
 	app.Log.Fatal(http.ListenAndServe(":8080", router))
+}
+
+func (app *application) commandsRoute(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
+	var cs []string
+	var text string
+
+	allHelpText := app.GetAllHelpText()
+	cs = append(cs, fmt.Sprintf("General commands: \n\n%s", allHelpText))
+
+	text = strings.Join(cs, "")
+
+	fmt.Fprintf(w, fmt.Sprint(text))
+
 }
 
 func (app *application) channelCommandsRoute(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
@@ -31,6 +45,8 @@ func (app *application) channelCommandsRoute(w http.ResponseWriter, r *http.Requ
 	// The slice of timers is only used to log them at
 	// the start so it looks a bit nicer.
 
+	heading := fmt.Sprintf("Commands in %s\n\n", channel)
+	cs = append(cs, heading)
 	// Iterate over all timers and then add them onto the scheduler.
 	for i, v := range command {
 		// idk why this works but it does so no touchy touchy.
@@ -39,24 +55,14 @@ func (app *application) channelCommandsRoute(w http.ResponseWriter, r *http.Requ
 		_ = i
 		var c string
 
-		if v.Category == "ascii" {
-			c = fmt.Sprintf(
-				"Name: \t%v\n"+
-					"Help: \t%v\n"+
-					"Level: \t%v\n"+
-					"\n",
-				v.Name, v.Help, v.Level,
-			)
-		} else {
-			c = fmt.Sprintf(
-				"Name: \t%v\n"+
-					"Help: \t%v\n"+
-					"Level: \t%v\n"+
-					"Text: \t%v\n"+
-					"\n",
-				v.Name, v.Help, v.Level, v.Text,
-			)
-		}
+		c = fmt.Sprintf(
+			"Name: %v\n"+
+				"Description: %v\n"+
+				"Level: %v\n"+
+				"Text: %v\n"+
+				"\n",
+			v.Name, v.Description, v.Level, v.Text,
+		)
 
 		// Add new value to the slice
 		cs = append(cs, c)

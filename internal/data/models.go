@@ -42,9 +42,8 @@ type Models struct {
 		GetAllChannel(channel string) ([]*Command, error)
 		Insert(command *Command) error
 		Update(command *Command) error
-		SetCategory(name, channel, category string) error
 		SetLevel(name, channel string, level int) error
-		SetHelp(name, channel, helptext string) error
+		SetDescription(name, channel, description string) error
 		Delete(name, channel string) error
 	}
 	Timers interface {

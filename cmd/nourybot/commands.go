@@ -329,10 +329,6 @@ func (app *application) handleCommand(message twitch.PrivateMessage) {
 				if userLevel >= 500 {
 					app.EditCommandLevel(cmdParams[3], cmdParams[4], message)
 				}
-			case "category":
-				if userLevel >= 500 {
-					app.EditCommandCategory(cmdParams[3], cmdParams[4], message)
-				}
 			}
 		}
 
@@ -665,7 +661,7 @@ func (app *application) commandHelp(target, name, username string, message twitc
 	if !ok {
 		// If it doesn't check the database for a command with that `name`. If there is one
 		// reply with that commands `help` entry.
-		c, err := app.GetCommandHelp(name, target, username)
+		c, err := app.GetCommandDescription(name, target, username)
 		if err != nil {
 			app.Log.Infow("commandHelp: no such command found",
 				"err", err)
@@ -694,9 +690,9 @@ func (app *application) GetAllHelpText() string {
 		var c string
 
 		if v.Alias == nil {
-			c = fmt.Sprintf("Name: %s\nDescription: %s\nUsage: %s\n\n", i, v.Description, v.Usage)
+			c = fmt.Sprintf("Name: %s\nDescription: %s\nLevel: %s\nUsage: %s\n\n", i, v.Description, v.Level, v.Usage)
 		} else {
-			c = fmt.Sprintf("Name: %s\nAliases: %s\nDescription: %s\nUsage: %s\n\n", i, v.Alias, v.Description, v.Usage)
+			c = fmt.Sprintf("Name: %s\nAliases: %s\nDescription: %s\nLevel: %s\nUsage: %s\n\n", i, v.Alias, v.Description, v.Level, v.Usage)
 
 		}
 
