@@ -13,6 +13,7 @@ func (app *application) startRouter() {
 	router := httprouter.New()
 	router.GET("/status", app.statusPageRoute)
 	router.GET("/commands/:channel", app.channelCommandsRoute)
+	router.GET("/timer/:channel", app.channelTimersRoute)
 
 	app.Log.Fatal(http.ListenAndServe(":8080", router))
 }
@@ -64,6 +65,43 @@ func (app *application) channelCommandsRoute(w http.ResponseWriter, r *http.Requ
 	text = strings.Join(cs, "")
 	fmt.Fprintf(w, fmt.Sprint(text))
 
+}
+
+func (app *application) channelTimersRoute(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
+	channel := ps.ByName("channel")
+	var ts []string
+	var text string
+
+	timer, err := app.Models.Timers.GetChannelTimer(channel)
+	if err != nil {
+		app.Log.Errorw("Error trying to retrieve all timer for a channel from database", err)
+		return
+	}
+	// The slice of timers is only used to log them at
+	// the start so it looks a bit nicer.
+
+	// Iterate over all timers and then add them onto the scheduler.
+	for i, v := range timer {
+		// idk why this works but it does so no touchy touchy.
+		// https://github.com/robfig/cron/issues/420#issuecomment-940949195
+		i, v := i, v
+		_ = i
+		var t string
+
+		t = fmt.Sprintf(
+			"Name: \t%v\n"+
+				"Text: \t%v\n"+
+				"Repeat: %v\n"+
+				"\n",
+			v.Name, v.Text, v.Repeat,
+		)
+
+		// Add new value to the slice
+		ts = append(ts, t)
+	}
+
+	text = strings.Join(ts, "")
+	fmt.Fprintf(w, fmt.Sprint(text))
 }
 
 func (app *application) statusPageRoute(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {

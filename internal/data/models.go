@@ -53,6 +53,7 @@ type Models struct {
 		Insert(timer *Timer) error
 		Update(timer *Timer) error
 		GetAll() ([]*Timer, error)
+		GetChannelTimer(channel string) ([]*Timer, error)
 		Delete(name string) error
 	}
 	Uploads interface {

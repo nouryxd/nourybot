@@ -195,6 +195,10 @@ func (app *application) handleCommand(message twitch.PrivateMessage) {
 
 	case "commands":
 		reply = app.ListChannelCommands(message.Channel)
+
+	case "timers":
+		reply = app.ListChannelTimer(message.Channel)
+
 	case "set":
 		switch cmdParams[1] {
 		case "lastfm":

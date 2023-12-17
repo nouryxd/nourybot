@@ -160,6 +160,66 @@ func (t TimerModel) GetAll() ([]*Timer, error) {
 	return timers, nil
 }
 
+// GetAll() returns a pointer to a slice of all channels (`[]*Channel`) in the database.
+func (t TimerModel) GetChannelTimer(channel string) ([]*Timer, error) {
+	query := `
+	SELECT id, name, identifier, text, channel, repeat
+	FROM timers
+	WHERE channel = $1
+	ORDER BY name`
+
+	// Create a context with 3 seconds timeout.
+	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+	defer cancel()
+
+	// Use QueryContext() the context and query. This returns a
+	// sql.Rows resultset containing our channels.
+	rows, err := t.DB.QueryContext(ctx, query, channel)
+	if err != nil {
+		return nil, err
+	}
+
+	// Need to defer a call to rows.Close() to ensure the resultset
+	// is closed before GetAll() returns.
+	defer rows.Close()
+
+	// Initialize an empty slice to hold the data.
+	timers := []*Timer{}
+
+	// Iterate over the resultset.
+	for rows.Next() {
+		// Initialize an empty Channel struct where we put on
+		// a single channel value.
+		var timer Timer
+
+		err := rows.Scan(
+			&timer.ID,
+			&timer.Name,
+			&timer.Identifier,
+			&timer.Text,
+			&timer.Channel,
+			&timer.Repeat,
+		)
+		if err != nil {
+			switch {
+			case errors.Is(err, sql.ErrNoRows):
+				return nil, ErrRecordNotFound
+			default:
+				return nil, err
+			}
+		}
+		// Add the single movie struct onto the slice.
+		timers = append(timers, &timer)
+	}
+
+	// When rows.Next() finishes call rows.Err() to retrieve any errors.
+	if err = rows.Err(); err != nil {
+		return nil, err
+	}
+
+	return timers, nil
+}
+
 func (t TimerModel) Update(timer *Timer) error {
 	query := `
 	UPDATE timers
