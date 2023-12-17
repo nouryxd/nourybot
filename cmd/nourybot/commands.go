@@ -82,11 +82,20 @@ func (app *application) handleCommand(message twitch.PrivateMessage) {
 			reply = commands.Bttv(cmdParams[1])
 		}
 
+	case "betterttv":
+		if msgLen < 2 {
+			reply = "Not enough arguments provided. Usage: ()bttv <emote name>"
+		} else {
+			reply = commands.Bttv(cmdParams[1])
+		}
+
 		// Coinflip
 	case "coin":
 		reply = commands.Coinflip()
+
 	case "coinflip":
 		reply = commands.Coinflip()
+
 	case "cf":
 		reply = commands.Coinflip()
 
@@ -108,6 +117,9 @@ func (app *application) handleCommand(message twitch.PrivateMessage) {
 		reply = commands.Preview(cmdParams[1])
 
 	case "ffz":
+		reply = commands.Ffz(cmdParams[1])
+
+	case "frankerfacez":
 		reply = commands.Ffz(cmdParams[1])
 
 	case "ddg":
@@ -186,13 +198,17 @@ func (app *application) handleCommand(message twitch.PrivateMessage) {
 
 	case "rxkcd":
 		reply, _ = commands.RandomXkcd()
+
 	case "randomxkcd":
 		reply, _ = commands.RandomXkcd()
-	// Latest Xkcd
+
 	case "xkcd":
 		reply, _ = commands.Xkcd()
 
 	case "uid":
+		reply = ivr.IDByUsername(cmdParams[1])
+
+	case "userid":
 		reply = ivr.IDByUsername(cmdParams[1])
 
 	case "commands":
@@ -217,6 +233,11 @@ func (app *application) handleCommand(message twitch.PrivateMessage) {
 	case "wa":
 		if userLevel >= 100 {
 			reply = commands.WolframAlphaQuery(message.Message[5:len(message.Message)], app.Config.wolframAlphaAppID)
+		}
+
+	case "query":
+		if userLevel >= 100 {
+			reply = commands.WolframAlphaQuery(message.Message[8:len(message.Message)], app.Config.wolframAlphaAppID)
 		}
 	case "debug":
 		switch cmdParams[1] {
@@ -274,17 +295,13 @@ func (app *application) handleCommand(message twitch.PrivateMessage) {
 			if userLevel >= 500 {
 				app.AddTimer(cmdParams[2], cmdParams[3], message)
 			}
-		case "edit":
-			if userLevel >= 500 {
-				app.EditTimer(cmdParams[2], cmdParams[3], message)
-			}
 		case "delete":
 			if userLevel >= 500 {
 				app.DeleteTimer(cmdParams[2], message)
 			}
 		case "list":
-			if userLevel >= 500 {
-				reply = app.ListTimers()
+			if userLevel >= 0 {
+				reply = app.ListChannelTimer(message.Channel)
 			}
 		}
 
@@ -360,35 +377,256 @@ func (app *application) handleCommand(message twitch.PrivateMessage) {
 	}
 }
 
-// Map of known commands with their help texts.
-var helpText = map[string]string{
-	"bttv":       "Returns the search URL for a given BTTV emote. Example usage: ()bttv <emote name>",
-	"catbox":     "Downloads the video of a given link with yt-dlp and then uploads the video to catbox.moe. Example usage: ()catbox <link>",
-	"coin":       "Flips a coin! Aliases: coinflip, coin, cf",
-	"cf":         "Flips a coin! Aliases: coinflip, coin, cf",
-	"coinflip":   "Flips a coin! Aliases: coinflip, coin, cf",
-	"currency":   "Returns the exchange rate for two currencies. Only three letter abbreviations are supported ( List of supported currencies: https://decapi.me/misc/currency?list ). Example usage: ()currency 10 USD to EUR",
-	"ffz":        "Returns the search URL for a given FFZ emote. Example usage: ()ffz <emote name>",
-	"followage":  "Returns how long a given user has been following a channel. Example usage: ()followage <channel> <username>",
-	"firstline":  "Returns the first message a user has sent in a given channel. Aliases: firstline, fl. Example usage: ()firstline <channel> <username>",
-	"fl":         "Returns the first message a user has sent in a given channel. Aliases: firstline, fl. Example usage: ()fl <channel> <username>",
-	"gofile":     "Downloads the video of a given link with yt-dlp and then uploads the video to gofile.io. Example usage: ()gofile <link>",
-	"help":       "Returns more information about a command and its usage. 4Head Example usage: ()help <command name>",
-	"kappa":      "Downloads the video of a given link with yt-dlp and then uploads the video to kappa.lol. Example usage: ()kappa <link>",
-	"ping":       "Hopefully returns a Pong! monkaS",
-	"preview":    "Returns a link to an (almost) live screenshot of a live channel. Alias: preview, thumbnail. Example usage: ()preview <channel>",
-	"phonetic":   "Translates the input to the text equivalent on a phonetic russian keyboard layout. Layout and general functionality is the same as https://russian.typeit.org/",
-	"ph":         "Translates the input to the text equivalent on a phonetic russian keyboard layout. Layout and general functionality is the same as https://russian.typeit.org/",
-	"thumbnail":  "Returns a link to an (almost) live screenshot of a live channel. Alias: preview, thumbnail. Example usage: ()thumbnail <channel>",
-	"tweet":      "Returns the latest tweet for a provided user. Example usage: ()tweet <username>",
-	"seventv":    "Returns the search URL for a given SevenTV emote. Aliases: seventv, 7tv. Example usage: ()seventv FeelsDankMan",
-	"7tv":        "Returns the search URL for a given SevenTV emote. Aliases: seventv, 7tv. Example usage: ()7tv FeelsDankMan",
-	"weather":    "Returns the weather for a given location. Example usage: ()weather Vilnius",
-	"randomxkcd": "Returns a link to a random xkcd comic. Alises: randomxkcd, rxkcd. Example usage: ()randomxkcd",
-	"rxkcd":      "Returns a link to a random xkcd comic. Alises: randomxkcd, rxkcd. Example usage: ()rxkcd",
-	"yaf":        "Downloads the video of a given link with yt-dlp and then uploads the video to yaf.li. Example usage: ()yaf <link>",
-	"xkcd":       "Returns a link to the latest xkcd comic. Example usage: ()xkcd",
-	"wa":         "Querys the Wolfram|Alpha API about something. Example usage: ()wa <question>",
+type command struct {
+	Alias       []string
+	Description string
+	Level       string
+	Usage       string
+}
+
+// Optional is []
+// Required is < >
+var helpText = map[string]command{
+	"command add": {
+		Alias:       nil,
+		Description: "Adds a channel command to the database.",
+		Level:       "250",
+		Usage:       "()add command <command name> <command text>",
+	},
+	"command edit level": {
+		Alias:       nil,
+		Description: "Edits the required level of a channel command with the given name.",
+		Level:       "250",
+		Usage:       "()command edit level <command name> <new command level>",
+	},
+	"command delete": {
+		Alias:       nil,
+		Description: "Deletes the channel command with the given name.",
+		Level:       "250",
+		Usage:       "()command delete <command name>",
+	},
+	"bttv": {
+		Alias:       []string{"bttv", "betterttv"},
+		Description: "Returns the search URL for a given BTTV emote.",
+		Level:       "0",
+		Usage:       "()bttv <emote name>",
+	},
+	"catbox": {
+		Alias:       nil,
+		Description: "Downloads the video of a given link with yt-dlp and then uploads the video to catbox.moe.",
+		Level:       "420",
+		Usage:       "()catbox <link>",
+	},
+	"coin": {
+		Alias:       []string{"coin", "coinflip", "cf"},
+		Description: "Flip a coin.",
+		Level:       "0",
+		Usage:       "()coin",
+	},
+	"commands": {
+		Alias:       nil,
+		Description: "Returns a link to the commands in the channel.",
+		Level:       "0",
+		Usage:       "()commands",
+	},
+	"currency": {
+		Alias:       []string{"currency", "money"},
+		Description: "Returns the exchange rate for two currencies. Only three letter abbreviations are supported ( List of supported currencies: https://decapi.me/misc/currency?list ).",
+		Level:       "0",
+		Usage:       "()currency <curr> to <curr>",
+	},
+	"duckduckgo": {
+		Alias:       []string{"duckduckgo", "ddg"},
+		Description: "Returns the duckduckgo search URL for a given query.",
+		Level:       "0",
+		Usage:       "()duckduckgo <query>",
+	},
+	"ffz": {
+		Alias:       []string{"ffz", "frankerfacez"},
+		Description: "Returns the search URL for a given FFZ emote.",
+		Level:       "0",
+		Usage:       "()ffz <emote name>",
+	},
+	"firstline": {
+		Alias:       []string{"firstline", "fl"},
+		Description: "Returns the first message a user has sent in a channel",
+		Level:       "0",
+		Usage:       "()firstline <channel> <username>",
+	},
+	"followage": {
+		Alias:       []string{"followage", "fa"},
+		Description: "Returns how long a user has been following a channel.",
+		Level:       "0",
+		Usage:       "()followage <channel> <username>",
+	},
+	"godocs": {
+		Alias:       nil,
+		Description: "Returns the godocs.io search URL for a given query.",
+		Level:       "0",
+		Usage:       "()godoc <query>",
+	},
+	"gofile": {
+		Alias:       nil,
+		Description: "Downloads the video of a given link with yt-dlp and then uploads the video to gofile.io.",
+		Level:       "420",
+		Usage:       "()gofile <link>",
+	},
+	"google": {
+		Alias:       nil,
+		Description: "Returns the google search URL for a given query.",
+		Level:       "0",
+		Usage:       "()google <query>",
+	},
+	"help": {
+		Alias:       nil,
+		Description: "Returns more information about a command 4Head.",
+		Level:       "0",
+		Usage:       "()help <command name>",
+	},
+	"join": {
+		Alias:       nil,
+		Description: "Adds the bot to a given channel.",
+		Level:       "1000",
+		Usage:       "()join <channel name>",
+	},
+	"kappa": {
+		Alias:       nil,
+		Description: "Downloads the video of a given link with yt-dlp and then uploads the video to kappa.lol.",
+		Level:       "420",
+		Usage:       "()kappa <link>",
+	},
+	"lastfm": {
+		Alias:       nil,
+		Description: `Look up the last played title for a user on last.fm. If you "$set lastfm" a last.fm username the command will use that username if no other username is specified.`,
+		Level:       "0",
+		Usage:       "()lastfm [username]",
+	},
+	"osrs": {
+		Alias:       nil,
+		Description: "Returns the oldschool runescape wiki search URL for a given query.",
+		Level:       "0",
+		Usage:       "()osrs <query>",
+	},
+	"part": {
+		Alias:       nil,
+		Description: "Removes the bot from a given channel.",
+		Level:       "1000",
+		Usage:       "()part <channel name>",
+	},
+	"phonetic": {
+		Alias:       []string{"phonetic", "ph"},
+		Description: "Translates the input to the character equivalent on a phonetic russian keyboard layout. Layout and general functionality is the same as on https://russian.typeit.org/",
+		Level:       "0",
+		Usage:       "()phonetic <input>",
+	},
+	"ping": {
+		Alias:       nil,
+		Description: "Hopefully returns a pong monkaS.",
+		Level:       "0",
+		Usage:       "()ping",
+	},
+	"predb search": {
+		Alias:       nil,
+		Description: "Returns the last 100 predb.net search results for a given query.",
+		Level:       "100",
+		Usage:       "()predb search <query>",
+	},
+	"predb group": {
+		Alias:       nil,
+		Description: "Returns the last 100 predb.net group results for a given release group.",
+		Level:       "100",
+		Usage:       "()predb group <group>",
+	},
+	"preview": {
+		Alias:       []string{"preview", "thumbnail"},
+		Description: "Returns a link to an (almost) live screenshot of a live channel.",
+		Level:       "0",
+		Usage:       "()thumbnail <channel>",
+	},
+	"randomxkcd": {
+		Alias:       []string{"randomxkcd", "rxkcd"},
+		Description: "Returns a link to a random xkcd comic.",
+		Level:       "0",
+		Usage:       "()randomxkcd",
+	},
+	"seventv": {
+		Alias:       []string{"seventv", "7tv"},
+		Description: "Returns the search URL for a given SevenTV emote.",
+		Level:       "0",
+		Usage:       "()seventv <emote name>",
+	},
+	"set lastfm": {
+		Alias:       nil,
+		Description: "Allows you to set a last.fm username that will be used for $lastfm lookups if no other username is specified.",
+		Level:       "0",
+		Usage:       "()set lastfm <username>",
+	},
+	"set location": {
+		Alias:       nil,
+		Description: "Allows you to set a location that will be used for $weather lookups if no other location is specified.",
+		Level:       "0",
+		Usage:       "()set location <location>",
+	},
+	"timer add": {
+		Alias:       nil,
+		Description: "Adds a new timer to the channel.",
+		Level:       "500",
+		Usage:       "()timer add <name> <repeat> <text>",
+	},
+	"timer delete": {
+		Alias:       nil,
+		Description: "Deletes a timer from the channel.",
+		Level:       "500",
+		Usage:       "()timer delete <name>",
+	},
+	"timer list": {
+		Alias:       nil,
+		Description: "Lists all timers from the channel.",
+		Level:       "0",
+		Usage:       "()timer list",
+	},
+	"timers": {
+		Alias:       nil,
+		Description: "Returns a link to the currently active timers in the channel.",
+		Level:       "0",
+		Usage:       "()timers",
+	},
+	"user edit level": {
+		Alias:       []string{"user set level"},
+		Description: "Edits the user level for a given username.",
+		Level:       "1000",
+		Usage:       "()user edit level <username> <level>",
+	},
+	"uid": {
+		Alias:       []string{"uid", "userid"},
+		Description: "Returns the Twitch user ID for a given username.",
+		Level:       "0",
+		Usage:       "()uid <username>",
+	},
+	"wa": {
+		Alias:       []string{"wa", "query"},
+		Description: "Queries the Wolfram|Alpha API about the input.",
+		Level:       "100",
+		Usage:       "()wa <input>",
+	},
+	"weather": {
+		Alias:       nil,
+		Description: `Returns the weather for a given location. If you "$set location" your location, the command will use that location if no other location is specified.`,
+		Level:       "0",
+		Usage:       "()weather [location]",
+	},
+	"xkcd": {
+		Alias:       nil,
+		Description: "Returns the link to the latest xkcd comic.",
+		Level:       "0",
+		Usage:       "()xkcd",
+	},
+	"yaf": {
+		Alias:       nil,
+		Description: "Downloads the video of a given link with yt-dlp and then uploads the video to yaf.li.",
+		Level:       "420",
+		Usage:       "()yaf <link>",
+	},
 }
 
 // Help checks if a help text for a given command exists and replies with it.
@@ -410,7 +648,7 @@ func (app *application) commandHelp(target, name, username string, message twitc
 		return
 	}
 
-	app.Send(target, i, message)
+	app.Send(target, i.Description, message)
 }
 
 // Help checks if a help text for a given command exists and replies with it.
@@ -427,7 +665,12 @@ func (app *application) GetAllHelpText() string {
 		_ = i
 		var c string
 
-		c = fmt.Sprintf("Name: %s\nDescription: %s\n\n", i, v)
+		if v.Alias == nil {
+			c = fmt.Sprintf("Name: %s\nDescription: %s\nUsage: %s\n\n", i, v.Description, v.Usage)
+		} else {
+			c = fmt.Sprintf("Name: %s\nAliases: %s\nDescription: %s\nUsage: %s\n\n", i, v.Alias, v.Description, v.Usage)
+
+		}
 
 		// Add new value to the slice
 		cs = append(cs, c)
