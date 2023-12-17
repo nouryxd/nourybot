@@ -304,3 +304,57 @@ func (app *application) ListCommands() string {
 
 	return reply
 }
+
+// InitialTimers is called on startup and queries the database for a list of
+// timers and then adds each onto the scheduler.
+func (app *application) ListChannelCommands(channel string) string {
+	command, err := app.Models.Commands.GetAllChannel(channel)
+	if err != nil {
+		app.Log.Errorw("Error trying to retrieve all timers from database", err)
+		return ""
+	}
+
+	// The slice of timers is only used to log them at
+	// the start so it looks a bit nicer.
+	var cs []string
+
+	// Iterate over all timers and then add them onto the scheduler.
+	for i, v := range command {
+		// idk why this works but it does so no touchy touchy.
+		// https://github.com/robfig/cron/issues/420#issuecomment-940949195
+		i, v := i, v
+		_ = i
+		var c string
+
+		if v.Category == "ascii" {
+			c = fmt.Sprintf(
+				"Name: \t%v\n"+
+					"Help: \t%v\n"+
+					"Level: \t%v\n"+
+					"\n",
+				v.Name, v.Help, v.Level,
+			)
+		} else {
+			c = fmt.Sprintf(
+				"Name: \t%v\n"+
+					"Help: \t%v\n"+
+					"Level: \t%v\n"+
+					"Text: \t%v\n"+
+					"\n",
+				v.Name, v.Help, v.Level, v.Text,
+			)
+		}
+
+		// Add new value to the slice
+		cs = append(cs, c)
+
+	}
+
+	reply, err := app.uploadPaste(strings.Join(cs, ""))
+	if err != nil {
+		app.Log.Errorw("Error trying to retrieve all timers from database", err)
+		return ""
+	}
+
+	return reply
+}

@@ -193,6 +193,8 @@ func (app *application) handleCommand(message twitch.PrivateMessage) {
 	case "uid":
 		reply = ivr.IDByUsername(cmdParams[1])
 
+	case "commands":
+		reply = app.ListChannelCommands(message.Channel)
 	case "set":
 		switch cmdParams[1] {
 		case "lastfm":

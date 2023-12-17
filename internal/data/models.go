@@ -39,6 +39,7 @@ type Models struct {
 	Commands interface {
 		Get(name, channel string) (*Command, error)
 		GetAll() ([]*Command, error)
+		GetAllChannel(channel string) ([]*Command, error)
 		Insert(command *Command) error
 		Update(command *Command) error
 		SetCategory(name, channel, category string) error
