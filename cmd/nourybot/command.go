@@ -318,6 +318,10 @@ func (app *application) ListChannelCommands(channel string) string {
 	// the start so it looks a bit nicer.
 	var cs []string
 
+	allHelpText := app.GetAllHelpText()
+	app.Log.Info(allHelpText)
+	cs = append(cs, fmt.Sprintf("General commands: \n\n%s\nChannel commands:\n\n", allHelpText))
+
 	// Iterate over all timers and then add them onto the scheduler.
 	for i, v := range command {
 		// idk why this works but it does so no touchy touchy.

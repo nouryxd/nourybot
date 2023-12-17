@@ -1,6 +1,8 @@
 package main
 
 import (
+	"fmt"
+	"sort"
 	"strings"
 
 	"github.com/gempir/go-twitch-irc/v4"
@@ -361,6 +363,7 @@ func (app *application) handleCommand(message twitch.PrivateMessage) {
 // Map of known commands with their help texts.
 var helpText = map[string]string{
 	"bttv":       "Returns the search URL for a given BTTV emote. Example usage: ()bttv <emote name>",
+	"catbox":     "Downloads the video of a given link with yt-dlp and then uploads the video to catbox.moe. Example usage: ()catbox <link>",
 	"coin":       "Flips a coin! Aliases: coinflip, coin, cf",
 	"cf":         "Flips a coin! Aliases: coinflip, coin, cf",
 	"coinflip":   "Flips a coin! Aliases: coinflip, coin, cf",
@@ -369,7 +372,9 @@ var helpText = map[string]string{
 	"followage":  "Returns how long a given user has been following a channel. Example usage: ()followage <channel> <username>",
 	"firstline":  "Returns the first message a user has sent in a given channel. Aliases: firstline, fl. Example usage: ()firstline <channel> <username>",
 	"fl":         "Returns the first message a user has sent in a given channel. Aliases: firstline, fl. Example usage: ()fl <channel> <username>",
+	"gofile":     "Downloads the video of a given link with yt-dlp and then uploads the video to gofile.io. Example usage: ()gofile <link>",
 	"help":       "Returns more information about a command and its usage. 4Head Example usage: ()help <command name>",
+	"kappa":      "Downloads the video of a given link with yt-dlp and then uploads the video to kappa.lol. Example usage: ()kappa <link>",
 	"ping":       "Hopefully returns a Pong! monkaS",
 	"preview":    "Returns a link to an (almost) live screenshot of a live channel. Alias: preview, thumbnail. Example usage: ()preview <channel>",
 	"phonetic":   "Translates the input to the text equivalent on a phonetic russian keyboard layout. Layout and general functionality is the same as https://russian.typeit.org/",
@@ -381,7 +386,9 @@ var helpText = map[string]string{
 	"weather":    "Returns the weather for a given location. Example usage: ()weather Vilnius",
 	"randomxkcd": "Returns a link to a random xkcd comic. Alises: randomxkcd, rxkcd. Example usage: ()randomxkcd",
 	"rxkcd":      "Returns a link to a random xkcd comic. Alises: randomxkcd, rxkcd. Example usage: ()rxkcd",
+	"yaf":        "Downloads the video of a given link with yt-dlp and then uploads the video to yaf.li. Example usage: ()yaf <link>",
 	"xkcd":       "Returns a link to the latest xkcd comic. Example usage: ()xkcd",
+	"wa":         "Querys the Wolfram|Alpha API about something. Example usage: ()wa <question>",
 }
 
 // Help checks if a help text for a given command exists and replies with it.
@@ -404,4 +411,28 @@ func (app *application) commandHelp(target, name, username string, message twitc
 	}
 
 	app.Send(target, i, message)
+}
+
+// Help checks if a help text for a given command exists and replies with it.
+func (app *application) GetAllHelpText() string {
+	// The slice of timers is only used to log them at
+	// the start so it looks a bit nicer.
+	var cs []string
+
+	// Iterate over all timers and then add them onto the scheduler.
+	for i, v := range helpText {
+		// idk why this works but it does so no touchy touchy.
+		// https://github.com/robfig/cron/issues/420#issuecomment-940949195
+		i, v := i, v
+		_ = i
+		var c string
+
+		c = fmt.Sprintf("Name: %s\nDescription: %s\n\n", i, v)
+
+		// Add new value to the slice
+		cs = append(cs, c)
+	}
+
+	sort.Strings(cs)
+	return strings.Join(cs, "")
 }
