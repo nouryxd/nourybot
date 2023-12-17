@@ -74,7 +74,6 @@ func main() {
 	cfg.twitchClientId = os.Getenv("TWITCH_CLIENT_ID")
 	cfg.twitchClientSecret = os.Getenv("TWITCH_CLIENT_SECRET")
 	cfg.wolframAlphaAppID = os.Getenv("WOLFRAMALPHA_APP_ID")
-	cfg.commandPrefix = os.Getenv("TWITCH_COMMAND_PREFIX")
 	cfg.twitchID = os.Getenv("TWITCH_ID")
 	cfg.env = os.Getenv("ENV")
 	tc := twitch.NewClient(cfg.twitchUsername, cfg.twitchOauth)
@@ -82,8 +81,10 @@ func main() {
 	switch cfg.env {
 	case "dev":
 		cfg.db.dsn = os.Getenv("DEV_DSN")
+		cfg.commandPrefix = "!!"
 	case "prod":
 		cfg.db.dsn = os.Getenv("PROD_DSN")
+		cfg.commandPrefix = "()"
 	}
 	// Database config variables
 	cfg.db.maxOpenConns = 25
