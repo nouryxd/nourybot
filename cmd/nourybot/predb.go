@@ -3,7 +3,7 @@ package main
 import (
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"net/http"
 	"net/url"
 	"strings"
@@ -36,22 +36,21 @@ func (app *application) PreDBLatest() string {
 	resp, err := http.Get(baseUrl)
 	if err != nil {
 		app.Log.Error(err)
+		return "Something went wrong FeelsBadMan"
 	}
-	app.Log.Info(resp)
 
 	defer resp.Body.Close()
 
-	body, err := ioutil.ReadAll(resp.Body)
+	body, err := io.ReadAll(resp.Body)
 	if err != nil {
 		app.Log.Error(err)
+		return "Something went wrong FeelsBadMan"
 	}
-	app.Log.Info(body)
 
 	var release latestFullResult
 	_ = json.Unmarshal([]byte(body), &release)
 
 	var ts []string
-	app.Log.Info(release)
 	for i := 0; i < release.Results; i++ {
 		t := fmt.Sprintf("ID: %v\nRelease timestamp: %v\nRelease: %v\nSection: %v\nFiles: %v\nSize: %v\nStatus: %v\nReason: %v\nRelease group: %v\nRelease genre: %v\npredb.net: %v\nNFO URL: %v\nNFO Image URL: %v\n\n",
 			release.Data[i].ID,
@@ -71,12 +70,6 @@ func (app *application) PreDBLatest() string {
 		ts = append(ts, t)
 
 	}
-
-	// reply, err := app.uploadPaste(strings.Join(ts, ""))
-	// if err != nil {
-	// 	app.Log.Errorw("Error trying to retrieve all timers from database", err)
-	// 	return ""
-	// }
 
 	reply := app.YafUploadString(strings.Join(ts, ""))
 	if err != nil {
@@ -113,22 +106,21 @@ func (app *application) PreDBSearch(title string) string {
 	resp, err := http.Get(escaped)
 	if err != nil {
 		app.Log.Error(err)
+		return "Something went wrong FeelsBadMan"
 	}
-	app.Log.Info(resp)
 
 	defer resp.Body.Close()
 
-	body, err := ioutil.ReadAll(resp.Body)
+	body, err := io.ReadAll(resp.Body)
 	if err != nil {
 		app.Log.Error(err)
+		return "Something went wrong FeelsBadMan"
 	}
-	app.Log.Info(body)
 
 	var release searchFullResult
 	_ = json.Unmarshal([]byte(body), &release)
 
 	var ts []string
-	app.Log.Info(release)
 	for i := 0; i < release.Results; i++ {
 		t := fmt.Sprintf("ID: %v\nRelease timestamp: %v\nRelease: %v\nSection: %v\nFiles: %v\nSize: %v\nStatus: %v\nReason: %v\nRelease group: %v\nRelease genre: %v\npredb.net: %v\nNFO URL: %v\nNFO Image URL: %v\n\n",
 			release.Data[i].ID,
@@ -148,12 +140,6 @@ func (app *application) PreDBSearch(title string) string {
 		ts = append(ts, t)
 
 	}
-
-	// reply, err := app.uploadPaste(strings.Join(ts, ""))
-	// if err != nil {
-	// 	app.Log.Errorw("Error trying to retrieve all timers from database", err)
-	// 	return ""
-	// }
 
 	reply := app.YafUploadString(strings.Join(ts, ""))
 	if err != nil {
@@ -169,22 +155,21 @@ func (app *application) PreDBGroup(group string) string {
 	resp, err := http.Get(escaped)
 	if err != nil {
 		app.Log.Error(err)
+		return "Something went wrong FeelsBadMan"
 	}
-	app.Log.Info(resp)
 
 	defer resp.Body.Close()
 
-	body, err := ioutil.ReadAll(resp.Body)
+	body, err := io.ReadAll(resp.Body)
 	if err != nil {
 		app.Log.Error(err)
+		return "Something went wrong FeelsBadMan"
 	}
-	app.Log.Info(body)
 
 	var release searchFullResult
 	_ = json.Unmarshal([]byte(body), &release)
 
 	var ts []string
-	app.Log.Info(release)
 	for i := 0; i < release.Results; i++ {
 		t := fmt.Sprintf("ID: %v\nRelease timestamp: %v\nRelease: %v\nSection: %v\nFiles: %v\nSize: %v\nStatus: %v\nReason: %v\nRelease group: %v\nRelease genre: %v\npredb.net: %v\nNFO URL: %v\nNFO Image URL: %v\n\n",
 			release.Data[i].ID,
@@ -205,18 +190,10 @@ func (app *application) PreDBGroup(group string) string {
 
 	}
 
-	// reply, err := app.uploadPaste(strings.Join(ts, ""))
-	// if err != nil {
-	// 	app.Log.Errorw("Error trying to retrieve all timers from database", err)
-	// 	return ""
-	// }
-
 	reply := app.YafUploadString(strings.Join(ts, ""))
 	if err != nil {
 		app.Log.Errorw("Error trying to retrieve all timers from database", err)
-		return ""
+		return "Something went wrong FeelsBadMan"
 	}
-	return reply
-
 	return reply
 }
