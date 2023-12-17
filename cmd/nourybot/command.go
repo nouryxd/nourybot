@@ -318,6 +318,6 @@ func (app *application) ListChannelCommands(channel string) string {
 
 	}
 
-	reply := fmt.Sprintf("Channel commands: %s, General commands: %s", channelUrl, commandUrl)
+	reply := fmt.Sprintf("Channel commands: %s | General commands: %s", channelUrl, commandUrl)
 	return reply
 }
