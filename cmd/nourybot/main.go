@@ -24,6 +24,7 @@ type config struct {
 	twitchClientId     string
 	twitchClientSecret string
 	twitchID           string
+	wolframAlphaAppID  string
 	commandPrefix      string
 	env                string
 	db                 struct {
@@ -42,6 +43,7 @@ type application struct {
 	Models       data.Models
 	Scheduler    *cron.Cron
 	Environment  string
+	Config       config
 	// Rdb       *redis.Client
 }
 
@@ -71,6 +73,7 @@ func main() {
 	cfg.twitchOauth = os.Getenv("TWITCH_OAUTH")
 	cfg.twitchClientId = os.Getenv("TWITCH_CLIENT_ID")
 	cfg.twitchClientSecret = os.Getenv("TWITCH_CLIENT_SECRET")
+	cfg.wolframAlphaAppID = os.Getenv("WOLFRAMALPHA_APP_ID")
 	cfg.commandPrefix = os.Getenv("TWITCH_COMMAND_PREFIX")
 	cfg.twitchID = os.Getenv("TWITCH_ID")
 	cfg.env = os.Getenv("ENV")
@@ -125,6 +128,7 @@ func main() {
 		Db:           db,
 		Models:       data.NewModels(db),
 		Scheduler:    cron.New(),
+		Config:       cfg,
 		Environment:  cfg.env,
 	}
 

@@ -200,6 +200,8 @@ func (app *application) handleCommand(message twitch.PrivateMessage) {
 		case "location":
 			app.SetUserLocation(message)
 		}
+	case "wa":
+		reply = app.WolframAlphaQuery(message.Message[5:len(message.Message)])
 
 		// --------------------------------
 		// 100 user level
