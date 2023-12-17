@@ -215,7 +215,7 @@ func (app *application) handleCommand(message twitch.PrivateMessage) {
 		reply = app.ListChannelCommands(message.Channel)
 
 	case "timers":
-		reply = app.ListChannelTimer(message.Channel)
+		reply = fmt.Sprintf("https://bot.noury.is/timer/%s", message.Channel)
 
 	case "set":
 		switch cmdParams[1] {
