@@ -121,7 +121,7 @@ func (app *application) EditTimer(name, repeat string, message twitch.PrivateMes
 	identifier := old.Identifier
 	app.Scheduler.RemoveJob(identifier)
 
-	err = app.Models.Timers.Delete(name)
+	err = app.Models.Timers.Delete(identifier)
 	if err != nil {
 		app.Log.Errorw("Error deleting timer from database",
 			"name", name,
@@ -354,7 +354,7 @@ func (app *application) DeleteTimer(name string, message twitch.PrivateMessage) 
 	app.Send(message.Channel, reply, message)
 }
 
-func (app *application) ListChannelTimer(channel string) string {
+func (app *application) DebugChannelTimers(channel string) string {
 	timer, err := app.Models.Timers.GetChannelTimer(channel)
 	if err != nil {
 		app.Log.Errorw("Error trying to retrieve all timers from database", err)
@@ -375,8 +375,50 @@ func (app *application) ListChannelTimer(channel string) string {
 
 		t = fmt.Sprintf(
 			"Name: \t%v\n"+
+				"ID: \t%v\n"+
+				"Identifier: \t%v\n"+
 				"Text: \t%v\n"+
 				"Repeat: \t%v\n"+
+				"\n",
+			v.Name, v.ID, v.Identifier, v.Text, v.Repeat,
+		)
+
+		// Add new value to the slice
+		ts = append(ts, t)
+
+	}
+
+	reply, err := app.uploadPaste(strings.Join(ts, ""))
+	if err != nil {
+		app.Log.Errorw("Error trying to retrieve all timers from database", err)
+		return ""
+	}
+
+	return reply
+}
+func (app *application) ListChannelTimer(channel string) string {
+	timer, err := app.Models.Timers.GetChannelTimer(channel)
+	if err != nil {
+		app.Log.Errorw("Error trying to retrieve all timers from database", err)
+		return ""
+	}
+
+	// The slice of timers is only used to log them at
+	// the start so it looks a bit nicer.
+	var ts []string
+
+	// Iterate over all timers and then add them onto the scheduler.
+	for i, v := range timer {
+		// idk why this works but it does so no touchy touchy.
+		// https://github.com/robfig/cron/issues/420#issuecomment-940949195
+		i, v := i, v
+		_ = i
+		var t string
+
+		t = fmt.Sprintf(
+			"Name: %v\n"+
+				"Text: %v\n"+
+				"Repeat: %v\n"+
 				"\n",
 			v.Name, v.Text, v.Repeat,
 		)

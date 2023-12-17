@@ -253,6 +253,10 @@ func (app *application) handleCommand(message twitch.PrivateMessage) {
 			if userLevel >= 100 {
 				reply = app.Environment
 			}
+		case "timers":
+			if userLevel >= 100 {
+				app.DebugChannelTimers(message.Channel)
+			}
 		}
 
 		// --------------------------------
@@ -299,9 +303,9 @@ func (app *application) handleCommand(message twitch.PrivateMessage) {
 			if userLevel >= 500 {
 				app.DeleteTimer(cmdParams[2], message)
 			}
-		case "list":
-			if userLevel >= 0 {
-				reply = app.ListChannelTimer(message.Channel)
+		case "edit":
+			if userLevel >= 500 {
+				app.EditTimer(cmdParams[2], cmdParams[3], message)
 			}
 		}
 
@@ -387,24 +391,6 @@ type command struct {
 // Optional is []
 // Required is < >
 var helpText = map[string]command{
-	"command add": {
-		Alias:       nil,
-		Description: "Adds a channel command to the database.",
-		Level:       "250",
-		Usage:       "()add command <command name> <command text>",
-	},
-	"command edit level": {
-		Alias:       nil,
-		Description: "Edits the required level of a channel command with the given name.",
-		Level:       "250",
-		Usage:       "()command edit level <command name> <new command level>",
-	},
-	"command delete": {
-		Alias:       nil,
-		Description: "Deletes the channel command with the given name.",
-		Level:       "250",
-		Usage:       "()command delete <command name>",
-	},
 	"bttv": {
 		Alias:       []string{"bttv", "betterttv"},
 		Description: "Returns the search URL for a given BTTV emote.",
@@ -423,6 +409,24 @@ var helpText = map[string]command{
 		Level:       "0",
 		Usage:       "()coin",
 	},
+	"command add": {
+		Alias:       nil,
+		Description: "Adds a channel command to the database.",
+		Level:       "250",
+		Usage:       "()add command <command name> <command text>",
+	},
+	"command edit level": {
+		Alias:       nil,
+		Description: "Edits the required level of a channel command with the given name.",
+		Level:       "250",
+		Usage:       "()command edit level <command name> <new command level>",
+	},
+	"command delete": {
+		Alias:       nil,
+		Description: "Deletes the channel command with the given name.",
+		Level:       "250",
+		Usage:       "()command delete <command name>",
+	},
 	"commands": {
 		Alias:       nil,
 		Description: "Returns a link to the commands in the channel.",
@@ -434,6 +438,30 @@ var helpText = map[string]command{
 		Description: "Returns the exchange rate for two currencies. Only three letter abbreviations are supported ( List of supported currencies: https://decapi.me/misc/currency?list ).",
 		Level:       "0",
 		Usage:       "()currency <curr> to <curr>",
+	},
+	"debug env": {
+		Alias:       nil,
+		Description: "Returns the environment currently running in.",
+		Level:       "100",
+		Usage:       "()debug env",
+	},
+	"debug user": {
+		Alias:       nil,
+		Description: "Returns additional information about a user.",
+		Level:       "100",
+		Usage:       "()debug user <username>",
+	},
+	"debug command": {
+		Alias:       nil,
+		Description: "Returns additional informations about a command.",
+		Level:       "100",
+		Usage:       "()debug command <command name>",
+	},
+	"debug timers": {
+		Alias:       nil,
+		Description: "Returns a list of timers currently running in the channel with additional informations.",
+		Level:       "100",
+		Usage:       "()debug timers",
 	},
 	"duckduckgo": {
 		Alias:       []string{"duckduckgo", "ddg"},
@@ -579,11 +607,11 @@ var helpText = map[string]command{
 		Level:       "500",
 		Usage:       "()timer delete <name>",
 	},
-	"timer list": {
+	"timer edit": {
 		Alias:       nil,
-		Description: "Lists all timers from the channel.",
-		Level:       "0",
-		Usage:       "()timer list",
+		Description: "Edits a timer from the channel.",
+		Level:       "500",
+		Usage:       "()timer edit <name> <repeat> <text>",
 	},
 	"timers": {
 		Alias:       nil,
