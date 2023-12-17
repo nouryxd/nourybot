@@ -23,5 +23,6 @@ func IDByUsername(username string) string {
 	responseList := make([]ivrIDByUsernameResponse, 0)
 	_ = json.NewDecoder(resp.Body).Decode(&responseList)
 
-	return responseList[0].ID
+	reply := fmt.Sprintf("%s=%s", username, responseList[0].ID)
+	return reply
 }
