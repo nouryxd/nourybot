@@ -108,7 +108,7 @@ type searchSingleResult struct {
 }
 
 func (app *application) PreDBSearch(title string) string {
-	escaped := fmt.Sprintf("https://api.predb.net/?q=%s&order_by=release&sort=asc&limit=100", url.QueryEscape(title))
+	escaped := fmt.Sprintf("https://api.predb.net/?q=%s&order_by=pretime&sort=desc&limit=100", url.QueryEscape(title))
 
 	resp, err := http.Get(escaped)
 	if err != nil {
@@ -164,7 +164,7 @@ func (app *application) PreDBSearch(title string) string {
 }
 
 func (app *application) PreDBGroup(group string) string {
-	escaped := fmt.Sprintf("https://api.predb.net/?group=%s&order_by=release&sort=asc&limit=100", url.QueryEscape(group))
+	escaped := fmt.Sprintf("https://api.predb.net/?group=%s&order_by=pretime&sort=desc&limit=100", url.QueryEscape(group))
 
 	resp, err := http.Get(escaped)
 	if err != nil {
