@@ -207,7 +207,7 @@ func main() {
 	})
 
 	// Start status page
-	go app.statusPage()
+	go app.startRouter()
 
 	// Actually connect to chat.
 	err = app.TwitchClient.Connect()

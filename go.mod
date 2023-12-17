@@ -26,4 +26,5 @@ require (
 	github.com/briandowns/openweathermap v0.19.0
 	github.com/dustin/go-humanize v1.0.1
 	github.com/joho/godotenv v1.5.1
+	github.com/julienschmidt/httprouter v1.3.0
 )
