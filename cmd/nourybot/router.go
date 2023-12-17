@@ -19,16 +19,16 @@ func (app *application) startRouter() {
 
 func (app *application) channelCommandsRoute(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
 	channel := ps.ByName("channel")
+	var cs []string
+	var text string
 
 	command, err := app.Models.Commands.GetAllChannel(channel)
 	if err != nil {
-		app.Log.Errorw("Error trying to retrieve all timers from database", err)
+		app.Log.Errorw("Error trying to retrieve all commands for a channel from database", err)
 		return
 	}
-
 	// The slice of timers is only used to log them at
 	// the start so it looks a bit nicer.
-	var cs []string
 
 	// Iterate over all timers and then add them onto the scheduler.
 	for i, v := range command {
@@ -59,11 +59,11 @@ func (app *application) channelCommandsRoute(w http.ResponseWriter, r *http.Requ
 
 		// Add new value to the slice
 		cs = append(cs, c)
-
 	}
 
-	text := strings.Join(cs, "")
-	fmt.Fprintf(w, fmt.Sprint(text), ps.ByName("name"))
+	text = strings.Join(cs, "")
+	fmt.Fprintf(w, fmt.Sprint(text))
+
 }
 
 func (app *application) statusPageRoute(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {

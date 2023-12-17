@@ -306,7 +306,12 @@ func (c CommandModel) GetAllChannel(channel string) ([]*Command, error) {
 			&command.Help,
 		)
 		if err != nil {
-			return nil, err
+			switch {
+			case errors.Is(err, sql.ErrNoRows):
+				return nil, ErrRecordNotFound
+			default:
+				return nil, err
+			}
 		}
 		// Add the single movie struct onto the slice.
 		commands = append(commands, &command)
