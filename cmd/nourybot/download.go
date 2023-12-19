@@ -55,7 +55,7 @@ func (app *application) ConvertAndSave(fName, link string, msg twitch.PrivateMes
 		return
 	}
 	//app.Send(target, "Downloaded.", msg)
-	fileName := fmt.Sprintf("%s.%s", uuid_og, rExt)
+	fileName := fmt.Sprintf("/public/uploads/%s.%s", uuid_og, rExt)
 	f, err := os.Create(fileName)
 	//app.Send(target, fmt.Sprintf("Filename: %s", fileName), msg)
 	if err != nil {
@@ -86,8 +86,10 @@ func (app *application) ConvertAndSave(fName, link string, msg twitch.PrivateMes
 		Output(out).
 		OverWriteOutput().ErrorToStdOut().Run()
 
+	defer os.Remove(fileName)
 	app.Send(msg.Channel, fmt.Sprintf("https://bot.noury.is/uploads/%s.mp4", fName), msg)
 }
+
 func (app *application) ConvertToMP4(link string, msg twitch.PrivateMessage) {
 	goutubedl.Path = "yt-dlp"
 	uuid_og := uuid.NewString()
