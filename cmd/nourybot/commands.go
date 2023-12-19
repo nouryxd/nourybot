@@ -369,7 +369,8 @@ func (app *application) handleCommand(message twitch.PrivateMessage) {
 		if err != nil {
 			return
 		}
-		reply = r
+		go app.SendNoBanphrase(target, r)
+		return
 	}
 	if reply != "" {
 		go app.Send(target, reply, message)

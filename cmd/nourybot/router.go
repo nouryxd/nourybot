@@ -29,7 +29,6 @@ func (app *application) commandsRoute(w http.ResponseWriter, r *http.Request, ps
 	text = strings.Join(cs, "")
 
 	fmt.Fprintf(w, fmt.Sprint(text))
-
 }
 
 func (app *application) channelCommandsRoute(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
