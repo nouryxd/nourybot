@@ -8,6 +8,7 @@ import (
 
 	"github.com/gempir/go-twitch-irc/v4"
 	"github.com/google/uuid"
+	ffmpeg "github.com/u2takey/ffmpeg-go"
 	"github.com/wader/goutubedl"
 )
 
@@ -33,6 +34,57 @@ func (app *application) NewDownload(destination, target, link string, msg twitch
 	case "gofile":
 		app.GofileDownload(target, link, identifier, msg)
 	}
+}
+func (app *application) ConvertToMP4(link string, msg twitch.PrivateMessage) {
+	goutubedl.Path = "yt-dlp"
+	uuid_og := uuid.NewString()
+	uuid_new := uuid.NewString()
+
+	app.Send(msg.Channel, "Downloading... dankCircle", msg)
+	result, err := goutubedl.New(context.Background(), link, goutubedl.Options{})
+	if err != nil {
+		app.Log.Errorln(err)
+		app.Send(msg.Channel, fmt.Sprintf("Something went wrong FeelsBadMan: %q", err), msg)
+		return
+	}
+	rExt := result.Info.Ext
+	downloadResult, err := result.Download(context.Background(), "best")
+	if err != nil {
+		app.Log.Errorln(err)
+		app.Send(msg.Channel, fmt.Sprintf("Something went wrong FeelsBadMan: %q", err), msg)
+		return
+	}
+	//app.Send(target, "Downloaded.", msg)
+	fileName := fmt.Sprintf("%s.%s", uuid_og, rExt)
+	f, err := os.Create(fileName)
+	//app.Send(target, fmt.Sprintf("Filename: %s", fileName), msg)
+	if err != nil {
+		app.Log.Errorln(err)
+		app.Send(msg.Channel, fmt.Sprintf("Something went wrong FeelsBadMan: %q", err), msg)
+		return
+	}
+	defer f.Close()
+	if _, err = io.Copy(f, downloadResult); err != nil {
+		app.Log.Errorln(err)
+		app.Send(msg.Channel, fmt.Sprintf("Something went wrong FeelsBadMan: %q", err), msg)
+		return
+	}
+
+	downloadResult.Close()
+	f.Close()
+	fn, err := os.Create("output.mp4")
+	if err != nil {
+		app.Log.Errorln(err)
+		app.Send(msg.Channel, fmt.Sprintf("Something went wrong FeelsBadMan: %q", err), msg)
+		return
+	}
+	defer fn.Close()
+
+	err = ffmpeg.Input(fileName).
+		Output("output.mp4").
+		OverWriteOutput().ErrorToStdOut().Run()
+
+	go app.NewUpload("yaf", "output.mp4", msg.Channel, uuid_new, msg)
 }
 
 func (app *application) YafDownload(target, link, identifier string, msg twitch.PrivateMessage) {

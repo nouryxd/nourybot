@@ -217,6 +217,11 @@ func (app *application) handleCommand(message twitch.PrivateMessage) {
 	case "timers":
 		reply = fmt.Sprintf("https://bot.noury.is/timer/%s", message.Channel)
 
+	case "conv":
+		if userLevel >= 100 {
+			app.ConvertToMP4(cmdParams[1], message)
+		}
+
 	case "set":
 		switch cmdParams[1] {
 		case "lastfm":
