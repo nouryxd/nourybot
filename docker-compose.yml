@@ -16,7 +16,7 @@ services:
       dockerfile: Dockerfile
     env_file: .env
     volumes:
-      - "./public/uploads/:/public/uploads"
+      - "/tmp/CHANGE_THIS_DIRECTORY/:/public/uploads"
     ports:
       - "127.0.0.1:42069:8080"
     depends_on:
