@@ -222,6 +222,11 @@ func (app *application) handleCommand(message twitch.PrivateMessage) {
 			app.ConvertToMP4(cmdParams[1], message)
 		}
 
+	case "meme":
+		if userLevel >= 100 {
+			app.ConvertAndSave(cmdParams[1], cmdParams[2], message)
+		}
+
 	case "set":
 		switch cmdParams[1] {
 		case "lastfm":

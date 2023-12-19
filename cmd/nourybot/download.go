@@ -35,6 +35,59 @@ func (app *application) NewDownload(destination, target, link string, msg twitch
 		app.GofileDownload(target, link, identifier, msg)
 	}
 }
+
+func (app *application) ConvertAndSave(fName, link string, msg twitch.PrivateMessage) {
+	goutubedl.Path = "yt-dlp"
+	uuid_og := uuid.NewString()
+
+	app.Send(msg.Channel, "Downloading... dankCircle", msg)
+	result, err := goutubedl.New(context.Background(), link, goutubedl.Options{})
+	if err != nil {
+		app.Log.Errorln(err)
+		app.Send(msg.Channel, fmt.Sprintf("Something went wrong FeelsBadMan: %q", err), msg)
+		return
+	}
+	rExt := result.Info.Ext
+	downloadResult, err := result.Download(context.Background(), "best")
+	if err != nil {
+		app.Log.Errorln(err)
+		app.Send(msg.Channel, fmt.Sprintf("Something went wrong FeelsBadMan: %q", err), msg)
+		return
+	}
+	//app.Send(target, "Downloaded.", msg)
+	fileName := fmt.Sprintf("%s.%s", uuid_og, rExt)
+	f, err := os.Create(fileName)
+	//app.Send(target, fmt.Sprintf("Filename: %s", fileName), msg)
+	if err != nil {
+		app.Log.Errorln(err)
+		app.Send(msg.Channel, fmt.Sprintf("Something went wrong FeelsBadMan: %q", err), msg)
+		return
+	}
+	defer f.Close()
+	if _, err = io.Copy(f, downloadResult); err != nil {
+		app.Log.Errorln(err)
+		app.Send(msg.Channel, fmt.Sprintf("Something went wrong FeelsBadMan: %q", err), msg)
+		return
+	}
+
+	downloadResult.Close()
+	f.Close()
+
+	out := fmt.Sprintf("/public/uploads/%s.mp4", fName)
+	fn, err := os.Create(out)
+	if err != nil {
+		app.Log.Errorln(err)
+		app.Send(msg.Channel, fmt.Sprintf("Something went wrong FeelsBadMan: %q", err), msg)
+		return
+	}
+	defer fn.Close()
+
+	err = ffmpeg.Input(fileName).
+		Output(out).
+		OverWriteOutput().ErrorToStdOut().Run()
+
+	app.Send(msg.Channel, fmt.Sprintf("https://bot.noury.is/uploads/%s.mp4", fName), msg)
+}
 func (app *application) ConvertToMP4(link string, msg twitch.PrivateMessage) {
 	goutubedl.Path = "yt-dlp"
 	uuid_og := uuid.NewString()
@@ -72,7 +125,9 @@ func (app *application) ConvertToMP4(link string, msg twitch.PrivateMessage) {
 
 	downloadResult.Close()
 	f.Close()
-	fn, err := os.Create("output.mp4")
+
+	out := "/public/uploads/output.mp4"
+	fn, err := os.Create(out)
 	if err != nil {
 		app.Log.Errorln(err)
 		app.Send(msg.Channel, fmt.Sprintf("Something went wrong FeelsBadMan: %q", err), msg)
@@ -81,10 +136,10 @@ func (app *application) ConvertToMP4(link string, msg twitch.PrivateMessage) {
 	defer fn.Close()
 
 	err = ffmpeg.Input(fileName).
-		Output("output.mp4").
+		Output(out).
 		OverWriteOutput().ErrorToStdOut().Run()
 
-	go app.NewUpload("yaf", "output.mp4", msg.Channel, uuid_new, msg)
+	go app.NewUpload("yaf", out, msg.Channel, uuid_new, msg)
 }
 
 func (app *application) YafDownload(target, link, identifier string, msg twitch.PrivateMessage) {
