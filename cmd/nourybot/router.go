@@ -2,15 +2,19 @@ package main
 
 import (
 	"fmt"
+	"html/template"
 	"net/http"
+	"sort"
 	"strings"
 
 	"github.com/julienschmidt/httprouter"
 	"github.com/lyx0/nourybot/internal/common"
+	"github.com/lyx0/nourybot/internal/data"
 )
 
 func (app *application) startRouter() {
 	router := httprouter.New()
+	router.GET("/", app.homeRoute)
 	router.GET("/status", app.statusPageRoute)
 	router.GET("/commands/:channel", app.channelCommandsRoute)
 	router.GET("/commands", app.commandsRoute)
@@ -19,16 +23,78 @@ func (app *application) startRouter() {
 	app.Log.Fatal(http.ListenAndServe(":8080", router))
 }
 
-func (app *application) commandsRoute(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
+type commandsRouteData struct {
+	Commands map[string]command
+}
+
+func (app *application) commandsRoute(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
+	t, err := template.ParseFiles("./web/templates/commands.page.gohtml")
+	if err != nil {
+		app.Log.Error(err)
+		return
+	}
+
+	// The slice of timers is only used to log them at
+	// the start so it looks a bit nicer.
 	var cs []string
-	var text string
 
-	allHelpText := app.GetAllHelpText()
-	cs = append(cs, fmt.Sprintf("General commands: \n\n%s", allHelpText))
+	// Iterate over all timers and then add them onto the scheduler.
+	for i, v := range helpText {
+		// idk why this works but it does so no touchy touchy.
+		// https://github.com/robfig/cron/issues/420#issuecomment-940949195
+		i, v := i, v
+		_ = i
+		var c string
 
-	text = strings.Join(cs, "")
+		if v.Alias == nil {
+			c = fmt.Sprintf("Name: %s\nDescription: %s\nLevel: %s\nUsage: %s\n\n", i, v.Description, v.Level, v.Usage)
+		} else {
+			c = fmt.Sprintf("Name: %s\nAliases: %s\nDescription: %s\nLevel: %s\nUsage: %s\n\n", i, v.Alias, v.Description, v.Level, v.Usage)
 
-	fmt.Fprintf(w, fmt.Sprint(text))
+		}
+
+		// Add new value to the slice
+		cs = append(cs, c)
+	}
+
+	sort.Strings(cs)
+	data := &commandsRouteData{helpText}
+
+	err = t.Execute(w, data)
+	if err != nil {
+		app.Log.Error(err)
+		return
+	}
+
+}
+
+type homeRouteData struct {
+	Name     string
+	Channels []*data.Channel
+}
+
+func (app *application) homeRoute(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
+	t, err := template.ParseFiles("./web/templates/home.page.gohtml")
+	if err != nil {
+		app.Log.Error(err)
+		return
+	}
+
+	allChannel, err := app.Models.Channels.GetAll()
+	if err != nil {
+		app.Log.Error(err)
+		return
+	}
+	app.Log.Infow("All channels:",
+		"channel", allChannel)
+	data := &homeRouteData{name, allChannel}
+
+	err = t.Execute(w, data)
+	if err != nil {
+		app.Log.Error(err)
+		return
+	}
+
 }
 
 func (app *application) channelCommandsRoute(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {

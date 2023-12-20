@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta content="width=device-width,initial-scale=1" name="viewport">
+    <title>nourybot - lidl twitch bot</title>
+    <meta property="og:title" content="nourybot - lidl twitch bot">
+    <meta property="og:description" content="nourybot">
+  </head>
+<h1>nourybot</h1>
+<p>Channels connected to:</hp>
+    <table>
+        <tr>
+            <th>Twitch ID</th>
+            <th>Username</th>
+        </tr>
+        {{ with .Channels }} 
+        {{ range . }}
+        <tr>
+            <td>{{ .TwitchID }}</td>
+            <td>{{ .Login }}</td>
+        </tr>
+        {{ end }}
+    </table>
+{{ end }}

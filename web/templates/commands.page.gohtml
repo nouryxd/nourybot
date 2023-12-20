@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta content="width=device-width,initial-scale=1" name="viewport">
+    <title>nourybot - lidl twitch bot</title>
+    <meta property="og:title" content="nourybot - lidl twitch bot">
+    <meta property="og:description" content="nourybot">
+  </head>
+<h1>Commands</h1>
+<p>General commands:</p>
+{{ with .Commands }} 
+{{ range . }}
+<p>
+    <b>Name:</b> {{ .Name }} </br>
+    {{ if .Alias }}
+        <b>Alias:</b> {{ .Alias}} </br>
+    {{ else }}
+    {{ end}}
+    <b>Description:</b> {{ .Description }} </br>
+    <b>Level:</b> {{ .Level }} </br>
+    <b>Usage:</b> {{ .Usage }} </br>
+</p>
+{{ end }}
+{{ end }}
