@@ -69,7 +69,6 @@ func (app *application) commandsRoute(w http.ResponseWriter, r *http.Request, _ 
 }
 
 type homeRouteData struct {
-	Name     string
 	Channels []*data.Channel
 }
 
@@ -87,7 +86,7 @@ func (app *application) homeRoute(w http.ResponseWriter, r *http.Request, _ http
 	}
 	app.Log.Infow("All channels:",
 		"channel", allChannel)
-	data := &homeRouteData{name, allChannel}
+	data := &homeRouteData{allChannel}
 
 	err = t.Execute(w, data)
 	if err != nil {
