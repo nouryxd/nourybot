@@ -206,10 +206,10 @@ func (app *application) handleCommand(message twitch.PrivateMessage) {
 		reply, _ = commands.Xkcd()
 
 	case "uid":
-		reply = ivr.IDByUsername(cmdParams[1])
+		reply = ivr.IDByUsernameReply(cmdParams[1])
 
 	case "userid":
-		reply = ivr.IDByUsername(cmdParams[1])
+		reply = ivr.IDByUsernameReply(cmdParams[1])
 
 	case "commands":
 		reply = app.ListChannelCommands(message.Channel)
