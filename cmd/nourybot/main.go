@@ -54,7 +54,7 @@ func main() {
 	logger := zap.NewExample()
 	defer func() {
 		if err := logger.Sync(); err != nil {
-			logger.Sugar().Fatalw("error syncing logger",
+			logger.Sugar().Errorw("error syncing logger",
 				"error", err,
 			)
 		}
