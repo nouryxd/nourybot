@@ -164,7 +164,7 @@ func (app *application) YafDownload(target, link, identifier string, msg twitch.
 		return
 	}
 	//app.Send(target, "Downloaded.", msg)
-	fileName := fmt.Sprintf("%s.%s", identifier, rExt)
+	fileName := fmt.Sprintf("/public/uploads/%s.%s", identifier, rExt)
 	f, err := os.Create(fileName)
 	//app.Send(target, fmt.Sprintf("Filename: %s", fileName), msg)
 
@@ -208,7 +208,7 @@ func (app *application) KappaDownload(target, link, identifier string, msg twitc
 		return
 	}
 	//app.Send(target, "Downloaded.", msg)
-	fileName := fmt.Sprintf("%s.%s", identifier, rExt)
+	fileName := fmt.Sprintf("/public/uploads/%s.%s", identifier, rExt)
 	f, err := os.Create(fileName)
 	//app.Send(target, fmt.Sprintf("Filename: %s", fileName), msg)
 
@@ -253,7 +253,7 @@ func (app *application) GofileDownload(target, link, identifier string, msg twit
 		return
 	}
 	//app.Send(target, "Downloaded.", msg)
-	fileName := fmt.Sprintf("%s.%s", safeFilename, rExt)
+	fileName := fmt.Sprintf("/public/uploads/%s.%s", safeFilename, rExt)
 	f, err := os.Create(fileName)
 	//app.Send(target, fmt.Sprintf("Filename: %s", fileName), msg)
 
@@ -304,7 +304,7 @@ func (app *application) CatboxDownload(target, link, identifier string, msg twit
 		return
 	}
 	//app.Send(target, "Downloaded.", msg)
-	fileName = fmt.Sprintf("%s.%s", identifier, rExt)
+	fileName = fmt.Sprintf("/public/uploads/%s.%s", identifier, rExt)
 	f, err := os.Create(fileName)
 	//app.Send(target, fmt.Sprintf("Filename: %s", fileName), msg)
 
