@@ -280,8 +280,8 @@ func (app *application) ListCommands() string {
 // InitialTimers is called on startup and queries the database for a list of
 // timers and then adds each onto the scheduler.
 func (app *application) ListChannelCommands(channel string) string {
-	channelUrl := fmt.Sprintf("https://bot.noury.is/commands/%s", channel)
-	commandUrl := "https://bot.noury.is/commands"
+	channelUrl := fmt.Sprintf("https://bot.noury.li/commands/%s", channel)
+	commandUrl := "https://bot.noury.li/commands"
 	command, err := app.Models.Commands.GetAllChannel(channel)
 	if err != nil {
 		app.Log.Errorw("Error trying to retrieve all timers from database", err)

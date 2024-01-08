@@ -215,7 +215,7 @@ func (app *application) handleCommand(message twitch.PrivateMessage) {
 		reply = app.ListChannelCommands(message.Channel)
 
 	case "timers":
-		reply = fmt.Sprintf("https://bot.noury.is/timer/%s", message.Channel)
+		reply = fmt.Sprintf("https://bot.noury.li/timer/%s", message.Channel)
 
 	case "conv":
 		if userLevel >= 100 {

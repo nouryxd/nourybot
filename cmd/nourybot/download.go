@@ -87,7 +87,7 @@ func (app *application) ConvertAndSave(fName, link string, msg twitch.PrivateMes
 		OverWriteOutput().ErrorToStdOut().Run()
 
 	defer os.Remove(fileName)
-	app.Send(msg.Channel, fmt.Sprintf("https://bot.noury.is/uploads/%s.mp4", fName), msg)
+	app.Send(msg.Channel, fmt.Sprintf("https://bot.noury.li/uploads/%s.mp4", fName), msg)
 }
 
 func (app *application) ConvertToMP4(link string, msg twitch.PrivateMessage) {
