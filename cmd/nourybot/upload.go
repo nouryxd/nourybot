@@ -112,6 +112,33 @@ func (app *application) CatboxUpload(target, fileName, identifier string, msg tw
 	app.Send(target, reply, msg)
 }
 
+func (app *application) GetGofileServer() string {
+	type gofileData struct {
+		Server string `json:"server"`
+	}
+
+	type gofileResponse struct {
+		Status string `json:"status"`
+		Data   gofileData
+	}
+
+	response, err := http.Get("https://api.gofile.io/getServer")
+	if err != nil {
+		return ""
+	}
+	responseData, err := io.ReadAll(response.Body)
+	if err != nil {
+		return ""
+	}
+	var responseObject gofileResponse
+	if err = json.Unmarshal(responseData, &responseObject); err != nil {
+		return ""
+	}
+
+	uploadServer := fmt.Sprintf("https://%s.gofile.io/uploadFile", responseObject.Data.Server)
+	return uploadServer
+}
+
 func (app *application) GofileUpload(target, path, identifier string, msg twitch.PrivateMessage) {
 	defer os.Remove(path)
 	app.Send(target, "Uploading to gofile.io... dankCircle", msg)
@@ -159,7 +186,8 @@ func (app *application) GofileUpload(target, path, identifier string, msg twitch
 		form.Close()
 	}()
 
-	req, err := http.NewRequest(http.MethodPost, GOFILE_ENDPOINT, pr)
+	gofileServer := app.GetGofileServer()
+	req, err := http.NewRequest(http.MethodPost, gofileServer, pr)
 	if err != nil {
 		app.Send(target, fmt.Sprintf("Something went wrong FeelsBadMan: %q", err), msg)
 		os.Remove(path)
