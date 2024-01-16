@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"io"
 	"os"
+	"strings"
 
 	"github.com/gempir/go-twitch-irc/v4"
 	"github.com/google/uuid"
@@ -47,7 +48,16 @@ func (app *application) ConvertAndSave(fName, link string, msg twitch.PrivateMes
 		app.Send(msg.Channel, fmt.Sprintf("Something went wrong FeelsBadMan: %q", err), msg)
 		return
 	}
-	rExt := result.Info.Ext
+
+	var rExt string
+	// For some reason youtube links return webm as result.Info.Ext but
+	// are in reality mp4.
+	if strings.HasPrefix(link, "https://www.youtube.com/") || strings.HasPrefix(link, "https://youtu.be/") {
+		rExt = "mp4"
+	} else {
+		rExt = result.Info.Ext
+	}
+
 	downloadResult, err := result.Download(context.Background(), "best")
 	if err != nil {
 		app.Log.Errorln(err)
@@ -103,7 +113,16 @@ func (app *application) ConvertToMP4(link string, msg twitch.PrivateMessage) {
 		app.Send(msg.Channel, fmt.Sprintf("Something went wrong FeelsBadMan: %q", err), msg)
 		return
 	}
-	rExt := result.Info.Ext
+
+	// For some reason youtube links return webm as result.Info.Ext but
+	// are in reality mp4.
+	var rExt string
+	if strings.HasPrefix(link, "https://www.youtube.com/") || strings.HasPrefix(link, "https://youtu.be/") {
+		rExt = "mp4"
+	} else {
+		rExt = result.Info.Ext
+	}
+
 	downloadResult, err := result.Download(context.Background(), "best")
 	if err != nil {
 		app.Log.Errorln(err)
@@ -156,7 +175,16 @@ func (app *application) YafDownload(target, link, identifier string, msg twitch.
 		app.Send(target, fmt.Sprintf("Something went wrong FeelsBadMan: %q", err), msg)
 		return
 	}
-	rExt := result.Info.Ext
+
+	// For some reason youtube links return webm as result.Info.Ext but
+	// are in reality mp4.
+	var rExt string
+	if strings.HasPrefix(link, "https://www.youtube.com/") || strings.HasPrefix(link, "https://youtu.be/") {
+		rExt = "mp4"
+	} else {
+		rExt = result.Info.Ext
+	}
+
 	downloadResult, err := result.Download(context.Background(), "best")
 	if err != nil {
 		app.Log.Errorln(err)
@@ -200,7 +228,16 @@ func (app *application) KappaDownload(target, link, identifier string, msg twitc
 		app.Send(target, fmt.Sprintf("Something went wrong FeelsBadMan: %q", err), msg)
 		return
 	}
-	rExt := result.Info.Ext
+
+	// For some reason youtube links return webm as result.Info.Ext but
+	// are in reality mp4.
+	var rExt string
+	if strings.HasPrefix(link, "https://www.youtube.com/") || strings.HasPrefix(link, "https://youtu.be/") {
+		rExt = "mp4"
+	} else {
+		rExt = result.Info.Ext
+	}
+
 	downloadResult, err := result.Download(context.Background(), "best")
 	if err != nil {
 		app.Log.Errorln(err)
@@ -245,7 +282,16 @@ func (app *application) GofileDownload(target, link, identifier string, msg twit
 		return
 	}
 	safeFilename := fmt.Sprintf("download_%s", result.Info.Title)
-	rExt := result.Info.Ext
+
+	// For some reason youtube links return webm as result.Info.Ext but
+	// are in reality mp4.
+	var rExt string
+	if strings.HasPrefix(link, "https://www.youtube.com/") || strings.HasPrefix(link, "https://youtu.be/") {
+		rExt = "mp4"
+	} else {
+		rExt = result.Info.Ext
+	}
+
 	downloadResult, err := result.Download(context.Background(), "best")
 	if err != nil {
 		app.Log.Errorln(err)
