@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"html/template"
 	"net/http"
+	"os"
 	"sort"
 	"strings"
 
@@ -19,6 +20,10 @@ func (app *application) startRouter() {
 	router.GET("/commands/:channel", app.channelCommandsRoute)
 	router.GET("/commands", app.commandsRoute)
 	router.GET("/timer/:channel", app.channelTimersRoute)
+
+	// Serve files uploaded by the meme command, but don't list the directory contents.
+	fs := justFilesFilesystem{http.Dir("/public/uploads/")}
+	router.Handler("GET", "/uploads/*filepath", http.StripPrefix("/uploads", http.FileServer(fs)))
 
 	app.Log.Fatal(http.ListenAndServe(":8080", router))
 }
@@ -180,4 +185,29 @@ func (app *application) statusPageRoute(w http.ResponseWriter, r *http.Request, 
 	commitLink := fmt.Sprintf("https://github.com/lyx0/nourybot/commit/%v", common.GetVersionPure())
 
 	fmt.Fprintf(w, fmt.Sprintf("started: \t%v\nenvironment: \t%v\ncommit: \t%v\ngithub: \t%v", started, app.Environment, commit, commitLink))
+}
+
+// Since I want to serve the files that I uploaded with the meme command to the /public/uploads
+// folder, but not list the directory on the `/uploads/` route I found this issue that solves
+// that problem with the httprouter.
+//
+//	https://github.com/julienschmidt/httprouter/issues/25#issuecomment-74977940
+type justFilesFilesystem struct {
+	fs http.FileSystem
+}
+
+func (fs justFilesFilesystem) Open(name string) (http.File, error) {
+	f, err := fs.fs.Open(name)
+	if err != nil {
+		return nil, err
+	}
+	return neuteredReaddirFile{f}, nil
+}
+
+type neuteredReaddirFile struct {
+	http.File
+}
+
+func (f neuteredReaddirFile) Readdir(count int) ([]os.FileInfo, error) {
+	return nil, nil
 }
