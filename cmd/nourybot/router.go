@@ -19,13 +19,58 @@ func (app *application) startRouter() {
 	router.GET("/status", app.statusPageRoute)
 	router.GET("/commands/:channel", app.channelCommandsRoute)
 	router.GET("/commands", app.commandsRoute)
+	router.GET("/timer", app.timersRoute)
 	router.GET("/timer/:channel", app.channelTimersRoute)
 
 	// Serve files uploaded by the meme command, but don't list the directory contents.
 	fs := justFilesFilesystem{http.Dir("/public/uploads/")}
 	router.Handler("GET", "/uploads/*filepath", http.StripPrefix("/uploads", http.FileServer(fs)))
 
+	app.Log.Info("Serving on :8080")
 	app.Log.Fatal(http.ListenAndServe(":8080", router))
+}
+
+type timersRouteData struct {
+	Timers []data.Timer
+}
+
+func (app *application) timersRoute(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
+	t, err := template.ParseFiles("./web/templates/timers.page.gohtml")
+	if err != nil {
+		app.Log.Error(err)
+		return
+	}
+	var ts []data.Timer
+
+	timerData, err := app.Models.Timers.GetAll()
+	if err != nil {
+		app.Log.Errorw("Error trying to retrieve all timer for a channel from database", err)
+		return
+	}
+	// The slice of timers is only used to log them at
+	// the start so it looks a bit nicer.
+
+	// Iterate over all timers and then add them onto the scheduler.
+	for i, v := range timerData {
+		// idk why this works but it does so no touchy touchy.
+		// https://github.com/robfig/cron/issues/420#issuecomment-940949195
+		i, v := i, v
+		_ = i
+		var t data.Timer
+		t.Name = v.Name
+		t.Text = v.Text
+		t.Repeat = v.Repeat
+
+		// Add new value to the slice
+		ts = append(ts, t)
+	}
+
+	data := &timersRouteData{ts}
+	err = t.Execute(w, data)
+	if err != nil {
+		app.Log.Error(err)
+		return
+	}
 }
 
 type commandsRouteData struct {
