@@ -322,7 +322,6 @@ func (app *application) GofileDownload(target, link, identifier string, msg twit
 	// time.Sleep(duration)
 
 	go app.NewUpload("gofile", fileName, target, identifier, msg)
-
 }
 
 func (app *application) CatboxDownload(target, link, identifier string, msg twitch.PrivateMessage) {

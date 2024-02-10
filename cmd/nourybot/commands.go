@@ -183,7 +183,7 @@ func (app *application) handleCommand(message twitch.PrivateMessage) {
 			reply, _ = commands.Phonetic(message.Message[11:len(message.Message)])
 		}
 	case "ping":
-		reply = commands.Ping()
+		reply = commands.Ping(app.Environment)
 		// ()bttv <emote name>
 
 		// ()weather <location>

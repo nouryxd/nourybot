@@ -4,7 +4,9 @@ import (
 	"context"
 	"database/sql"
 	"fmt"
+	"io"
 	"os"
+	"os/signal"
 	"time"
 
 	"github.com/gempir/go-twitch-irc/v4"
@@ -47,7 +49,20 @@ type application struct {
 	// Rdb       *redis.Client
 }
 
+// main() only calls the run function so that we can go around the limitation
+// that main() cannot return anything, like int for error codes in c for example.
+// https://grafana.com/blog/2024/02/09/how-i-write-http-services-in-go-after-13-years/
 func main() {
+	ctx := context.Background()
+	ctx, cancel := signal.NotifyContext(ctx, os.Interrupt)
+	defer cancel()
+	if err := run(ctx, os.Stdout, os.Args); err != nil {
+		fmt.Fprintf(os.Stderr, "%s\n", err)
+		os.Exit(1)
+	}
+}
+
+func run(ctx context.Context, w io.Writer, args []string) error {
 	var cfg config
 	// Initialize a new sugared logger that we'll pass on
 	// down through the application.
@@ -216,6 +231,7 @@ func main() {
 		panic(err)
 	}
 
+	return nil
 }
 
 // openDB returns the sql.DB connection pool.
@@ -249,4 +265,5 @@ func openDB(cfg config) (*sql.DB, error) {
 	}
 
 	return db, nil
+
 }
