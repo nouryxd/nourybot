@@ -167,7 +167,13 @@ type homeRouteData struct {
 }
 
 func (app *application) homeRoute(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
-	t, err := template.ParseFiles("./web/templates/home.page.gohtml")
+	t, err := template.ParseFiles(
+		"./web/templates/base.template.gohtml",
+		"./web/templates/header.partial.gohtml",
+		"./web/templates/footer.partial.gohtml",
+		"./web/templates/home.page.gohtml",
+	)
+
 	if err != nil {
 		app.Log.Error(err)
 		return
