@@ -6,7 +6,6 @@ import (
 	"net/http"
 	"os"
 	"sort"
-	"strings"
 
 	"github.com/julienschmidt/httprouter"
 	"github.com/lyx0/nourybot/internal/common"
@@ -17,8 +16,8 @@ func (app *application) startRouter() {
 	router := httprouter.New()
 	router.GET("/", app.homeRoute)
 	router.GET("/status", app.statusPageRoute)
-	router.GET("/commands/:channel", app.channelCommandsRoute)
 	router.GET("/commands", app.commandsRoute)
+	router.GET("/commands/:channel", app.channelCommandsRoute)
 	router.GET("/timer", app.timersRoute)
 	router.GET("/timer/:channel", app.channelTimersRoute)
 
@@ -32,11 +31,6 @@ func (app *application) startRouter() {
 
 type timersRouteData struct {
 	Timers []data.Timer
-}
-
-type channelTimersRouteData struct {
-	Timers  []data.Timer
-	Channel string
 }
 
 func (app *application) timersRoute(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
@@ -76,6 +70,11 @@ func (app *application) timersRoute(w http.ResponseWriter, r *http.Request, _ ht
 		app.Log.Error(err)
 		return
 	}
+}
+
+type channelTimersRouteData struct {
+	Timers  []data.Timer
+	Channel string
 }
 
 func (app *application) channelTimersRoute(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
@@ -191,45 +190,46 @@ func (app *application) homeRoute(w http.ResponseWriter, r *http.Request, _ http
 
 }
 
+type channelCommandsRouteData struct {
+	Commands []data.Command
+	Channel  string
+}
+
 func (app *application) channelCommandsRoute(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
 	channel := ps.ByName("channel")
-	var cs []string
-	var text string
-
-	command, err := app.Models.Commands.GetAllChannel(channel)
+	t, err := template.ParseFiles("./web/templates/channelcommands.page.gohtml")
 	if err != nil {
-		app.Log.Errorw("Error trying to retrieve all commands for a channel from database", err)
+		app.Log.Error(err)
 		return
 	}
-	// The slice of timers is only used to log them at
-	// the start so it looks a bit nicer.
+	var cs []data.Command
 
-	heading := fmt.Sprintf("Commands in %s\n\n", channel)
-	cs = append(cs, heading)
-	// Iterate over all timers and then add them onto the scheduler.
-	for i, v := range command {
+	commandData, err := app.Models.Commands.GetAllChannel(channel)
+	if err != nil {
+		app.Log.Errorw("Error trying to retrieve all timer for a channel from database", err)
+		return
+	}
+
+	for i, v := range commandData {
 		// idk why this works but it does so no touchy touchy.
 		// https://github.com/robfig/cron/issues/420#issuecomment-940949195
 		i, v := i, v
 		_ = i
-		var c string
+		var c data.Command
+		c.Name = v.Name
+		c.Level = v.Level
+		c.Description = v.Description
+		c.Text = v.Text
 
-		c = fmt.Sprintf(
-			"Name: %v\n"+
-				"Description: %v\n"+
-				"Level: %v\n"+
-				"Text: %v\n"+
-				"\n",
-			v.Name, v.Description, v.Level, v.Text,
-		)
-
-		// Add new value to the slice
 		cs = append(cs, c)
 	}
 
-	text = strings.Join(cs, "")
-	fmt.Fprintf(w, fmt.Sprint(text))
-
+	data := &channelCommandsRouteData{cs, channel}
+	err = t.Execute(w, data)
+	if err != nil {
+		app.Log.Error(err)
+		return
+	}
 }
 
 func (app *application) statusPageRoute(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
