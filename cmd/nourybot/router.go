@@ -34,6 +34,11 @@ type timersRouteData struct {
 	Timers []data.Timer
 }
 
+type channelTimersRouteData struct {
+	Timers  []data.Timer
+	Channel string
+}
+
 func (app *application) timersRoute(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
 	t, err := template.ParseFiles("./web/templates/timers.page.gohtml")
 	if err != nil {
@@ -66,6 +71,46 @@ func (app *application) timersRoute(w http.ResponseWriter, r *http.Request, _ ht
 	}
 
 	data := &timersRouteData{ts}
+	err = t.Execute(w, data)
+	if err != nil {
+		app.Log.Error(err)
+		return
+	}
+}
+
+func (app *application) channelTimersRoute(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
+	channel := ps.ByName("channel")
+	t, err := template.ParseFiles("./web/templates/channeltimers.page.gohtml")
+	if err != nil {
+		app.Log.Error(err)
+		return
+	}
+	var ts []data.Timer
+
+	timerData, err := app.Models.Timers.GetChannelTimer(channel)
+	if err != nil {
+		app.Log.Errorw("Error trying to retrieve all timer for a channel from database", err)
+		return
+	}
+	// The slice of timers is only used to log them at
+	// the start so it looks a bit nicer.
+
+	// Iterate over all timers and then add them onto the scheduler.
+	for i, v := range timerData {
+		// idk why this works but it does so no touchy touchy.
+		// https://github.com/robfig/cron/issues/420#issuecomment-940949195
+		i, v := i, v
+		_ = i
+		var t data.Timer
+		t.Name = v.Name
+		t.Text = v.Text
+		t.Repeat = v.Repeat
+
+		// Add new value to the slice
+		ts = append(ts, t)
+	}
+
+	data := &channelTimersRouteData{ts, channel}
 	err = t.Execute(w, data)
 	if err != nil {
 		app.Log.Error(err)
@@ -185,43 +230,6 @@ func (app *application) channelCommandsRoute(w http.ResponseWriter, r *http.Requ
 	text = strings.Join(cs, "")
 	fmt.Fprintf(w, fmt.Sprint(text))
 
-}
-
-func (app *application) channelTimersRoute(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
-	channel := ps.ByName("channel")
-	var ts []string
-	var text string
-
-	timer, err := app.Models.Timers.GetChannelTimer(channel)
-	if err != nil {
-		app.Log.Errorw("Error trying to retrieve all timer for a channel from database", err)
-		return
-	}
-	// The slice of timers is only used to log them at
-	// the start so it looks a bit nicer.
-
-	// Iterate over all timers and then add them onto the scheduler.
-	for i, v := range timer {
-		// idk why this works but it does so no touchy touchy.
-		// https://github.com/robfig/cron/issues/420#issuecomment-940949195
-		i, v := i, v
-		_ = i
-		var t string
-
-		t = fmt.Sprintf(
-			"Name: \t%v\n"+
-				"Text: \t%v\n"+
-				"Repeat: %v\n"+
-				"\n",
-			v.Name, v.Text, v.Repeat,
-		)
-
-		// Add new value to the slice
-		ts = append(ts, t)
-	}
-
-	text = strings.Join(ts, "")
-	fmt.Fprintf(w, fmt.Sprint(text))
 }
 
 func (app *application) statusPageRoute(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
