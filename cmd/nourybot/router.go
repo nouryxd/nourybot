@@ -34,7 +34,12 @@ type timersRouteData struct {
 }
 
 func (app *application) timersRoute(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
-	t, err := template.ParseFiles("./web/templates/timers.page.gohtml")
+	t, err := template.ParseFiles(
+		"./web/templates/base.template.gohtml",
+		"./web/templates/header.partial.gohtml",
+		"./web/templates/footer.partial.gohtml",
+		"./web/templates/timers.page.gohtml",
+	)
 	if err != nil {
 		app.Log.Error(err)
 		return
@@ -79,7 +84,12 @@ type channelTimersRouteData struct {
 
 func (app *application) channelTimersRoute(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
 	channel := ps.ByName("channel")
-	t, err := template.ParseFiles("./web/templates/channeltimers.page.gohtml")
+	t, err := template.ParseFiles(
+		"./web/templates/base.template.gohtml",
+		"./web/templates/header.partial.gohtml",
+		"./web/templates/footer.partial.gohtml",
+		"./web/templates/channeltimers.page.gohtml",
+	)
 	if err != nil {
 		app.Log.Error(err)
 		return
@@ -122,7 +132,12 @@ type commandsRouteData struct {
 }
 
 func (app *application) commandsRoute(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
-	t, err := template.ParseFiles("./web/templates/commands.page.gohtml")
+	t, err := template.ParseFiles(
+		"./web/templates/base.template.gohtml",
+		"./web/templates/header.partial.gohtml",
+		"./web/templates/footer.partial.gohtml",
+		"./web/templates/commands.page.gohtml",
+	)
 	if err != nil {
 		app.Log.Error(err)
 		return
@@ -203,7 +218,12 @@ type channelCommandsRouteData struct {
 
 func (app *application) channelCommandsRoute(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
 	channel := ps.ByName("channel")
-	t, err := template.ParseFiles("./web/templates/channelcommands.page.gohtml")
+	t, err := template.ParseFiles(
+		"./web/templates/base.template.gohtml",
+		"./web/templates/header.partial.gohtml",
+		"./web/templates/footer.partial.gohtml",
+		"./web/templates/channelcommands.page.gohtml",
+	)
 	if err != nil {
 		app.Log.Error(err)
 		return
