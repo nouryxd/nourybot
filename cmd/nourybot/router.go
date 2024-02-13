@@ -1,8 +1,12 @@
 package main
 
 import (
+	"bytes"
+	"encoding/json"
 	"fmt"
 	"html/template"
+	"io/ioutil"
+	"log"
 	"net/http"
 	"os"
 	"sort"
@@ -10,12 +14,14 @@ import (
 	"github.com/julienschmidt/httprouter"
 	"github.com/lyx0/nourybot/internal/common"
 	"github.com/lyx0/nourybot/internal/data"
+	"github.com/nicklaw5/helix/v2"
 )
 
 func (app *application) startRouter() {
 	router := httprouter.New()
 	router.GET("/", app.homeRoute)
 	router.GET("/status", app.statusPageRoute)
+	router.POST("/eventsub", app.eventsubFollow)
 	router.GET("/commands", app.commandsRoute)
 	router.GET("/commands/:channel", app.channelCommandsRoute)
 	router.GET("/timer", app.timersRoute)
@@ -27,6 +33,46 @@ func (app *application) startRouter() {
 
 	app.Log.Info("Serving on :8080")
 	app.Log.Fatal(http.ListenAndServe(":8080", router))
+}
+
+type eventSubNotification struct {
+	Subscription helix.EventSubSubscription `json:"subscription"`
+	Challenge    string                     `json:"challenge"`
+	Event        json.RawMessage            `json:"event"`
+}
+
+func (app *application) eventsubFollow(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
+	body, err := ioutil.ReadAll(r.Body)
+	if err != nil {
+		log.Println(err)
+		return
+	}
+	defer r.Body.Close()
+	// verify that the notification came from twitch using the secret.
+	if !helix.VerifyEventSubNotification(app.Config.eventSubSecret, r.Header, string(body)) {
+		log.Println("no valid signature on subscription")
+		return
+	} else {
+		log.Println("verified signature for subscription")
+	}
+	var vals eventSubNotification
+	err = json.NewDecoder(bytes.NewReader(body)).Decode(&vals)
+	if err != nil {
+		log.Println(err)
+		return
+	}
+	// if there's a challenge in the request, respond with only the challenge to verify your eventsub.
+	if vals.Challenge != "" {
+		w.Write([]byte(vals.Challenge))
+		return
+	}
+	var liveEvent helix.EventSubStreamOnlineEvent
+	err = json.NewDecoder(bytes.NewReader(vals.Event)).Decode(&liveEvent)
+
+	log.Printf("got stream online event webhook: %s is live\n", liveEvent.BroadcasterUserName)
+	w.WriteHeader(200)
+	w.Write([]byte("ok"))
+	app.SendNoContext("nouryxd", fmt.Sprintf("%s is now live!", liveEvent.BroadcasterUserName))
 }
 
 type timersRouteData struct {

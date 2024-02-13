@@ -25,6 +25,7 @@ type config struct {
 	twitchOauth        string
 	twitchClientId     string
 	twitchClientSecret string
+	eventSubSecret     string
 	twitchID           string
 	wolframAlphaAppID  string
 	commandPrefix      string
@@ -88,6 +89,7 @@ func run(ctx context.Context, w io.Writer, args []string) error {
 	cfg.twitchOauth = os.Getenv("TWITCH_OAUTH")
 	cfg.twitchClientId = os.Getenv("TWITCH_CLIENT_ID")
 	cfg.twitchClientSecret = os.Getenv("TWITCH_CLIENT_SECRET")
+	cfg.eventSubSecret = os.Getenv("EVENTSUB_SECRET")
 	cfg.wolframAlphaAppID = os.Getenv("WOLFRAMALPHA_APP_ID")
 	cfg.twitchID = os.Getenv("TWITCH_ID")
 	cfg.env = os.Getenv("ENV")

@@ -122,6 +122,18 @@ func (app *application) handleCommand(message twitch.PrivateMessage) {
 	case "frankerfacez":
 		reply = commands.Ffz(cmdParams[1])
 
+	case "notify":
+		switch cmdParams[1] {
+		case "live":
+			if userLevel >= 100 {
+				reply = app.createLiveSubscription(target, cmdParams[2])
+			}
+		case "offline":
+			if userLevel >= 100 {
+				//reply = app.createFollowSubscription(target, cmdParams[2])
+			}
+		}
+
 	case "ddg":
 		reply = commands.DuckDuckGo(message.Message[6:len(message.Message)])
 
