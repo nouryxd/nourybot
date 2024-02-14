@@ -130,7 +130,7 @@ func (app *application) handleCommand(message twitch.PrivateMessage) {
 			}
 		case "offline":
 			if userLevel >= 100 {
-				//reply = app.createFollowSubscription(target, cmdParams[2])
+				reply = app.createOfflineSubscription(target, cmdParams[2])
 			}
 		}
 	case "unnotify":
@@ -138,6 +138,10 @@ func (app *application) handleCommand(message twitch.PrivateMessage) {
 		case "live":
 			if userLevel >= 100 {
 				reply = app.deleteLiveSubscription(target, cmdParams[2])
+			}
+		case "offline":
+			if userLevel >= 100 {
+				reply = app.deleteOfflineSubscription(target, cmdParams[2])
 			}
 		}
 

@@ -55,6 +55,7 @@ func (app *application) eventsubFollow(w http.ResponseWriter, r *http.Request, _
 	} else {
 		log.Println("verified signature for subscription")
 	}
+
 	var vals eventSubNotification
 	err = json.NewDecoder(bytes.NewReader(body)).Decode(&vals)
 	if err != nil {
@@ -66,13 +67,24 @@ func (app *application) eventsubFollow(w http.ResponseWriter, r *http.Request, _
 		w.Write([]byte(vals.Challenge))
 		return
 	}
-	var liveEvent helix.EventSubStreamOnlineEvent
-	err = json.NewDecoder(bytes.NewReader(vals.Event)).Decode(&liveEvent)
 
-	log.Printf("got stream online event webhook: %s is live\n", liveEvent.BroadcasterUserName)
-	w.WriteHeader(200)
-	w.Write([]byte("ok"))
-	app.SendNoContext("nouryxd", fmt.Sprintf("%s is now live!", liveEvent.BroadcasterUserName))
+	switch vals.Subscription.Type {
+	case helix.EventSubTypeStreamOnline:
+		var liveEvent helix.EventSubStreamOnlineEvent
+		err = json.NewDecoder(bytes.NewReader(vals.Event)).Decode(&liveEvent)
+		log.Printf("got stream online event webhook: %s is live\n", liveEvent.BroadcasterUserName)
+		w.WriteHeader(200)
+		w.Write([]byte("ok"))
+		app.SendNoContext("nouryxd", fmt.Sprintf("%s went live FeelsGoodMan", liveEvent.BroadcasterUserName))
+
+	case helix.EventSubTypeStreamOffline:
+		var offlineEvent helix.EventSubStreamOfflineEvent
+		err = json.NewDecoder(bytes.NewReader(vals.Event)).Decode(&offlineEvent)
+		log.Printf("got stream online event webhook: %s is live\n", offlineEvent.BroadcasterUserName)
+		w.WriteHeader(200)
+		w.Write([]byte("ok"))
+		app.SendNoContext("nouryxd", fmt.Sprintf("%s went offline FeelsBadMan", offlineEvent.BroadcasterUserName))
+	}
 }
 
 type timersRouteData struct {
