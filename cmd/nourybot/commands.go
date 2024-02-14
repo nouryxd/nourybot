@@ -133,6 +133,13 @@ func (app *application) handleCommand(message twitch.PrivateMessage) {
 				//reply = app.createFollowSubscription(target, cmdParams[2])
 			}
 		}
+	case "unnotify":
+		switch cmdParams[1] {
+		case "live":
+			if userLevel >= 100 {
+				reply = app.deleteLiveSubscription(target, cmdParams[2])
+			}
+		}
 
 	case "ddg":
 		reply = commands.DuckDuckGo(message.Message[6:len(message.Message)])
