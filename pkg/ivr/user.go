@@ -18,10 +18,11 @@ func IDByUsernameReply(username string) string {
 		return "xd"
 	}
 
-	defer resp.Body.Close()
-
 	responseList := make([]ivrIDByUsernameResponse, 0)
-	_ = json.NewDecoder(resp.Body).Decode(&responseList)
+	err = json.NewDecoder(resp.Body).Decode(&responseList)
+	if len(responseList) == 0 {
+		return "xd"
+	}
 
 	reply := fmt.Sprintf("%s=%s", username, responseList[0].ID)
 	return reply
@@ -39,6 +40,9 @@ func IDByUsername(username string) string {
 
 	responseList := make([]ivrIDByUsernameResponse, 0)
 	_ = json.NewDecoder(resp.Body).Decode(&responseList)
+	if len(responseList) == 0 {
+		return "xd"
+	}
 
 	return responseList[0].ID
 }
