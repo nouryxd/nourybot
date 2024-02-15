@@ -133,6 +133,7 @@ func (app *application) handleCommand(message twitch.PrivateMessage) {
 				reply = app.createOfflineSubscription(target, cmdParams[2])
 			}
 		}
+
 	case "unnotify":
 		switch cmdParams[1] {
 		case "live":

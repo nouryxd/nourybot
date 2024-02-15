@@ -14,6 +14,7 @@ import (
 	"github.com/julienschmidt/httprouter"
 	"github.com/lyx0/nourybot/internal/common"
 	"github.com/lyx0/nourybot/internal/data"
+	"github.com/lyx0/nourybot/pkg/ivr"
 	"github.com/nicklaw5/helix/v2"
 )
 
@@ -75,15 +76,19 @@ func (app *application) eventsubFollow(w http.ResponseWriter, r *http.Request, _
 		log.Printf("got stream online event webhook: %s is live\n", liveEvent.BroadcasterUserName)
 		w.WriteHeader(200)
 		w.Write([]byte("ok"))
-		app.SendNoContext("nouryxd", fmt.Sprintf("%s went live FeelsGoodMan", liveEvent.BroadcasterUserName))
+
+		game := ivr.GameByUsername(liveEvent.BroadcasterUserLogin)
+		title := ivr.TitleByUsername(liveEvent.BroadcasterUserLogin)
+
+		app.SendNoBanphrase("nouryxd", fmt.Sprintf("%s went live FeelsGoodMan Game: %s; Title: %s; https://twitch.tv/%s", liveEvent.BroadcasterUserName, game, title, liveEvent.BroadcasterUserLogin))
 
 	case helix.EventSubTypeStreamOffline:
 		var offlineEvent helix.EventSubStreamOfflineEvent
 		err = json.NewDecoder(bytes.NewReader(vals.Event)).Decode(&offlineEvent)
-		log.Printf("got stream online event webhook: %s is live\n", offlineEvent.BroadcasterUserName)
+		log.Printf("got stream offline event webhook: %s is now offline\n", offlineEvent.BroadcasterUserName)
 		w.WriteHeader(200)
 		w.Write([]byte("ok"))
-		app.SendNoContext("nouryxd", fmt.Sprintf("%s went offline FeelsBadMan", offlineEvent.BroadcasterUserName))
+		app.SendNoBanphrase("nouryxd", fmt.Sprintf("%s went offline FeelsBadMan", offlineEvent.BroadcasterUserName))
 	}
 }
 
