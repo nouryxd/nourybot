@@ -3,7 +3,7 @@ package commands
 import (
 	"fmt"
 
-	"github.com/lyx0/nourybot/internal/common"
+	"github.com/lyx0/nourybot/pkg/common"
 	"github.com/lyx0/nourybot/pkg/humanize"
 )
 

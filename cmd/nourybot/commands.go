@@ -6,8 +6,8 @@ import (
 	"strings"
 
 	"github.com/gempir/go-twitch-irc/v4"
-	"github.com/lyx0/nourybot/internal/commands"
-	"github.com/lyx0/nourybot/internal/common"
+	"github.com/lyx0/nourybot/pkg/commands"
+	"github.com/lyx0/nourybot/pkg/common"
 	"github.com/lyx0/nourybot/pkg/ivr"
 	"github.com/lyx0/nourybot/pkg/lastfm"
 	"github.com/lyx0/nourybot/pkg/owm"
@@ -99,11 +99,11 @@ func (app *application) handleCommand(message twitch.PrivateMessage) {
 	case "cf":
 		reply = commands.Coinflip()
 
-		// ()currency <amount> <input currency> to <output currency>
 	case "currency":
 		if msgLen < 4 {
 			reply = "Not enough arguments provided. Usage: ()currency 10 USD to EUR"
 		} else {
+			// ()currency <amount> <input currency> to <output currency>
 			reply, _ = commands.Currency(cmdParams[1], cmdParams[2], cmdParams[4])
 		}
 

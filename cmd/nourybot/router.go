@@ -12,8 +12,8 @@ import (
 	"sort"
 
 	"github.com/julienschmidt/httprouter"
-	"github.com/lyx0/nourybot/internal/common"
 	"github.com/lyx0/nourybot/internal/data"
+	"github.com/lyx0/nourybot/pkg/common"
 	"github.com/lyx0/nourybot/pkg/ivr"
 	"github.com/nicklaw5/helix/v2"
 )

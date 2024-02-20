@@ -1,7 +1,7 @@
 package commands
 
 import (
-	"github.com/lyx0/nourybot/internal/common"
+	"github.com/lyx0/nourybot/pkg/common"
 )
 
 func Coinflip() string {
