@@ -16,6 +16,7 @@ const (
 	eventSubResponseForbidden    = 403
 )
 
+// createLiveSubscription creates a stream.online twitch eventsub subscription for the specified channel
 func (app *application) createLiveSubscription(target, channel string) string {
 	uid := ivr.IDByUsername(channel)
 	if uid == "xd" {
@@ -45,6 +46,7 @@ func (app *application) createLiveSubscription(target, channel string) string {
 	return fmt.Sprintf("Created subscription for channel %v; uid=%v", channel, uid)
 }
 
+// deleteLiveSubscription deletes a stream.live twitch eventsub subscription for the specified channel
 func (app *application) deleteLiveSubscription(target, channel string) string {
 	uid := ivr.IDByUsername(channel)
 	if uid == "xd" {
@@ -100,6 +102,7 @@ func (app *application) deleteLiveSubscription(target, channel string) string {
 	return fmt.Sprintf("Successfully deleted live notification for channel %s; id=%v", channel, uid)
 }
 
+// createOfflineSubscription creates a stream.offline twitch eventsub subscription for the specified channel
 func (app *application) createOfflineSubscription(target, channel string) string {
 	uid := ivr.IDByUsername(channel)
 	if uid == "xd" {
@@ -129,6 +132,7 @@ func (app *application) createOfflineSubscription(target, channel string) string
 	return fmt.Sprintf("Created offline subscription for channel %v; uid=%v", channel, uid)
 }
 
+// deleteOfflineSubscription deletes a stream.offline twitch eventsub subscription for the specified channel
 func (app *application) deleteOfflineSubscription(target, channel string) string {
 	uid := ivr.IDByUsername(channel)
 	if uid == "xd" {
