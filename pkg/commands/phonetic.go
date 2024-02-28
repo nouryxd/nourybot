@@ -75,6 +75,8 @@ var cm = map[string]string{
 	"M": "М",
 }
 
+// Phonetic replaces the characters in a given message with the characters on a
+// russian phonetic keyboard.
 func Phonetic(message string) (string, error) {
 	var ts string
 

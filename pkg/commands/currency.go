@@ -6,6 +6,8 @@ import (
 	"net/http"
 )
 
+// Currency queries the decapi.me api for the current exchange rate for
+// two given currencies.
 func Currency(currAmount, currFrom, currTo string) (string, error) {
 	basePath := "https://decapi.me/misc/currency/"
 	from := fmt.Sprintf("?from=%s", currFrom)

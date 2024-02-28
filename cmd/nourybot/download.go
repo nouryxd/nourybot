@@ -37,6 +37,8 @@ func (app *application) NewDownload(destination, target, link string, msg twitch
 	}
 }
 
+// ConvertAndSave downloads a given video link with yt-dlp, then tries to convert it
+// to mp4 with ffmpeg and afterwards serves the video from /public/uploads
 func (app *application) ConvertAndSave(fName, link string, msg twitch.PrivateMessage) {
 	goutubedl.Path = "yt-dlp"
 	uuid_og := uuid.NewString()
@@ -64,10 +66,8 @@ func (app *application) ConvertAndSave(fName, link string, msg twitch.PrivateMes
 		app.Send(msg.Channel, fmt.Sprintf("Something went wrong FeelsBadMan: %q", err), msg)
 		return
 	}
-	//app.Send(target, "Downloaded.", msg)
 	fileName := fmt.Sprintf("/public/uploads/%s.%s", uuid_og, rExt)
 	f, err := os.Create(fileName)
-	//app.Send(target, fmt.Sprintf("Filename: %s", fileName), msg)
 	if err != nil {
 		app.Log.Errorln(err)
 		app.Send(msg.Channel, fmt.Sprintf("Something went wrong FeelsBadMan: %q", err), msg)
@@ -100,6 +100,8 @@ func (app *application) ConvertAndSave(fName, link string, msg twitch.PrivateMes
 	app.Send(msg.Channel, fmt.Sprintf("https://bot.noury.li/uploads/%s.mp4", fName), msg)
 }
 
+// ConvertAndSave downloads a given video link with yt-dlp, then tries to convert it
+// to mp4 with ffmpeg and afterwards passes the result to NewUpload with yaf.li as destination.
 func (app *application) ConvertToMP4(link string, msg twitch.PrivateMessage) {
 	fName := "in"
 	goutubedl.Path = "yt-dlp"
@@ -129,10 +131,8 @@ func (app *application) ConvertToMP4(link string, msg twitch.PrivateMessage) {
 		app.Send(msg.Channel, fmt.Sprintf("Something went wrong FeelsBadMan: %q", err), msg)
 		return
 	}
-	//app.Send(target, "Downloaded.", msg)
 	fileName := fmt.Sprintf("/public/uploads/%s.%s", uuid_og, rExt)
 	f, err := os.Create(fileName)
-	//app.Send(target, fmt.Sprintf("Filename: %s", fileName), msg)
 	if err != nil {
 		app.Log.Errorln(err)
 		app.Send(msg.Channel, fmt.Sprintf("Something went wrong FeelsBadMan: %q", err), msg)
@@ -165,6 +165,8 @@ func (app *application) ConvertToMP4(link string, msg twitch.PrivateMessage) {
 	go app.NewUpload("yaf", out, msg.Channel, uuid_new, msg)
 }
 
+// YafDownload downloads a given link with yt-dlp and then passes the result on to the NewUpload function
+// with yaf.li as destination.
 func (app *application) YafDownload(target, link, identifier string, msg twitch.PrivateMessage) {
 	goutubedl.Path = "yt-dlp"
 
@@ -191,10 +193,8 @@ func (app *application) YafDownload(target, link, identifier string, msg twitch.
 		app.Send(target, fmt.Sprintf("Something went wrong FeelsBadMan: %q", err), msg)
 		return
 	}
-	//app.Send(target, "Downloaded.", msg)
 	fileName := fmt.Sprintf("/public/uploads/%s.%s", identifier, rExt)
 	f, err := os.Create(fileName)
-	//app.Send(target, fmt.Sprintf("Filename: %s", fileName), msg)
 
 	if err != nil {
 		app.Log.Errorln(err)
@@ -210,14 +210,12 @@ func (app *application) YafDownload(target, link, identifier string, msg twitch.
 
 	downloadResult.Close()
 	f.Close()
-	// duration := 5 * time.Second
-	// dl.twitchClient.Say(target, "ResidentSleeper ..")
-	// time.Sleep(duration)
 
 	go app.NewUpload("yaf", fileName, target, identifier, msg)
-
 }
 
+// KappaDownload downloads a given link with yt-dlp and then passes the result on to the NewUpload function
+// with kappa.lol as destination.
 func (app *application) KappaDownload(target, link, identifier string, msg twitch.PrivateMessage) {
 	goutubedl.Path = "yt-dlp"
 
@@ -263,14 +261,12 @@ func (app *application) KappaDownload(target, link, identifier string, msg twitc
 
 	downloadResult.Close()
 	f.Close()
-	// duration := 5 * time.Second
-	// dl.twitchClient.Say(target, "ResidentSleeper ..")
-	// time.Sleep(duration)
 
 	go app.NewUpload("kappa", fileName, target, identifier, msg)
-
 }
 
+// GoFileDownload downloads a given link with yt-dlp and then passes the result to the NewUpload function
+// with gofile.io as destination.
 func (app *application) GofileDownload(target, link, identifier string, msg twitch.PrivateMessage) {
 	goutubedl.Path = "yt-dlp"
 
@@ -324,6 +320,8 @@ func (app *application) GofileDownload(target, link, identifier string, msg twit
 	go app.NewUpload("gofile", fileName, target, identifier, msg)
 }
 
+// CatboxDownload downloads a given link with yt-dlp and then passes the result to NewUpload function
+// with catbox.moe as destination.
 func (app *application) CatboxDownload(target, link, identifier string, msg twitch.PrivateMessage) {
 	goutubedl.Path = "yt-dlp"
 	var fileName string
@@ -348,10 +346,8 @@ func (app *application) CatboxDownload(target, link, identifier string, msg twit
 		app.Send(target, fmt.Sprintf("Something went wrong FeelsBadMan: %q", err), msg)
 		return
 	}
-	//app.Send(target, "Downloaded.", msg)
 	fileName = fmt.Sprintf("/public/uploads/%s.%s", identifier, rExt)
 	f, err := os.Create(fileName)
-	//app.Send(target, fmt.Sprintf("Filename: %s", fileName), msg)
 
 	if err != nil {
 		app.Log.Errorln(err)

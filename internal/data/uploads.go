@@ -23,7 +23,7 @@ type UploadModel struct {
 	DB *sql.DB
 }
 
-// Insert takes in a channel struct and inserts it into the database.
+// Insert logs the supplied valeus to the uploads database.
 func (u UploadModel) Insert(twitchLogin, twitchID, twitchChannel, twitchMessage, filehoster, downloadURL, identifier string) {
 	query := `
 	INSERT INTO uploads(twitchlogin, twitchid, twitchchannel, twitchmessage,  filehoster, downloadurl, uploadurl, identifier)
@@ -59,6 +59,7 @@ func (u UploadModel) Insert(twitchLogin, twitchID, twitchChannel, twitchMessage,
 	}
 }
 
+// UpdateUploadURL updates the url for a given upload identifier.
 func (u UploadModel) UpdateUploadURL(identifier, uploadURL string) {
 	var id string
 	query := `

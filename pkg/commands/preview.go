@@ -6,6 +6,8 @@ import (
 	"github.com/lyx0/nourybot/pkg/common"
 )
 
+// Preview returns a link to an almost live image of a given twitch stream
+// if the channel is currently live.
 func Preview(channel string) string {
 	imageHeight := common.GenerateRandomNumberRange(1040, 1080)
 	imageWidth := common.GenerateRandomNumberRange(1890, 1920)

@@ -50,9 +50,6 @@ type application struct {
 	// Rdb       *redis.Client
 }
 
-// main() only calls the run function so that we can go around the limitation
-// that main() cannot return anything, like int for error codes in c for example.
-// https://grafana.com/blog/2024/02/09/how-i-write-http-services-in-go-after-13-years/
 func main() {
 	ctx := context.Background()
 	ctx, cancel := signal.NotifyContext(ctx, os.Interrupt)
@@ -65,8 +62,7 @@ func main() {
 
 func run(ctx context.Context, w io.Writer, args []string) error {
 	var cfg config
-	// Initialize a new sugared logger that we'll pass on
-	// down through the application.
+
 	logger := zap.NewExample()
 	defer func() {
 		if err := logger.Sync(); err != nil {
@@ -156,13 +152,6 @@ func run(ctx context.Context, w io.Writer, args []string) error {
 
 	// Received a PrivateMessage (normal chat message).
 	app.TwitchClient.OnPrivateMessage(func(message twitch.PrivateMessage) {
-		// sugar.Infow("New Twitch PrivateMessage",
-		// 	"message.Channel", message.Channel,
-		// 	"message.User.DisplayName", message.User.DisplayName,
-		// 	"message.User.ID", message.User.ID,
-		// 	"message.Message", message.Message,
-		// )
-
 		// roomId is the Twitch UserID of the channel the message originated from.
 		// If there is no roomId something went really wrong.
 		roomId := message.Tags["room-id"]

@@ -51,7 +51,7 @@ func (u UserModel) Insert(login, twitchId string) error {
 	return nil
 }
 
-// SetLocation searches the database for a record with the provided login value
+// SetLocation queries the database for a record with the provided login value
 // and if that exists sets the location to the supplied
 func (u UserModel) SetLocation(twitchId, location string) error {
 	query := `
@@ -78,8 +78,8 @@ func (u UserModel) SetLocation(twitchId, location string) error {
 	return nil
 }
 
-// SetLocation searches the database for a record with the provided login value
-// and if that exists sets the location to the supplied
+// GetLocation queries the database for a record with the provided login value
+// and if that exists returns the location value.
 func (u UserModel) GetLocation(twitchId string) (string, error) {
 	query := `
 	SELECT location
@@ -104,8 +104,8 @@ func (u UserModel) GetLocation(twitchId string) (string, error) {
 	return user.Location, nil
 }
 
-// SetLocation searches the database for a record with the provided login value
-// and if that exists sets the location to the supplied
+// SetLastFM queries the database for a record with the provided login value
+// and if that exists sets the lastfm value to the supplied value.
 func (u UserModel) SetLastFM(login, lastfmUser string) error {
 	query := `
 	UPDATE users
@@ -131,8 +131,8 @@ func (u UserModel) SetLastFM(login, lastfmUser string) error {
 	return nil
 }
 
-// SetLocation searches the database for a record with the provided login value
-// and if that exists sets the location to the supplied
+// GetLastFM queries the database for a record with the provided login value
+// and if that exists returns the lastfm username.
 func (u UserModel) GetLastFM(login string) (string, error) {
 	query := `
 	SELECT lastfm_username
@@ -157,8 +157,8 @@ func (u UserModel) GetLastFM(login string) (string, error) {
 	return user.LastFMUsername, nil
 }
 
-// SetLocation searches the database for a record with the provided login value
-// and if that exists sets the location to the supplied
+// SetLocation queries the database for a record with the provided twitch id
+// and if that exists returns the level specified in the database for the user.
 func (u UserModel) GetLevel(twitchId string) (int, error) {
 	query := `
 	SELECT level
@@ -184,14 +184,13 @@ func (u UserModel) GetLevel(twitchId string) (int, error) {
 }
 
 // Setlevel searches the database for a record with the provided login value
-// and if that exists sets the level to the supplied level value.
+// and if that exists sets the level to the newly supplied level value.
 func (u UserModel) SetLevel(login string, level int) error {
 	query := `
 	UPDATE users
 	SET level = $2
 	WHERE login = $1`
 
-	// err := u.DB.QueryRow(query, args...).Scan(&user)
 	result, err := u.DB.Exec(query, login, level)
 	if err != nil {
 		return err
@@ -242,7 +241,7 @@ func (u UserModel) Get(login string) (*User, error) {
 	return &user, nil
 }
 
-// Check checks the database for a record with the given login name.
+// Check checks for a record with the given login name.
 func (u UserModel) Check(twitchId string) (*User, error) {
 	query := `
 	SELECT id, login

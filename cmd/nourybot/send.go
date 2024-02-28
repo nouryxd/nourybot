@@ -12,16 +12,14 @@ import (
 	"github.com/google/uuid"
 )
 
-// banphraseResponse is the data we receive back from
-// the banphrase API
+// banphraseResponse is the data we receive back from the banphrase API
 type banphraseResponse struct {
 	Banned        bool          `json:"banned"`
 	InputMessage  string        `json:"input_message"`
 	BanphraseData banphraseData `json:"banphrase_data"`
 }
 
-// banphraseData contains details about why a message
-// was banphrased.
+// banphraseData contains details about why a message was banphrased.
 type banphraseData struct {
 	Id        int    `json:"id"`
 	Name      string `json:"name"`
@@ -83,8 +81,7 @@ func (app *application) checkMessage(text string) (bool, string) {
 	return true, "Banphrase API couldn't be reached monkaS"
 }
 
-// Send is used to send twitch replies and contains the necessary
-// safeguards and logic for that.
+// SendNoContext is used to send twitch replies without the full twitch.PrivateMessage context to be logged.
 func (app *application) SendNoContext(target, message string) {
 	// Message we are trying to send is empty.
 	if len(message) == 0 {
@@ -141,8 +138,8 @@ func (app *application) SendNoContext(target, message string) {
 	}
 }
 
-// Send is used to send twitch replies and contains the necessary
-// safeguards and logic for that.
+// Send is used to send twitch replies and contains the necessary safeguards and logic for that.
+// Send also logs the twitch.PrivateMessage contents into the database.
 func (app *application) Send(target, message string, msgContext twitch.PrivateMessage) {
 	// Message we are trying to send is empty.
 	if len(message) == 0 {
@@ -200,8 +197,7 @@ func (app *application) Send(target, message string, msgContext twitch.PrivateMe
 	}
 }
 
-// Send is used to send twitch replies and contains the necessary
-// safeguards and logic for that.
+// SendNoBanphrase does not check the banphrase before sending a twitch mesage.
 func (app *application) SendNoBanphrase(target, message string) {
 	// Message we are trying to send is empty.
 	if len(message) == 0 {

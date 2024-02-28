@@ -10,6 +10,7 @@ import (
 	"net/http"
 	"os"
 	"sort"
+	"time"
 
 	"github.com/julienschmidt/httprouter"
 	"github.com/lyx0/nourybot/internal/data"
@@ -77,6 +78,9 @@ func (app *application) eventsubFollow(w http.ResponseWriter, r *http.Request, _
 		w.WriteHeader(200)
 		w.Write([]byte("ok"))
 
+		// Sleep for 5 seconds before checking querying game and title as they might not be updated.
+		time.Sleep(time.Duration(5) * time.Second)
+
 		game := ivr.GameByUsername(liveEvent.BroadcasterUserLogin)
 		title := ivr.TitleByUsername(liveEvent.BroadcasterUserLogin)
 
@@ -114,8 +118,6 @@ func (app *application) timersRoute(w http.ResponseWriter, r *http.Request, _ ht
 		app.Log.Errorw("Error trying to retrieve all timer for a channel from database", err)
 		return
 	}
-	// The slice of timers is only used to log them at
-	// the start so it looks a bit nicer.
 
 	// Iterate over all timers and then add them onto the scheduler.
 	for i, v := range timerData {
@@ -164,8 +166,6 @@ func (app *application) channelTimersRoute(w http.ResponseWriter, r *http.Reques
 		app.Log.Errorw("Error trying to retrieve all timer for a channel from database", err)
 		return
 	}
-	// The slice of timers is only used to log them at
-	// the start so it looks a bit nicer.
 
 	// Iterate over all timers and then add them onto the scheduler.
 	for i, v := range timerData {
@@ -206,11 +206,8 @@ func (app *application) commandsRoute(w http.ResponseWriter, r *http.Request, _ 
 		return
 	}
 
-	// The slice of timers is only used to log them at
-	// the start so it looks a bit nicer.
 	var cs []string
 
-	// Iterate over all timers and then add them onto the scheduler.
 	for i, v := range helpText {
 		// idk why this works but it does so no touchy touchy.
 		// https://github.com/robfig/cron/issues/420#issuecomment-940949195

@@ -17,16 +17,6 @@ const (
 )
 
 func (app *application) createLiveSubscription(target, channel string) string {
-	// client, err := helix.NewClient(&helix.Options{
-	// 	ClientID:       app.Config.twitchClientId,
-	// 	AppAccessToken: app.HelixClient.GetAppAccessToken(),
-	// })
-	// if err != nil {
-	// 	app.Log.Errorw("Error creating new helix client",
-	// 		"err", err,
-	// 	)
-	// }
-
 	uid := ivr.IDByUsername(channel)
 	if uid == "xd" {
 		return fmt.Sprintf("Could not find user with name %v", channel)
@@ -56,22 +46,12 @@ func (app *application) createLiveSubscription(target, channel string) string {
 }
 
 func (app *application) deleteLiveSubscription(target, channel string) string {
-	client, err := helix.NewClient(&helix.Options{
-		ClientID:       app.Config.twitchClientId,
-		AppAccessToken: app.HelixClient.GetAppAccessToken(),
-	})
-	if err != nil {
-		app.Log.Errorw("Error creating new helix client",
-			"err", err,
-		)
-	}
-
 	uid := ivr.IDByUsername(channel)
 	if uid == "xd" {
 		return fmt.Sprintf("Could not find user with name %v", channel)
 	}
 
-	resp, err := client.GetEventSubSubscriptions(&helix.EventSubSubscriptionsParams{
+	resp, err := app.HelixClient.GetEventSubSubscriptions(&helix.EventSubSubscriptionsParams{
 		UserID: uid,
 	})
 	if err != nil {
@@ -103,7 +83,7 @@ func (app *application) deleteLiveSubscription(target, channel string) string {
 	//eventSubID := resp.Data.EventSubSubscriptions[0].ID
 	//app.SendNoContext("nouryxd", eventSubID)
 
-	resp2, err := client.RemoveEventSubSubscription(eventSubID)
+	resp2, err := app.HelixClient.RemoveEventSubSubscription(eventSubID)
 	if err != nil {
 		app.Log.Errorw("Error getting EventSub subscriptions",
 			"resp", resp,
@@ -121,16 +101,6 @@ func (app *application) deleteLiveSubscription(target, channel string) string {
 }
 
 func (app *application) createOfflineSubscription(target, channel string) string {
-	// client, err := helix.NewClient(&helix.Options{
-	// 	ClientID:       app.Config.twitchClientId,
-	// 	AppAccessToken: app.HelixClient.GetAppAccessToken(),
-	// })
-	// if err != nil {
-	// 	app.Log.Errorw("Error creating new helix client",
-	// 		"err", err,
-	// 	)
-	// }
-
 	uid := ivr.IDByUsername(channel)
 	if uid == "xd" {
 		return fmt.Sprintf("Could not find user with name %v", channel)
@@ -160,22 +130,12 @@ func (app *application) createOfflineSubscription(target, channel string) string
 }
 
 func (app *application) deleteOfflineSubscription(target, channel string) string {
-	client, err := helix.NewClient(&helix.Options{
-		ClientID:       app.Config.twitchClientId,
-		AppAccessToken: app.HelixClient.GetAppAccessToken(),
-	})
-	if err != nil {
-		app.Log.Errorw("Error creating new helix client",
-			"err", err,
-		)
-	}
-
 	uid := ivr.IDByUsername(channel)
 	if uid == "xd" {
 		return fmt.Sprintf("Could not find user with name %v", channel)
 	}
 
-	resp, err := client.GetEventSubSubscriptions(&helix.EventSubSubscriptionsParams{
+	resp, err := app.HelixClient.GetEventSubSubscriptions(&helix.EventSubSubscriptionsParams{
 		UserID: uid,
 	})
 	if err != nil {
@@ -207,7 +167,7 @@ func (app *application) deleteOfflineSubscription(target, channel string) string
 	//eventSubID = resp.Data.EventSubSubscriptions[0].ID
 	//app.SendNoContext("nouryxd", eventSubID)
 
-	resp2, err := client.RemoveEventSubSubscription(eventSubID)
+	resp2, err := app.HelixClient.RemoveEventSubSubscription(eventSubID)
 	if err != nil {
 		app.Log.Errorw("Error getting EventSub subscriptions",
 			"resp", resp,

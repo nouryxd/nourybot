@@ -8,7 +8,8 @@ import (
 	"gopkg.in/gomail.v2"
 )
 
-// Thanks to Twitch moving whispers again I just use email now.
+// SendEmail sends an email to the email address configured in the .env file
+// with the supplied body.
 func (app *application) SendEmail(subject, body string) {
 	err := godotenv.Load()
 	if err != nil {

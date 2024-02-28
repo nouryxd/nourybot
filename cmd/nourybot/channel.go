@@ -7,9 +7,9 @@ import (
 	"github.com/lyx0/nourybot/pkg/ivr"
 )
 
-// AddChannel takes in a channel name, then calls GetIdByLogin for the
-// channels ID and inserts both the name and id value into the database.
-// If there is no error thrown the TwitchClient joins the channel afterwards.
+// AddChannel calls ivr.IDByUsername with the provided login and tries to insert
+// the Twitch login and userID into the database. If there is no error thrown the
+// TwitchClient joins the channel afterwards.
 func (app *application) AddChannel(login string, message twitch.PrivateMessage) {
 	userID := ivr.IDByUsername(login)
 
@@ -27,7 +27,6 @@ func (app *application) AddChannel(login string, message twitch.PrivateMessage) 
 }
 
 // GetAllChannels() queries the database and lists all channels.
-// Only used for debug/information purposes.
 func (app *application) GetAllChannels() {
 	channel, err := app.Models.Channels.GetAll()
 	if err != nil {

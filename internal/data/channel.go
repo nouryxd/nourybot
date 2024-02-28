@@ -48,7 +48,7 @@ func (c ChannelModel) Get(login string) (*Channel, error) {
 	return &channel, nil
 }
 
-// Insert takes in a channel struct and inserts it into the database.
+// Insert takes in a twitch login name and a twitch id and inserts them into the database.
 func (c ChannelModel) Insert(login, id string) error {
 	query := `
 	INSERT INTO channels(login, twitchid)
@@ -79,7 +79,7 @@ func (c ChannelModel) Insert(login, id string) error {
 	return nil
 }
 
-// GetAll() returns a pointer to a slice of all channels (`[]*Channel`) in the database.
+// GetAll returns all channels in the database.
 func (c ChannelModel) GetAll() ([]*Channel, error) {
 	query := `
 	SELECT id, added_at, login, twitchid
@@ -97,11 +97,8 @@ func (c ChannelModel) GetAll() ([]*Channel, error) {
 		return nil, err
 	}
 
-	// Need to defer a call to rows.Close() to ensure the resultset
-	// is closed before GetAll() returns.
 	defer rows.Close()
 
-	// Initialize an empty slice to hold the data.
 	channels := []*Channel{}
 
 	// Iterate over the resultset.
@@ -132,7 +129,7 @@ func (c ChannelModel) GetAll() ([]*Channel, error) {
 	return channels, nil
 }
 
-// GetJoinable() returns a slice of channel names (Channel.Login) in the database.
+// GetJoinable returns a slice of channels in the database.
 func (c ChannelModel) GetJoinable() ([]string, error) {
 	query := `
 	SELECT login
@@ -150,11 +147,8 @@ func (c ChannelModel) GetJoinable() ([]string, error) {
 		return nil, err
 	}
 
-	// Need to defer a call to rows.Close() to ensure the resultset
-	// is closed before GetAll() returns.
 	defer rows.Close()
 
-	// Initialize an empty slice to hold the data.
 	channels := []string{}
 
 	// Iterate over the resultset.
@@ -182,8 +176,7 @@ func (c ChannelModel) GetJoinable() ([]string, error) {
 	return channels, nil
 }
 
-// Delete takes in a login name and queries the database and if there is an
-// entry with that login name deletes the entry.
+// Delete deletes the channel with the given login name string in the database.
 func (c ChannelModel) Delete(login string) error {
 	// Prepare the statement.
 	query := `

@@ -11,6 +11,8 @@ import (
 	"runtime/debug"
 )
 
+// GetVersion returns the current git commit hash.
+// If the version is modified the hash ends in "-dirty"
 func GetVersion() string {
 	var revision string
 	var modified bool
@@ -40,6 +42,8 @@ func GetVersion() string {
 	return revision
 }
 
+// GetVersion returns the current git commit hash.
+// This function does not add the "-dirty" string at the end of the hash.
 func GetVersionPure() string {
 	var revision string
 	var modified bool

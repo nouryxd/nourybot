@@ -20,6 +20,7 @@ type ivrGame struct {
 	DisplayName string `json:"displayName"`
 }
 
+// TitleByUsername returns the current title of a supplied twitch channel.
 func TitleByUsername(login string) string {
 	baseUrl := "https://api.ivr.fi/v2/twitch/user?login="
 
@@ -39,6 +40,7 @@ func TitleByUsername(login string) string {
 	return responseList[0].Stream.Title
 }
 
+// GameByUsername returns the current game of a supplied twitch channel.
 func GameByUsername(login string) string {
 	baseUrl := "https://api.ivr.fi/v2/twitch/user?login="
 
@@ -58,6 +60,8 @@ func GameByUsername(login string) string {
 	return responseList[0].Stream.Game.DisplayName
 }
 
+// IDByUsernameReply returns the twitch user id of a supplied
+// twitch username in the format of "username=id"
 func IDByUsernameReply(username string) string {
 	baseUrl := "https://api.ivr.fi/v2/twitch/user?login="
 
@@ -76,6 +80,7 @@ func IDByUsernameReply(username string) string {
 	return reply
 }
 
+// IDByUsername returns the twitch user id for a given twitch username.
 func IDByUsername(username string) string {
 	baseUrl := "https://api.ivr.fi/v2/twitch/user?login="
 

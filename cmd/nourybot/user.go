@@ -9,8 +9,8 @@ import (
 	"github.com/lyx0/nourybot/pkg/owm"
 )
 
-// AddUser calls GetIdByLogin to get the twitch id of the login name and then adds
-// the login name, twitch id and supplied level to the database.
+// InitUser is called on each command usage and checks if the user that sent the command
+// is already in the database. If he isn't then add the user to the database.
 func (app *application) InitUser(login, twitchId string) {
 	_, err := app.Models.Users.Check(twitchId)
 	//app.Log.Error(err)
@@ -21,8 +21,7 @@ func (app *application) InitUser(login, twitchId string) {
 	}
 }
 
-// DebugUser queries the database for a login name, if that name exists it returns the fields
-// and outputs them to twitch chat and a twitch whisper.
+// DebugUser queries the database for a login name, if that name exists it creates a new paste
 func (app *application) DebugUser(login string, message twitch.PrivateMessage) {
 	user, err := app.Models.Users.Get(login)
 
@@ -47,7 +46,6 @@ func (app *application) DebugUser(login string, message twitch.PrivateMessage) {
 			return
 		}
 		app.Send(message.Channel, resp, message)
-		// app.SendEmail(subject, body)
 		return
 	}
 }
@@ -93,10 +91,6 @@ func (app *application) EditUserLevel(login, lvl string, message twitch.PrivateM
 // SetUserLocation sets new location for the user
 func (app *application) SetUserLocation(message twitch.PrivateMessage) {
 	// snipLength is the length we need to "snip" off of the start of `message`.
-	//  `()set location` = +13
-	//  trailing space =  +1
-	//      zero-based =  +1
-	//                 =  16
 	snipLength := 15
 
 	// Split the twitch message at `snipLength` plus length of the name of the
@@ -134,6 +128,7 @@ func (app *application) SetUserLastFM(lastfmUser string, message twitch.PrivateM
 	}
 }
 
+// GetUserLevel returns the level a user has in the database.
 func (app *application) GetUserLevel(msg twitch.PrivateMessage) int {
 	var dbUserLevel int
 	var twitchUserLevel int
@@ -160,6 +155,10 @@ func (app *application) GetUserLevel(msg twitch.PrivateMessage) int {
 	}
 }
 
+// UserCheckWeather checks if a user is in the database and if he has a location
+// provided. If both is true it calls owm.Weather with the location and replies
+// with the result.
+// If no location was provided the response will instruct the user how to set a location.
 func (app *application) UserCheckWeather(message twitch.PrivateMessage) {
 	target := message.Channel
 	twitchLogin := message.User.Name
@@ -180,6 +179,10 @@ func (app *application) UserCheckWeather(message twitch.PrivateMessage) {
 	app.Send(target, reply, message)
 }
 
+// UserCheckWeather checks if a user is in the database and if he has a lastfm
+// username provided. If both is true it calls lastfm.LastFmUserRecent with the username
+// and replies with the result.
+// If no lastfm username was provided the response will instruct the user how to set a lastfm username.
 func (app *application) UserCheckLastFM(message twitch.PrivateMessage) string {
 	twitchLogin := message.User.Name
 	target := message.Channel

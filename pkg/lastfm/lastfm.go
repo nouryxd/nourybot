@@ -9,6 +9,7 @@ import (
 	"go.uber.org/zap"
 )
 
+// LastFmUserRecent returns the recently played track for a given lastfm username.
 func LastFmUserRecent(target, user string) string {
 	sugar := zap.NewExample().Sugar()
 

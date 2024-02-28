@@ -20,7 +20,7 @@ type CommandsLogModel struct {
 	DB *sql.DB
 }
 
-// Get tries to find a command in the database with the provided name.
+// Insert inserts the supplied values into the database commands_logs
 func (c CommandsLogModel) Insert(twitchLogin, twitchId, twitchChannel, twitchMessage, commandName string, uLvl int, identifier, rawMsg string) {
 	query := `
 	INSERT into commands_logs(twitch_login, twitch_id, twitch_channel, twitch_message, command_name, user_level, identifier, raw_message)

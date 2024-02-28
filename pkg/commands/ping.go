@@ -7,6 +7,7 @@ import (
 	"github.com/lyx0/nourybot/pkg/humanize"
 )
 
+// Ping returns information about the bot.
 func Ping(env string) string {
 	botUptime := humanize.Time(common.GetUptime())
 	commandsUsed := common.GetCommandsUsed()

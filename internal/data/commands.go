@@ -20,7 +20,7 @@ type CommandModel struct {
 	DB *sql.DB
 }
 
-// Get tries to find a command in the database with the provided name.
+// Get tries to find a command in the database with the provided name and channel.
 func (c CommandModel) Get(name, channel string) (*Command, error) {
 	query := `
 	SELECT *
@@ -50,14 +50,13 @@ func (c CommandModel) Get(name, channel string) (*Command, error) {
 	return &command, nil
 }
 
-// GetAll() returns a pointer to a slice of all channels (`[]*Channel`) in the database.
+// GetAll returns  a slice of all channels in the database.
 func (c CommandModel) GetAll() ([]*Command, error) {
 	query := `
 	SELECT *
 	FROM commands
 	ORDER BY id`
 
-	// Create a context with 3 seconds timeout.
 	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
 	defer cancel()
 
@@ -68,11 +67,8 @@ func (c CommandModel) GetAll() ([]*Command, error) {
 		return nil, err
 	}
 
-	// Need to defer a call to rows.Close() to ensure the resultset
-	// is closed before GetAll() returns.
 	defer rows.Close()
 
-	// Initialize an empty slice to hold the data.
 	commands := []*Command{}
 
 	// Iterate over the resultset.
@@ -105,7 +101,7 @@ func (c CommandModel) GetAll() ([]*Command, error) {
 	return commands, nil
 }
 
-// GetAll() returns a pointer to a slice of all channels (`[]*Channel`) in the database.
+// GetAll returns  a slice of all channels in the database.
 func (c CommandModel) GetAllChannel(channel string) ([]*Command, error) {
 	query := `
 	SELECT id, name, channel, text, level, description
@@ -113,7 +109,6 @@ func (c CommandModel) GetAllChannel(channel string) ([]*Command, error) {
 	WHERE channel = $1
 	ORDER BY name`
 
-	// Create a context with 3 seconds timeout.
 	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
 	defer cancel()
 
@@ -124,8 +119,6 @@ func (c CommandModel) GetAllChannel(channel string) ([]*Command, error) {
 		return nil, err
 	}
 
-	// Need to defer a call to rows.Close() to ensure the resultset
-	// is closed before GetAll() returns.
 	defer rows.Close()
 
 	// Initialize an empty slice to hold the data.
@@ -193,6 +186,7 @@ func (c CommandModel) Insert(command *Command) error {
 	return nil
 }
 
+// Update updates a command with the new supplied values.
 func (c CommandModel) Update(command *Command) error {
 	query := `
 	UPDATE commands
@@ -220,7 +214,7 @@ func (c CommandModel) Update(command *Command) error {
 }
 
 // SetLevel queries the database for an entry with the provided name,
-// if there is one it updates the entrys level with the provided level.
+// if there is one it updates the entries level with the newly provided level.
 func (c CommandModel) SetLevel(name, channel string, level int) error {
 	query := `
 	UPDATE commands

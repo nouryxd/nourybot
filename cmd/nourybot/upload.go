@@ -44,6 +44,7 @@ func (app *application) NewUpload(destination, fileName, target, identifier stri
 	}
 }
 
+// CatboxUpload uplodas the given file to catbox.moe.
 func (app *application) CatboxUpload(target, fileName, identifier string, msg twitch.PrivateMessage) {
 	defer os.Remove(fileName)
 	file, err := os.Open(fileName)
@@ -53,10 +54,6 @@ func (app *application) CatboxUpload(target, fileName, identifier string, msg tw
 	}
 	defer file.Close()
 	app.Send(target, "Uploading to catbox.moe... dankCircle", msg)
-
-	// if size := helper.FileSize(fileName); size > 209715200 {
-	// 	return "", fmt.Errorf("file too large, size: %d MB", size/1024/1024)
-	// }
 
 	r, w := io.Pipe()
 	m := multipart.NewWriter(w)
@@ -112,6 +109,7 @@ func (app *application) CatboxUpload(target, fileName, identifier string, msg tw
 	app.Send(target, reply, msg)
 }
 
+// GetGofileServer queries to gofile api for the server name to upload to
 func (app *application) GetGofileServer() string {
 	type gofileData struct {
 		Server string `json:"server"`
@@ -139,6 +137,7 @@ func (app *application) GetGofileServer() string {
 	return uploadServer
 }
 
+// GofileUpload uplodas the given file to gofile.io.
 func (app *application) GofileUpload(target, path, identifier string, msg twitch.PrivateMessage) {
 	defer os.Remove(path)
 	app.Send(target, "Uploading to gofile.io... dankCircle", msg)
@@ -231,6 +230,7 @@ func (app *application) GofileUpload(target, path, identifier string, msg twitch
 	app.Send(target, reply, msg)
 }
 
+// KappaUpload uplodas the given file to kappa.lol.
 func (app *application) KappaUpload(target, path, identifier string, msg twitch.PrivateMessage) {
 	defer os.Remove(path)
 	app.Send(target, "Uploading to kappa.lol... dankCircle", msg)
@@ -319,6 +319,7 @@ func (app *application) KappaUpload(target, path, identifier string, msg twitch.
 	app.Send(target, reply, msg)
 }
 
+// YafUpload uplodas the given file to yaf.li.
 func (app *application) YafUpload(target, path, identifier string, msg twitch.PrivateMessage) {
 	defer os.Remove(path)
 	app.Send(target, "Uploading to yaf.li... dankCircle", msg)
@@ -395,6 +396,7 @@ func (app *application) YafUpload(target, path, identifier string, msg twitch.Pr
 	app.Send(target, reply, msg)
 }
 
+// YafUploadString uplodas text to yaf.li.
 func (app *application) YafUploadString(text string) string {
 	path := uuid.NewString()
 	app.Log.Info(path)

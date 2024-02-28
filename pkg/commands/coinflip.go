@@ -4,6 +4,7 @@ import (
 	"github.com/lyx0/nourybot/pkg/common"
 )
 
+// Coinflip returns either "Heads!" or "Tails!"
 func Coinflip() string {
 	flip := common.GenerateRandomNumber(2)
 	var reply string

@@ -15,6 +15,7 @@ type xkcdResponse struct {
 	Img       string `json:"img"`
 }
 
+// Xkcd queries the xkcd api and returns latest xkcd comic.
 func Xkcd() (string, error) {
 	response, err := http.Get("https://xkcd.com/info.0.json")
 	if err != nil {
@@ -34,8 +35,9 @@ func Xkcd() (string, error) {
 	return reply, nil
 }
 
+// RandomXkcd queries the xkcd api and returns a random xkcd comic.
 func RandomXkcd() (string, error) {
-	comicNum := fmt.Sprint(common.GenerateRandomNumber(2772))
+	comicNum := fmt.Sprint(common.GenerateRandomNumber(2899))
 
 	response, err := http.Get(fmt.Sprint("http://xkcd.com/" + comicNum + "/info.0.json"))
 	if err != nil {

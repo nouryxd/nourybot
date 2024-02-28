@@ -20,6 +20,7 @@ type TimerModel struct {
 	DB *sql.DB
 }
 
+// Get tries to find a timer with the supplied name.
 func (t TimerModel) Get(name string) (*Timer, error) {
 	query := `
 	SELECT id, name, identifier, text, channel, repeat
@@ -49,6 +50,7 @@ func (t TimerModel) Get(name string) (*Timer, error) {
 	return &timer, nil
 }
 
+// GetIdentifier returns the internal identifier for a supplied timer name.
 func (t TimerModel) GetIdentifier(name string) (string, error) {
 	query := `
 	SELECT id, name, identifier, text, channel, repeat
@@ -78,7 +80,7 @@ func (t TimerModel) GetIdentifier(name string) (string, error) {
 	return timer.Identifier, nil
 }
 
-// Insert adds a command into the database.
+// Insert adds a new timer into the database.
 func (t TimerModel) Insert(timer *Timer) error {
 	query := `
 	INSERT into timers(name, identifier, text, channel, repeat)
@@ -105,14 +107,13 @@ func (t TimerModel) Insert(timer *Timer) error {
 	return nil
 }
 
-// GetAll() returns a pointer to a slice of all channels (`[]*Channel`) in the database.
+// GetAll returns a pointer to a slice of all timers in the database.
 func (t TimerModel) GetAll() ([]*Timer, error) {
 	query := `
 	SELECT id, name, identifier, text, channel, repeat
 	FROM timers
 	ORDER BY id`
 
-	// Create a context with 3 seconds timeout.
 	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
 	defer cancel()
 
@@ -123,11 +124,8 @@ func (t TimerModel) GetAll() ([]*Timer, error) {
 		return nil, err
 	}
 
-	// Need to defer a call to rows.Close() to ensure the resultset
-	// is closed before GetAll() returns.
 	defer rows.Close()
 
-	// Initialize an empty slice to hold the data.
 	timers := []*Timer{}
 
 	// Iterate over the resultset.
@@ -160,7 +158,7 @@ func (t TimerModel) GetAll() ([]*Timer, error) {
 	return timers, nil
 }
 
-// GetAll() returns a pointer to a slice of all channels (`[]*Channel`) in the database.
+// GetChanneltimer returns a pointer to a slice of all timers of a given channel in the database.
 func (t TimerModel) GetChannelTimer(channel string) ([]*Timer, error) {
 	query := `
 	SELECT id, name, identifier, text, channel, repeat
@@ -168,7 +166,6 @@ func (t TimerModel) GetChannelTimer(channel string) ([]*Timer, error) {
 	WHERE channel = $1
 	ORDER BY name`
 
-	// Create a context with 3 seconds timeout.
 	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
 	defer cancel()
 
@@ -179,11 +176,8 @@ func (t TimerModel) GetChannelTimer(channel string) ([]*Timer, error) {
 		return nil, err
 	}
 
-	// Need to defer a call to rows.Close() to ensure the resultset
-	// is closed before GetAll() returns.
 	defer rows.Close()
 
-	// Initialize an empty slice to hold the data.
 	timers := []*Timer{}
 
 	// Iterate over the resultset.
@@ -248,7 +242,7 @@ func (t TimerModel) Update(timer *Timer) error {
 }
 
 // Delete takes in a command name and queries the database for an entry with
-// the same name and tries to delete that entry.
+// the name and tries to delete that entry.
 func (t TimerModel) Delete(identifier string) error {
 	// Prepare the statement.
 	query := `

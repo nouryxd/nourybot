@@ -10,8 +10,8 @@ import (
 	"github.com/lyx0/nourybot/internal/data"
 )
 
-// AddCommand splits a message into two parts and passes on the
-// name and text to the database handler.
+// AddCommand splits a message into two parts and passes on the name and text
+// to the database handler.
 func (app *application) AddCommand(name string, message twitch.PrivateMessage) {
 	// snipLength is the length we need to "snip" off of the start of `message`.
 	//  `()add command` = +12
@@ -21,13 +21,12 @@ func (app *application) AddCommand(name string, message twitch.PrivateMessage) {
 	snipLength := 15
 
 	// Split the twitch message at `snipLength` plus length of the name of the
-	// command that we want to add.
-	// The part of the message we are left over with is then passed on to the database
-	// handlers as the `text` part of the command.
+	// command that we want to add. The part of the message we are left over with
+	// is then passed on to the database handlers as the `text` part of the command.
 	//
-	// e.g. `()addcommand CoolSponsors Check out CoolSponsor.com they are the coolest sponsors!
+	// e.g.  ()addcommand CoolSponsors Check out CoolSponsor.com they are the coolest sponsors!
 	//       | <- snipLength + name -> |  <--- command text with however many characters ---> |
-	//       | <----- 14 + 12  ------> |
+	//       | <----- 15 + 12  ------> |
 	text := message.Message[snipLength+len(name) : len(message.Message)]
 	command := &data.Command{
 		Name:        name,
@@ -50,12 +49,11 @@ func (app *application) AddCommand(name string, message twitch.PrivateMessage) {
 	}
 }
 
-// GetCommand queries the database for a name. If an entry exists it checks
-// if the Command.Level is 0, if it is the command.Text value is returned.
+// GetCommand queries the database for a command with the provided name. If an entry exists
+// it checks if the Command.Level is 0, if it is the command.Text value is returned.
 //
-// If the Command.Level is not 0 it queries the database for the level of the
-// user who sent the message. If the users level is equal or higher
-// the command.Text field is returned.
+// If the Command.Level is not 0 it queries the database for the level of the user who sent
+// the message. If the users level is equal or higher the command.Text field is returned.
 func (app *application) GetCommand(target, commandName string, userLevel int) (string, error) {
 	app.Log.Infow("command",
 		"target", target,
@@ -75,22 +73,17 @@ func (app *application) GetCommand(target, commandName string, userLevel int) (s
 	} else if userLevel >= command.Level {
 		// Userlevel is sufficient so return the command.Text
 		return command.Text, nil
-
-		// If the command has no level set just return the text.
-		// Otherwise check if the level is high enough.
 	}
 	// Userlevel was not enough so return an empty string and error.
 	return "", ErrUserInsufficientLevel
 }
 
-// GetCommand queries the database for a name. If an entry exists it checks
-// if the Command.Level is 0, if it is the command.Text value is returned.
+// GetCommandDescription queries the database for a command with the provided name in the channel.
+// If a command exist it then checks if the Command.Level is 0, if it is the command.Text value is returned.
 //
-// If the Command.Level is not 0 it queries the database for the level of the
-// user who sent the message. If the users level is equal or higher
-// the command.Text field is returned.
+// If the Command.Level is not 0 it queries the database for the level of the user who sent
+// the message. If the users level is equal or higher the command.Text field is returned.
 func (app *application) GetCommandDescription(name, channel, username string) (string, error) {
-	// Fetch the command from the database if it exists.
 	command, err := app.Models.Commands.Get(name, channel)
 	if err != nil {
 		// It probably did not exist
@@ -102,8 +95,7 @@ func (app *application) GetCommandDescription(name, channel, username string) (s
 	if command.Level == 0 {
 		return command.Description, nil
 	} else {
-		// Get the user from the database to check if the userlevel is equal
-		// or higher than the command.Level.
+		// Get the user from the database to check if the userlevel is sufficient.
 		user, err := app.Models.Users.Get(username)
 		if err != nil {
 			return "", err
@@ -118,8 +110,8 @@ func (app *application) GetCommandDescription(name, channel, username string) (s
 	return "", ErrUserInsufficientLevel
 }
 
-// EditCommandLevel takes in a name and level string and updates the entry with name
-// to the supplied level value.
+// EditCommandLevel checks if a command with the provided name exists in the database. If it does it
+// changes the level of the command with the supplied value.
 func (app *application) EditCommandLevel(name, lvl string, message twitch.PrivateMessage) {
 	level, err := strconv.Atoi(lvl)
 	if err != nil {
@@ -141,10 +133,9 @@ func (app *application) EditCommandLevel(name, lvl string, message twitch.Privat
 	}
 }
 
-// DebugCommand checks if a command with the provided name exists in the database
-// and outputs information about it in the chat.
+// DebugCommand checks if a command with the provided name exists in the database and if it
+// does it creates a new paste with the commands information.
 func (app *application) DebugCommand(name string, message twitch.PrivateMessage) {
-	// Query the database for a command with the provided name
 	cmd, err := app.Models.Commands.Get(name, message.Channel)
 	if err != nil {
 		reply := fmt.Sprintf("Something went wrong FeelsBadMan %s", err)
@@ -160,7 +151,6 @@ func (app *application) DebugCommand(name string, message twitch.PrivateMessage)
 			cmd.Description,
 		)
 
-		//app.Send(message.Channel, reply)
 		resp, err := app.uploadPaste(reply)
 		if err != nil {
 			app.Log.Errorln("Could not upload paste:", err)
@@ -168,7 +158,6 @@ func (app *application) DebugCommand(name string, message twitch.PrivateMessage)
 			return
 		}
 		app.Send(message.Channel, resp, message)
-		//app.SendEmail(fmt.Sprintf("DEBUG for command %s", name), reply)
 		return
 	}
 }
@@ -205,7 +194,7 @@ func (app *application) EditCommandHelp(name string, message twitch.PrivateMessa
 	}
 }
 
-// DeleteCommand takes in a name value and deletes the command from the database if it exists.
+// DeleteCommand takes in a name of a command and deletes the command from the database if it exists.
 func (app *application) DeleteCommand(name string, message twitch.PrivateMessage) {
 	err := app.Models.Commands.Delete(name, message.Channel)
 	if err != nil {
@@ -218,6 +207,7 @@ func (app *application) DeleteCommand(name string, message twitch.PrivateMessage
 	app.Send(message.Channel, reply, message)
 }
 
+// LogCommand is called when a command is called and logs information about it in the database.
 func (app *application) LogCommand(msg twitch.PrivateMessage, commandName string, userLevel int) {
 	twitchLogin := msg.User.Name
 	twitchID := msg.User.ID
@@ -229,8 +219,7 @@ func (app *application) LogCommand(msg twitch.PrivateMessage, commandName string
 	go app.Models.CommandsLogs.Insert(twitchLogin, twitchID, twitchChannel, twitchMessage, commandName, userLevel, identifier, rawMsg)
 }
 
-// InitialTimers is called on startup and queries the database for a list of
-// timers and then adds each onto the scheduler.
+// ListCommands queries the databse for all commands, and then creates a new paste with them.
 func (app *application) ListCommands() string {
 	command, err := app.Models.Commands.GetAll()
 	if err != nil {
@@ -277,8 +266,8 @@ func (app *application) ListCommands() string {
 	return reply
 }
 
-// InitialTimers is called on startup and queries the database for a list of
-// timers and then adds each onto the scheduler.
+// ListChannelCommands queries the databse for all commands in a specified twitch channel
+// and then creates a new paste with them.
 func (app *application) ListChannelCommands(channel string) string {
 	channelUrl := fmt.Sprintf("https://bot.noury.li/commands/%s", channel)
 	commandUrl := "https://bot.noury.li/commands"

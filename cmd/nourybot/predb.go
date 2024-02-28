@@ -14,6 +14,7 @@ type latestFullResult struct {
 	Results int                  `json:"results"`
 	Data    []latestSingleResult `json:"data"`
 }
+
 type latestSingleResult struct {
 	ID       string  `json:"id"`
 	PreTime  string  `json:"pretime"`
