@@ -43,6 +43,11 @@ type eventSubNotification struct {
 	Event        json.RawMessage            `json:"event"`
 }
 
+// eventsubMessageId stores the last message id of an event sub. Twitch resends events
+// if it is unsure that you have gotten them so we check if the last event has the same
+// message id and if it does discard the event.
+var lastEventSubSubscriptionId = ""
+
 func (app *application) eventsubFollow(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
 	body, err := io.ReadAll(r.Body)
 	if err != nil {
@@ -70,16 +75,22 @@ func (app *application) eventsubFollow(w http.ResponseWriter, r *http.Request, _
 		return
 	}
 
+	if vals.Subscription.ID == lastEventSubSubscriptionId {
+		return
+	} else {
+		lastEventSubSubscriptionId = vals.Subscription.ID
+	}
+
 	switch vals.Subscription.Type {
 	case helix.EventSubTypeStreamOnline:
 		var liveEvent helix.EventSubStreamOnlineEvent
+
 		err = json.NewDecoder(bytes.NewReader(vals.Event)).Decode(&liveEvent)
 		log.Printf("got stream online event webhook: %s is live\n", liveEvent.BroadcasterUserName)
 		w.WriteHeader(200)
 		w.Write([]byte("ok"))
 
-		// Sleep for 5 seconds before checking querying game and title as they might not be updated.
-		time.Sleep(time.Duration(5) * time.Second)
+		time.Sleep(5 * time.Second)
 
 		game := ivr.GameByUsername(liveEvent.BroadcasterUserLogin)
 		title := ivr.TitleByUsername(liveEvent.BroadcasterUserLogin)
