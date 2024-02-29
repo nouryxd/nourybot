@@ -4,16 +4,19 @@ import (
 	"fmt"
 
 	"github.com/gempir/go-twitch-irc/v4"
-	"github.com/lyx0/nourybot/pkg/ivr"
 )
 
-// AddChannel calls ivr.IDByUsername with the provided login and tries to insert
+// AddChannel looks up the userID of the provided login and tries to insert
 // the Twitch login and userID into the database. If there is no error thrown the
 // TwitchClient joins the channel afterwards.
 func (app *application) AddChannel(login string, message twitch.PrivateMessage) {
-	userID := ivr.IDByUsername(login)
+	userID, err := app.getUserID(login)
+	if err != nil {
+		app.Log.Error(err)
+		return
+	}
 
-	err := app.Models.Channels.Insert(login, userID)
+	err = app.Models.Channels.Insert(login, userID)
 	if err != nil {
 		reply := fmt.Sprintf("Something went wrong FeelsBadMan %s", err)
 		app.Send(message.Channel, reply, message)

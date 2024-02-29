@@ -265,7 +265,8 @@ func (app *application) SendNoLimit(target, message string) {
 		// TODO: Make it so it splits at a space instead and not in the middle of a word.
 		// Message was fine.
 		identifier := uuid.NewString()
-		go app.Models.SentMessagesLogs.Insert(target, message, "unavailable", "unavailable", "unavailable", "unavailable", identifier, "unavailable")
+		go app.Models.SentMessagesLogs.Insert(
+			target, message, "unavailable", "unavailable", "unavailable", "unavailable", identifier, "unavailable")
 		go app.TwitchClient.Say(target, message)
 		return
 	}

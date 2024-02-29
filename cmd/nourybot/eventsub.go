@@ -3,7 +3,6 @@ package main
 import (
 	"fmt"
 
-	"github.com/lyx0/nourybot/pkg/ivr"
 	"github.com/nicklaw5/helix/v2"
 )
 
@@ -18,9 +17,10 @@ const (
 
 // createLiveSubscription creates a stream.online twitch eventsub subscription for the specified channel
 func (app *application) createLiveSubscription(target, channel string) string {
-	uid := ivr.IDByUsername(channel)
-	if uid == "xd" {
-		return fmt.Sprintf("Could not find user with name %v", channel)
+	uid, err := app.getUserID(channel)
+	if err != nil {
+		app.Log.Error(err)
+		return fmt.Sprint(ErrGenericErrorMessage)
 	}
 
 	resp, err := app.HelixClient.CreateEventSubSubscription(&helix.EventSubSubscription{
@@ -48,9 +48,10 @@ func (app *application) createLiveSubscription(target, channel string) string {
 
 // deleteLiveSubscription deletes a stream.live twitch eventsub subscription for the specified channel
 func (app *application) deleteLiveSubscription(target, channel string) string {
-	uid := ivr.IDByUsername(channel)
-	if uid == "xd" {
-		return fmt.Sprintf("Could not find user with name %v", channel)
+	uid, err := app.getUserID(channel)
+	if err != nil {
+		app.Log.Error(err)
+		return fmt.Sprint(ErrGenericErrorMessage)
 	}
 
 	resp, err := app.HelixClient.GetEventSubSubscriptions(&helix.EventSubSubscriptionsParams{
@@ -106,9 +107,10 @@ func (app *application) deleteLiveSubscription(target, channel string) string {
 // createOfflineSubscription creates a stream.offline twitch eventsub
 // subscription for the specified channel.
 func (app *application) createOfflineSubscription(target, channel string) string {
-	uid := ivr.IDByUsername(channel)
-	if uid == "xd" {
-		return fmt.Sprintf("Could not find user with name %v", channel)
+	uid, err := app.getUserID(channel)
+	if err != nil {
+		app.Log.Error(err)
+		return fmt.Sprint(ErrGenericErrorMessage)
 	}
 
 	resp, err := app.HelixClient.CreateEventSubSubscription(&helix.EventSubSubscription{
@@ -137,9 +139,10 @@ func (app *application) createOfflineSubscription(target, channel string) string
 // deleteOfflineSubscription deletes a stream.offline twitch eventsub
 // subscription for the specified channel
 func (app *application) deleteOfflineSubscription(target, channel string) string {
-	uid := ivr.IDByUsername(channel)
-	if uid == "xd" {
-		return fmt.Sprintf("Could not find user with name %v", channel)
+	uid, err := app.getUserID(channel)
+	if err != nil {
+		app.Log.Error(err)
+		return fmt.Sprint(ErrGenericErrorMessage)
 	}
 
 	resp, err := app.HelixClient.GetEventSubSubscriptions(&helix.EventSubSubscriptionsParams{
