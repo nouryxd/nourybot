@@ -8,7 +8,6 @@ import (
 	"github.com/gempir/go-twitch-irc/v4"
 	"github.com/lyx0/nourybot/pkg/commands"
 	"github.com/lyx0/nourybot/pkg/common"
-	"github.com/lyx0/nourybot/pkg/ivr"
 	"github.com/lyx0/nourybot/pkg/lastfm"
 	"github.com/lyx0/nourybot/pkg/owm"
 )
@@ -89,7 +88,6 @@ func (app *application) handleCommand(message twitch.PrivateMessage) {
 			reply = commands.Bttv(cmdParams[1])
 		}
 
-		// Coinflip
 	case "coin":
 		reply = commands.Coinflip()
 
@@ -103,7 +101,6 @@ func (app *application) handleCommand(message twitch.PrivateMessage) {
 		if msgLen < 4 {
 			reply = "Not enough arguments provided. Usage: ()currency 10 USD to EUR"
 		} else {
-			// ()currency <amount> <input currency> to <output currency>
 			reply, _ = commands.Currency(cmdParams[1], cmdParams[2], cmdParams[4])
 		}
 
@@ -121,30 +118,6 @@ func (app *application) handleCommand(message twitch.PrivateMessage) {
 
 	case "frankerfacez":
 		reply = commands.Ffz(cmdParams[1])
-
-	case "notify":
-		switch cmdParams[1] {
-		case "live":
-			if userLevel >= 100 {
-				reply = app.createLiveSubscription(target, cmdParams[2])
-			}
-		case "offline":
-			if userLevel >= 100 {
-				reply = app.createOfflineSubscription(target, cmdParams[2])
-			}
-		}
-
-	case "unnotify":
-		switch cmdParams[1] {
-		case "live":
-			if userLevel >= 100 {
-				reply = app.deleteLiveSubscription(target, cmdParams[2])
-			}
-		case "offline":
-			if userLevel >= 100 {
-				reply = app.deleteOfflineSubscription(target, cmdParams[2])
-			}
-		}
 
 	case "ddg":
 		reply = commands.DuckDuckGo(message.Message[6:len(message.Message)])
@@ -214,16 +187,25 @@ func (app *application) handleCommand(message twitch.PrivateMessage) {
 		reply, _ = commands.Xkcd()
 
 	case "uid":
-		reply = ivr.IDByUsernameReply(cmdParams[1])
+		reply, _ = app.getChannelID(cmdParams[1])
 
 	case "userid":
-		reply = ivr.IDByUsernameReply(cmdParams[1])
+		reply, _ = app.getChannelID(cmdParams[1])
 
 	case "commands":
 		reply = app.ListChannelCommands(message.Channel)
 
 	case "timers":
 		reply = fmt.Sprintf("https://bot.noury.li/timer/%s", message.Channel)
+
+	case "title":
+		if msgLen == 1 {
+			reply = app.getChannelTitleByUsername(target)
+		} else if msgLen == 2 {
+			reply = app.getChannelTitleByUsername(cmdParams[1])
+		} else {
+			return
+		}
 
 	case "conv":
 		if userLevel >= 100 {
@@ -295,6 +277,30 @@ func (app *application) handleCommand(message twitch.PrivateMessage) {
 	case "kappa":
 		if userLevel >= 420 {
 			go app.NewDownload("kappa", target, cmdParams[1], message)
+		}
+
+	case "notify":
+		switch cmdParams[1] {
+		case "live":
+			if userLevel >= 420 {
+				reply = app.createLiveSubscription(target, cmdParams[2])
+			}
+		case "offline":
+			if userLevel >= 420 {
+				reply = app.createOfflineSubscription(target, cmdParams[2])
+			}
+		}
+
+	case "unnotify":
+		switch cmdParams[1] {
+		case "live":
+			if userLevel >= 420 {
+				reply = app.deleteLiveSubscription(target, cmdParams[2])
+			}
+		case "offline":
+			if userLevel >= 420 {
+				reply = app.deleteOfflineSubscription(target, cmdParams[2])
+			}
 		}
 
 	case "yaf":
@@ -568,6 +574,20 @@ var helpText = map[string]command{
 		Level:       "0",
 		Usage:       "()lastfm [username]",
 	},
+	"notify live": {
+		Name:        "notify live",
+		Alias:       nil,
+		Description: `Sends a notification when the specified Twitch channel goes online.`,
+		Level:       "420",
+		Usage:       "()notify live <username>",
+	},
+	"notify offline": {
+		Name:        "notify offline",
+		Alias:       nil,
+		Description: `Sends a notification when the specified Twitch channel goes offline.`,
+		Level:       "420",
+		Usage:       "()notify offline <username>",
+	},
 	"osrs": {
 		Name:        "osrs",
 		Alias:       nil,
@@ -658,6 +678,27 @@ var helpText = map[string]command{
 		Description: "Returns a link to the currently active timers in the channel.",
 		Level:       "0",
 		Usage:       "()timers",
+	},
+	"title": {
+		Name:        "title",
+		Alias:       nil,
+		Description: "Returns the title of a Twitch channel.",
+		Level:       "0",
+		Usage:       "()title [name]",
+	},
+	"unnotify live": {
+		Name:        "unnotify live",
+		Alias:       nil,
+		Description: `Removes a notification for a channel going online.`,
+		Level:       "420",
+		Usage:       "()unnotify live <username>",
+	},
+	"unnotify offline": {
+		Name:        "unnotify offline",
+		Alias:       nil,
+		Description: `Removes a notification for a channel going offline.`,
+		Level:       "420",
+		Usage:       "()unnotify offline <username>",
 	},
 	"user edit level": {
 		Name:        "user edit level",

@@ -14,7 +14,6 @@ import (
 	"github.com/julienschmidt/httprouter"
 	"github.com/lyx0/nourybot/internal/data"
 	"github.com/lyx0/nourybot/pkg/common"
-	"github.com/lyx0/nourybot/pkg/ivr"
 	"github.com/nicklaw5/helix/v2"
 )
 
@@ -95,8 +94,8 @@ func (app *application) eventsubFollow(w http.ResponseWriter, r *http.Request, p
 		w.WriteHeader(200)
 		w.Write([]byte("ok"))
 
-		game := ivr.GameByUsername(liveEvent.BroadcasterUserLogin)
-		title := ivr.TitleByUsername(liveEvent.BroadcasterUserLogin)
+		game := app.getChannelGame(liveEvent.BroadcasterUserID)
+		title := app.getChannelTitle(liveEvent.BroadcasterUserID)
 
 		app.SendNoBanphrase(channel, fmt.Sprintf("%s went live FeelsGoodMan Game: %s; Title: %s; https://twitch.tv/%s", liveEvent.BroadcasterUserName, game, title, liveEvent.BroadcasterUserLogin))
 
