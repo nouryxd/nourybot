@@ -72,6 +72,9 @@ func IDByUsernameReply(username string) string {
 
 	responseList := make([]ivrResponse, 0)
 	err = json.NewDecoder(resp.Body).Decode(&responseList)
+	if err != nil {
+		return "xd"
+	}
 	if len(responseList) == 0 {
 		return "xd"
 	}

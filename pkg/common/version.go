@@ -67,7 +67,7 @@ func GetVersionPure() string {
 	}
 
 	if modified {
-		return fmt.Sprintf("%s", revision)
+		return revision
 	}
 
 	return revision

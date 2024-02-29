@@ -12,8 +12,9 @@ import (
 	"github.com/lyx0/nourybot/pkg/owm"
 )
 
-// handleCommand takes in a twitch.PrivateMessage and then routes the message to
-// the function that is responsible for each command and knows how to deal with it accordingly.
+// handleCommand takes in a twitch.PrivateMessage and then routes the message
+// to the function that is responsible for each command and knows how to deal
+// with it accordingly.
 func (app *application) handleCommand(message twitch.PrivateMessage) {
 	var reply string
 
@@ -21,7 +22,8 @@ func (app *application) handleCommand(message twitch.PrivateMessage) {
 		return
 	}
 
-	// Increments the counter how many commands have been used, called in the ping command.
+	// Increments the counter how many commands have been used,
+	// called in the ping command.
 	go common.CommandUsed()
 
 	go app.InitUser(message.User.Name, message.User.ID)
@@ -134,6 +136,9 @@ func (app *application) handleCommand(message twitch.PrivateMessage) {
 	case "youtube":
 		reply = commands.Youtube(message.Message[10:len(message.Message)])
 
+	case "godoc":
+		reply = commands.Godocs(message.Message[8:len(message.Message)])
+
 	case "godocs":
 		reply = commands.Godocs(message.Message[9:len(message.Message)])
 
@@ -202,10 +207,10 @@ func (app *application) handleCommand(message twitch.PrivateMessage) {
 		reply, _ = app.getUserID(cmdParams[1])
 
 	case "uname":
-		reply, _ = app.getChannelUsername(cmdParams[1])
+		reply, _ = app.userIDtoUsername(cmdParams[1])
 
 	case "username":
-		reply, _ = app.getChannelUsername(cmdParams[1])
+		reply, _ = app.userIDtoUsername(cmdParams[1])
 
 	case "commands":
 		reply = app.ListChannelCommands(message.Channel)
@@ -549,10 +554,10 @@ var helpText = map[string]command{
 	},
 	"godocs": {
 		Name:        "godocs",
-		Alias:       nil,
+		Alias:       []string{"godocs", "godoc"},
 		Description: "Returns the godocs.io search URL for a given query.",
 		Level:       "0",
-		Usage:       "()godoc <query>",
+		Usage:       "()godocs <query>",
 	},
 	"gofile": {
 		Name:        "gofile",
@@ -753,7 +758,7 @@ var helpText = map[string]command{
 	"weather": {
 		Name:        "weather",
 		Alias:       nil,
-		Description: `Returns the weather for a given location. If you "$set location" your location, the command will use that location if no other location is specified.`,
+		Description: `Returns the weather for a given location. If you "()set location" your location, the command will use that location if no other location is specified.`,
 		Level:       "0",
 		Usage:       "()weather [location]",
 	},
@@ -810,9 +815,19 @@ func (app *application) GetAllHelpText() string {
 		var c string
 
 		if v.Alias == nil {
-			c = fmt.Sprintf("Name: %s\nDescription: %s\nLevel: %s\nUsage: %s\n\n", i, v.Description, v.Level, v.Usage)
+			c = fmt.Sprintf("Name: %s\nDescription: %s\nLevel: %s\nUsage: %s\n\n",
+				i,
+				v.Description,
+				v.Level,
+				v.Usage,
+			)
 		} else {
-			c = fmt.Sprintf("Name: %s\nAliases: %s\nDescription: %s\nLevel: %s\nUsage: %s\n\n", i, v.Alias, v.Description, v.Level, v.Usage)
+			c = fmt.Sprintf("Name: %s\nAliases: %s\nDescription: %s\nLevel: %s\nUsage: %s\n\n",
+				i, v.Alias,
+				v.Description,
+				v.Level,
+				v.Usage,
+			)
 
 		}
 

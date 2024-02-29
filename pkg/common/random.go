@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"math/rand"
 	"strconv"
-	"time"
 )
 
 // StrGenerateRandomNumber generates a random number from
@@ -19,7 +18,6 @@ func StrGenerateRandomNumber(max string) int {
 		fmt.Printf("Supplied value %v is not a number", num)
 		return 0
 	} else {
-		rand.Seed(time.Now().UnixNano())
 		return rand.Intn(num)
 	}
 }
@@ -27,7 +25,6 @@ func StrGenerateRandomNumber(max string) int {
 // GenerateRandomNumber returns a random number from
 // a given max value as a int
 func GenerateRandomNumber(max int) int {
-	rand.Seed(time.Now().UnixNano())
 	return rand.Intn(max)
 }
 

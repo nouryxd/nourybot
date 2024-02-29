@@ -49,11 +49,13 @@ func (app *application) AddCommand(name string, message twitch.PrivateMessage) {
 	}
 }
 
-// GetCommand queries the database for a command with the provided name. If an entry exists
-// it checks if the Command.Level is 0, if it is the command.Text value is returned.
+// GetCommand queries the database for a command with the provided name.
+// If an entry exists it checks if the Command.Level is 0, if it is
+// the command.Text value is returned.
 //
-// If the Command.Level is not 0 it queries the database for the level of the user who sent
-// the message. If the users level is equal or higher the command.Text field is returned.
+// If the Command.Level is not 0 it queries the database for the level of the
+// user who sent the message. If the users level is equal or higher
+// the command.Text field is returned.
 func (app *application) GetCommand(target, commandName string, userLevel int) (string, error) {
 	app.Log.Infow("command",
 		"target", target,
@@ -78,11 +80,14 @@ func (app *application) GetCommand(target, commandName string, userLevel int) (s
 	return "", ErrUserInsufficientLevel
 }
 
-// GetCommandDescription queries the database for a command with the provided name in the channel.
-// If a command exist it then checks if the Command.Level is 0, if it is the command.Text value is returned.
+// GetCommandDescription queries the database for a command with the provided
+// name in the channel.
+// If a command exist it then checks if the Command.Level is 0, if it is
+// the command.Text value is returned.
 //
-// If the Command.Level is not 0 it queries the database for the level of the user who sent
-// the message. If the users level is equal or higher the command.Text field is returned.
+// If the Command.Level is not 0 it queries the database for the level of
+// the user that sent the message. If the users level is equal or higher
+// the command.Text field is returned.
 func (app *application) GetCommandDescription(name, channel, username string) (string, error) {
 	command, err := app.Models.Commands.Get(name, channel)
 	if err != nil {
@@ -110,25 +115,31 @@ func (app *application) GetCommandDescription(name, channel, username string) (s
 	return "", ErrUserInsufficientLevel
 }
 
-// EditCommandLevel checks if a command with the provided name exists in the database. If it does it
-// changes the level of the command with the supplied value.
+// EditCommandLevel checks if a command with the provided name exists in
+// the database. If it exists it changes the level of the command in
+// the database with the newly supplied level value.
 func (app *application) EditCommandLevel(name, lvl string, message twitch.PrivateMessage) {
 	level, err := strconv.Atoi(lvl)
+
 	if err != nil {
 		app.Log.Error(err)
-		app.Send(message.Channel, fmt.Sprintf("Something went wrong FeelsBadMan %s", ErrCommandLevelNotInteger), message)
+		app.Send(message.Channel,
+			fmt.Sprintf("Something went wrong FeelsBadMan %s", ErrCommandLevelNotInteger), message)
+
 		return
 	}
 
 	err = app.Models.Commands.SetLevel(name, message.Channel, level)
-
 	if err != nil {
-		app.Send(message.Channel, fmt.Sprintf("Something went wrong FeelsBadMan %s", ErrRecordNotFound), message)
+		app.Send(message.Channel,
+			fmt.Sprintf("Something went wrong FeelsBadMan %s", ErrRecordNotFound), message)
 		app.Log.Error(err)
+
 		return
 	} else {
 		reply := fmt.Sprintf("Updated command %s to level %v", name, level)
 		app.Send(message.Channel, reply, message)
+
 		return
 	}
 }
@@ -279,11 +290,10 @@ func (app *application) ListChannelCommands(channel string) string {
 
 	// The slice of timers is only used to log them at
 	// the start so it looks a bit nicer.
-	var cs []string
 
 	allHelpText := app.GetAllHelpText()
+	var cs = []string{fmt.Sprintf("General commands: \n\n%s\nChannel commands:\n\n", allHelpText)}
 	app.Log.Info(allHelpText)
-	cs = append(cs, fmt.Sprintf("General commands: \n\n%s\nChannel commands:\n\n", allHelpText))
 
 	// Iterate over all timers and then add them onto the scheduler.
 	for i, v := range command {
@@ -291,9 +301,8 @@ func (app *application) ListChannelCommands(channel string) string {
 		// https://github.com/robfig/cron/issues/420#issuecomment-940949195
 		i, v := i, v
 		_ = i
-		var c string
 
-		c = fmt.Sprintf(
+		c := fmt.Sprintf(
 			"Name: \t%v\n"+
 				"Description: %v\n"+
 				"Level: \t%v\n"+

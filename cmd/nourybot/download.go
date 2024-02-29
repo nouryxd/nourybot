@@ -87,7 +87,7 @@ func (app *application) ConvertAndSave(fName, link string, msg twitch.PrivateMes
 	fn, err := os.Create(out)
 	if err != nil {
 		app.Log.Errorln(err)
-		app.Send(msg.Channel, fmt.Sprintf("Something went wrong FeelsBadMan: %q", err), msg)
+		app.Send(msg.Channel, fmt.Sprint(ErrGenericErrorMessage), msg)
 		return
 	}
 	defer fn.Close()
@@ -95,6 +95,11 @@ func (app *application) ConvertAndSave(fName, link string, msg twitch.PrivateMes
 	err = ffmpeg.Input(fileName).
 		Output(out).
 		OverWriteOutput().ErrorToStdOut().Run()
+	if err != nil {
+		app.Log.Errorln(err)
+		app.Send(msg.Channel, fmt.Sprint(ErrGenericErrorMessage), msg)
+		return
+	}
 
 	defer os.Remove(fileName)
 	app.Send(msg.Channel, fmt.Sprintf("https://bot.noury.li/uploads/%s.mp4", fName), msg)
@@ -160,6 +165,11 @@ func (app *application) ConvertToMP4(link string, msg twitch.PrivateMessage) {
 	err = ffmpeg.Input(fileName).
 		Output(out).
 		OverWriteOutput().ErrorToStdOut().Run()
+	if err != nil {
+		app.Log.Errorln(err)
+		app.Send(msg.Channel, fmt.Sprint(ErrGenericErrorMessage), msg)
+		return
+	}
 
 	defer os.Remove(fileName)
 	go app.NewUpload("yaf", out, msg.Channel, uuid_new, msg)

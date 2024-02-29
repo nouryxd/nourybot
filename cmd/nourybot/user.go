@@ -42,7 +42,8 @@ func (app *application) DebugUser(login string, message twitch.PrivateMessage) {
 		resp, err := app.uploadPaste(body)
 		if err != nil {
 			app.Log.Errorln("Could not upload paste:", err)
-			app.Send(message.Channel, fmt.Sprintf("Something went wrong FeelsBadMan %v", ErrDuringPasteUpload), message)
+			app.Send(message.Channel,
+				fmt.Sprintf("Something went wrong FeelsBadMan %v", ErrDuringPasteUpload), message)
 			return
 		}
 		app.Send(message.Channel, resp, message)
@@ -72,13 +73,15 @@ func (app *application) EditUserLevel(login, lvl string, message twitch.PrivateM
 	level, err := strconv.Atoi(lvl)
 	if err != nil {
 		app.Log.Error(err)
-		app.Send(message.Channel, fmt.Sprintf("Something went wrong FeelsBadMan %s", ErrUserLevelNotInteger), message)
+		app.Send(message.Channel,
+			fmt.Sprintf("Something went wrong FeelsBadMan %s", ErrUserLevelNotInteger), message)
 		return
 	}
 
 	err = app.Models.Users.SetLevel(login, level)
 	if err != nil {
-		app.Send(message.Channel, fmt.Sprintf("Something went wrong FeelsBadMan %s", ErrRecordNotFound), message)
+		app.Send(message.Channel,
+			fmt.Sprintf("Something went wrong FeelsBadMan %s", ErrRecordNotFound), message)
 		app.Log.Error(err)
 		return
 	} else {
@@ -101,7 +104,9 @@ func (app *application) SetUserLocation(message twitch.PrivateMessage) {
 
 	err := app.Models.Users.SetLocation(twitchId, location)
 	if err != nil {
-		app.Send(message.Channel, fmt.Sprintf("Something went wrong FeelsBadMan %s", ErrRecordNotFound), message)
+		app.Send(message.Channel,
+			fmt.Sprintf("Something went wrong FeelsBadMan %s", ErrRecordNotFound), message)
+
 		app.Log.Error(err)
 		return
 	} else {
@@ -158,7 +163,8 @@ func (app *application) GetUserLevel(msg twitch.PrivateMessage) int {
 // UserCheckWeather checks if a user is in the database and if he has a location
 // provided. If both is true it calls owm.Weather with the location and replies
 // with the result.
-// If no location was provided the response will instruct the user how to set a location.
+// If no location was provided the response will instruct the user
+// how to set a location.
 func (app *application) UserCheckWeather(message twitch.PrivateMessage) {
 	target := message.Channel
 	twitchLogin := message.User.Name
@@ -182,7 +188,8 @@ func (app *application) UserCheckWeather(message twitch.PrivateMessage) {
 // UserCheckWeather checks if a user is in the database and if he has a lastfm
 // username provided. If both is true it calls lastfm.LastFmUserRecent with the username
 // and replies with the result.
-// If no lastfm username was provided the response will instruct the user how to set a lastfm username.
+// If no lastfm username was provided the response will instruct the user
+// how to set a lastfm username.
 func (app *application) UserCheckLastFM(message twitch.PrivateMessage) string {
 	twitchLogin := message.User.Name
 	target := message.Channel

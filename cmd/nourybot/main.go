@@ -178,11 +178,15 @@ func run(ctx context.Context, w io.Writer, args []string) error {
 
 	app.TwitchClient.OnClearChatMessage(func(message twitch.ClearChatMessage) {
 		if message.BanDuration == 0 && message.Channel == "forsen" {
-			app.TwitchClient.Say("nouryxd", fmt.Sprintf("MODS https://logs.ivr.fi/?channel=forsen&username=%v", message.TargetUsername))
+			app.TwitchClient.Say("nouryxd",
+				fmt.Sprintf("MODS https://logs.ivr.fi/?channel=forsen&username=%v",
+					message.TargetUsername))
 		}
 
 		if message.BanDuration >= 28700 && message.Channel == "forsen" {
-			app.TwitchClient.Say("nouryxd", fmt.Sprintf("monkaS -%v https://logs.ivr.fi/?channel=forsen&username=%v", message.BanDuration, message.TargetUsername))
+			app.TwitchClient.Say("nouryxd",
+				fmt.Sprintf("monkaS -%v https://logs.ivr.fi/?channel=forsen&username=%v",
+					message.BanDuration, message.TargetUsername))
 		}
 
 	})

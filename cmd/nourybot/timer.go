@@ -14,7 +14,6 @@ import (
 // new data.Timer struct so that the timer can be inserted into the database.
 func (app *application) AddTimer(name, repeat string, message twitch.PrivateMessage) {
 	cmdParams := strings.SplitN(message.Message, " ", 500)
-	// prefixLength is the length of `()add timer` plus +2 (for the space and zero based)
 	prefix := "()add timer"
 	prefixLength := len("()add timer")
 	nameLength := len(name)
@@ -319,7 +318,8 @@ func (app *application) DeleteTimer(name string, message twitch.PrivateMessage) 
 	app.Send(message.Channel, reply, message)
 }
 
-// DebugChannelTimers queries the database for all timers in channel and uploads the contents as a paste.
+// DebugChannelTimers queries the database for all timers in channel
+// and uploads the contents as a paste.
 func (app *application) DebugChannelTimers(channel string) string {
 	timer, err := app.Models.Timers.GetChannelTimer(channel)
 	if err != nil {
@@ -337,9 +337,8 @@ func (app *application) DebugChannelTimers(channel string) string {
 		// https://github.com/robfig/cron/issues/420#issuecomment-940949195
 		i, v := i, v
 		_ = i
-		var t string
 
-		t = fmt.Sprintf(
+		t := fmt.Sprintf(
 			"Name: \t%v\n"+
 				"ID: \t%v\n"+
 				"Identifier: \t%v\n"+
@@ -363,7 +362,8 @@ func (app *application) DebugChannelTimers(channel string) string {
 	return reply
 }
 
-// ListchannelTimer queries the database for all timers in channel and uploads the contents as a paste.
+// ListchannelTimer queries the database for all timers in channel and
+// uploads the contents as a paste.
 func (app *application) ListChannelTimer(channel string) string {
 	timer, err := app.Models.Timers.GetChannelTimer(channel)
 	if err != nil {
@@ -379,9 +379,8 @@ func (app *application) ListChannelTimer(channel string) string {
 		// https://github.com/robfig/cron/issues/420#issuecomment-940949195
 		i, v := i, v
 		_ = i
-		var t string
 
-		t = fmt.Sprintf(
+		t := fmt.Sprintf(
 			"Name: %v\n"+
 				"Text: %v\n"+
 				"Repeat: %v\n"+

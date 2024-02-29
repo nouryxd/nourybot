@@ -392,7 +392,6 @@ func (app *application) YafUpload(target, path, identifier string, msg twitch.Pr
 	var reply = string(body[:])
 
 	go app.Models.Uploads.UpdateUploadURL(identifier, reply)
-	//app.Send(target, fmt.Sprintf("Removing file: %s", path), msg)
 	app.Send(target, reply, msg)
 }
 
@@ -488,6 +487,5 @@ func (app *application) YafUploadString(text string) string {
 
 	var reply = string(body[:])
 
-	//app.Send(target, fmt.Sprintf("Removing file: %s", path), msg)
 	return reply
 }

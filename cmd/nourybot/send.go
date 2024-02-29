@@ -93,7 +93,8 @@ func (app *application) SendNoContext(target, message string) {
 	}
 
 	identifier := uuid.NewString()
-	go app.Models.SentMessagesLogs.Insert(target, message, "unavailable", "unavailable", "unavailable", "unavailable", identifier, "unavailable")
+	go app.Models.SentMessagesLogs.Insert(
+		target, message, "unavailable", "unavailable", "unavailable", "unavailable", identifier, "unavailable")
 
 	// Since messages starting with `.` or `/` are used for special actions
 	// (ban, whisper, timeout) and so on, we place an emote infront of it so
@@ -152,7 +153,8 @@ func (app *application) Send(target, message string, msgContext twitch.PrivateMe
 
 	commandName := strings.ToLower(strings.SplitN(msgContext.Message, " ", 3)[0][2:])
 	identifier := uuid.NewString()
-	go app.Models.SentMessagesLogs.Insert(target, message, commandName, msgContext.User.Name, msgContext.User.ID, msgContext.Message, identifier, msgContext.Raw)
+	go app.Models.SentMessagesLogs.Insert(
+		target, message, commandName, msgContext.User.Name, msgContext.User.ID, msgContext.Message, identifier, msgContext.Raw)
 
 	// Since messages starting with `.` or `/` are used for special actions
 	// (ban, whisper, timeout) and so on, we place an emote infront of it so
@@ -209,7 +211,8 @@ func (app *application) SendNoBanphrase(target, message string) {
 	}
 
 	identifier := uuid.NewString()
-	go app.Models.SentMessagesLogs.Insert(target, message, "unavailable", "unavailable", "unavailable", "unavailable", identifier, "unavailable")
+	go app.Models.SentMessagesLogs.Insert(
+		target, message, "unavailable", "unavailable", "unavailable", "unavailable", identifier, "unavailable")
 
 	// Since messages starting with `.` or `/` are used for special actions
 	// (ban, whisper, timeout) and so on, we place an emote infront of it so

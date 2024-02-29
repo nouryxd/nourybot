@@ -27,7 +27,7 @@ func (app *application) startRouter() {
 	router.GET("/timer", app.timersRoute)
 	router.GET("/timer/:channel", app.channelTimersRoute)
 
-	// Serve files uploaded by the meme command, but don't list the directory contents.
+	// Serve files uploaded by the meme command, but don't list directory contents.
 	fs := justFilesFilesystem{http.Dir("/public/uploads/")}
 	router.Handler("GET", "/uploads/*filepath", http.StripPrefix("/uploads", http.FileServer(fs)))
 
@@ -41,10 +41,11 @@ type eventSubNotification struct {
 	Event        json.RawMessage            `json:"event"`
 }
 
-// eventsubMessageId stores the last message id of an event sub. Twitch resends events
-// if it is unsure that you have gotten them so we check if the last event has the same
-// message id and if it does discard the event.
-var lastEventSubSubscriptionId = []string{"xd"}
+// eventsubSubscriptionID stores the received eventsub subscription ids since
+// last restart. Twitch resends events if it is unsure that we have gotten them
+// so we check if the received eventsub subscription id has already
+// been recorded and discard them if so.
+var lastEventSubSubscriptionID = []string{"xd"}
 
 func (app *application) eventsubFollow(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
 	channel := ps.ByName("channel")
@@ -68,7 +69,8 @@ func (app *application) eventsubFollow(w http.ResponseWriter, r *http.Request, p
 		log.Println(err)
 		return
 	}
-	// if there's a challenge in the request, respond with only the challenge to verify your eventsub.
+	// if there's a challenge in the request, respond
+	// with only the challenge to verify the request is genuine.
 	if vals.Challenge != "" {
 		w.Write([]byte(vals.Challenge))
 		return
@@ -77,11 +79,11 @@ func (app *application) eventsubFollow(w http.ResponseWriter, r *http.Request, p
 
 	// Check if the current events subscription id equals the last events.
 	// If it does ignore the event since it's a repeated event.
-	for i := 0; i < len(lastEventSubSubscriptionId); i++ {
-		if vals.Subscription.ID == lastEventSubSubscriptionId[i] {
+	for i := 0; i < len(lastEventSubSubscriptionID); i++ {
+		if vals.Subscription.ID == lastEventSubSubscriptionID[i] {
 			return
 		} else {
-			lastEventSubSubscriptionId[i] = vals.Subscription.ID
+			lastEventSubSubscriptionID[i] = vals.Subscription.ID
 		}
 	}
 
@@ -90,22 +92,39 @@ func (app *application) eventsubFollow(w http.ResponseWriter, r *http.Request, p
 		var liveEvent helix.EventSubStreamOnlineEvent
 
 		err = json.NewDecoder(bytes.NewReader(vals.Event)).Decode(&liveEvent)
-		log.Printf("got stream online event webhook: [%s]: %s is live\n", channel, liveEvent.BroadcasterUserName)
+		if err != nil {
+			app.Log.Errorln(err)
+			return
+		}
+
+		log.Printf("got stream online event webhook: [%s]: %s is live\n",
+			channel, liveEvent.BroadcasterUserName)
 		w.WriteHeader(200)
 		w.Write([]byte("ok"))
 
 		game := app.getChannelGame(liveEvent.BroadcasterUserID)
 		title := app.getChannelTitle(liveEvent.BroadcasterUserID)
 
-		app.SendNoBanphrase(channel, fmt.Sprintf("%s went live FeelsGoodMan Game: %s; Title: %s; https://twitch.tv/%s", liveEvent.BroadcasterUserName, game, title, liveEvent.BroadcasterUserLogin))
+		go app.SendNoBanphrase(channel,
+			fmt.Sprintf("@%s went live FeelsGoodMan Game: %s; Title: %s; https://twitch.tv/%s",
+				liveEvent.BroadcasterUserName, game, title, liveEvent.BroadcasterUserLogin))
 
 	case helix.EventSubTypeStreamOffline:
 		var offlineEvent helix.EventSubStreamOfflineEvent
+
 		err = json.NewDecoder(bytes.NewReader(vals.Event)).Decode(&offlineEvent)
-		log.Printf("got stream online event webhook: [%s]: %s is live\n", channel, offlineEvent.BroadcasterUserName)
+		if err != nil {
+			app.Log.Errorln(err)
+			return
+		}
+
+		log.Printf("got stream offline event webhook: [%s]: %s is offline\n",
+			channel, offlineEvent.BroadcasterUserName)
 		w.WriteHeader(200)
 		w.Write([]byte("ok"))
-		app.SendNoBanphrase(channel, fmt.Sprintf("%s went offline FeelsBadMan", offlineEvent.BroadcasterUserName))
+
+		go app.SendNoBanphrase(channel,
+			fmt.Sprintf("%s went offline FeelsBadMan", offlineEvent.BroadcasterUserName))
 	}
 }
 
@@ -229,9 +248,13 @@ func (app *application) commandsRoute(w http.ResponseWriter, r *http.Request, _ 
 		var c string
 
 		if v.Alias == nil {
-			c = fmt.Sprintf("Name: %s\nDescription: %s\nLevel: %s\nUsage: %s\n\n", i, v.Description, v.Level, v.Usage)
+			c = fmt.Sprintf(
+				"Name: %s\nDescription: %s\nLevel: %s\nUsage: %s\n\n",
+				i, v.Description, v.Level, v.Usage)
 		} else {
-			c = fmt.Sprintf("Name: %s\nAliases: %s\nDescription: %s\nLevel: %s\nUsage: %s\n\n", i, v.Alias, v.Description, v.Level, v.Usage)
+			c = fmt.Sprintf(
+				"Name: %s\nAliases: %s\nDescription: %s\nLevel: %s\nUsage: %s\n\n",
+				i, v.Alias, v.Description, v.Level, v.Usage)
 
 		}
 
@@ -336,12 +359,17 @@ func (app *application) statusPageRoute(w http.ResponseWriter, r *http.Request, 
 	started := common.GetUptime().Format("2006-1-2 15:4:5")
 	commitLink := fmt.Sprintf("https://github.com/lyx0/nourybot/commit/%v", common.GetVersionPure())
 
-	fmt.Fprintf(w, fmt.Sprintf("started: \t%v\nenvironment: \t%v\ncommit: \t%v\ngithub: \t%v", started, app.Environment, commit, commitLink))
+	fmt.Print(w, fmt.Sprint(
+		"started: \t"+started+"\n"+
+			"environment: \t"+app.Environment+"\n"+
+			"commit: \t"+commit+"\n"+
+			"github: \t"+commitLink,
+	))
 }
 
-// Since I want to serve the files that I uploaded with the meme command to the /public/uploads
-// folder, but not list the directory on the `/uploads/` route I found this issue that solves
-// that problem with the httprouter.
+// Since I want to serve the files that I upload with the meme command to
+// the /public/uploads folder but not list the directory contents of
+// the `/uploads/` route I found this issue that solves this.
 //
 //	https://github.com/julienschmidt/httprouter/issues/25#issuecomment-74977940
 type justFilesFilesystem struct {
