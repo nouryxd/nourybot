@@ -119,6 +119,15 @@ func (app *application) handleCommand(message twitch.PrivateMessage) {
 	case "frankerfacez":
 		reply = commands.Ffz(cmdParams[1])
 
+	case "game":
+		if msgLen == 1 {
+			reply = app.getChannelGameByUsername(target)
+		} else if msgLen == 2 {
+			reply = app.getChannelGameByUsername(cmdParams[1])
+		} else {
+			return
+		}
+
 	case "ddg":
 		reply = commands.DuckDuckGo(message.Message[6:len(message.Message)])
 
@@ -187,10 +196,16 @@ func (app *application) handleCommand(message twitch.PrivateMessage) {
 		reply, _ = commands.Xkcd()
 
 	case "uid":
-		reply, _ = app.getChannelID(cmdParams[1])
+		reply, _ = app.getUserID(cmdParams[1])
 
 	case "userid":
-		reply, _ = app.getChannelID(cmdParams[1])
+		reply, _ = app.getUserID(cmdParams[1])
+
+	case "uname":
+		reply, _ = app.getChannelUsername(cmdParams[1])
+
+	case "username":
+		reply, _ = app.getChannelUsername(cmdParams[1])
 
 	case "commands":
 		reply = app.ListChannelCommands(message.Channel)
@@ -525,6 +540,13 @@ var helpText = map[string]command{
 		Level:       "0",
 		Usage:       "()followage <channel> <username>",
 	},
+	"game": {
+		Name:        "game",
+		Alias:       nil,
+		Description: "Returns the currenct game Twitch channel. If no channel is provided will default to the channel the message was sent from.",
+		Level:       "0",
+		Usage:       "()game [channel]",
+	},
 	"godocs": {
 		Name:        "godocs",
 		Alias:       nil,
@@ -682,7 +704,7 @@ var helpText = map[string]command{
 	"title": {
 		Name:        "title",
 		Alias:       nil,
-		Description: "Returns the title of a Twitch channel.",
+		Description: "Returns the title of a Twitch channel. If no channel is provided will default to the channel the message was sent from.",
 		Level:       "0",
 		Usage:       "()title [name]",
 	},
@@ -713,6 +735,13 @@ var helpText = map[string]command{
 		Description: "Returns the Twitch user ID for a given username.",
 		Level:       "0",
 		Usage:       "()uid <username>",
+	},
+	"username": {
+		Name:        "username",
+		Alias:       []string{"username", "uname"},
+		Description: "Returns the Twitch login name for a given Twitch user ID.",
+		Level:       "0",
+		Usage:       "()username <userID>",
 	},
 	"wa": {
 		Name:        "wa",

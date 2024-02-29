@@ -4,7 +4,7 @@ import (
 	"github.com/nicklaw5/helix/v2"
 )
 
-func (app *application) getChannelID(username string) (string, error) {
+func (app *application) getUserID(username string) (string, error) {
 	resp, err := app.HelixClient.GetUsers(&helix.UsersParams{
 		Logins: []string{username},
 	})
@@ -14,6 +14,18 @@ func (app *application) getChannelID(username string) (string, error) {
 	}
 
 	return resp.Data.Users[0].ID, nil
+}
+
+func (app *application) getChannelUsername(channelID string) (string, error) {
+	resp, err := app.HelixClient.GetUsers(&helix.UsersParams{
+		IDs: []string{channelID},
+	})
+	if err != nil {
+		app.Log.Error(err)
+		return "", err
+	}
+
+	return resp.Data.Users[0].Login, nil
 }
 
 func (app *application) getChannelTitle(channelID string) string {
@@ -29,7 +41,7 @@ func (app *application) getChannelTitle(channelID string) string {
 }
 
 func (app *application) getChannelTitleByUsername(username string) string {
-	channelID, err := app.getChannelID(username)
+	channelID, err := app.getUserID(username)
 	if err != nil {
 		app.Log.Error(err)
 		return "Something went wrong FeelsBadMan"
@@ -52,7 +64,7 @@ func (app *application) getChannelGame(channelId string) string {
 }
 
 func (app *application) getChannelGameByUsername(username string) string {
-	channelID, err := app.getChannelID(username)
+	channelID, err := app.getUserID(username)
 	if err != nil {
 		app.Log.Error(err)
 		return "Something went wrong FeelsBadMan"
