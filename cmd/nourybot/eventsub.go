@@ -31,7 +31,7 @@ func (app *application) createLiveSubscription(target, channel string) string {
 		},
 		Transport: helix.EventSubTransport{
 			Method:   "webhook",
-			Callback: "https://bot.noury.li/eventsub",
+			Callback: fmt.Sprintf("https://bot.noury.li/eventsub/%v", target),
 			Secret:   app.Config.eventSubSecret,
 		},
 	})
@@ -78,7 +78,8 @@ func (app *application) deleteLiveSubscription(target, channel string) string {
 	// which one has the type we want for this event. Then use this ones ID.
 	var eventSubID string
 	for i := 0; i < len(resp.Data.EventSubSubscriptions); i++ {
-		if resp.Data.EventSubSubscriptions[i].Type == "stream.online" {
+		if resp.Data.EventSubSubscriptions[i].Type == "stream.online" &&
+			resp.Data.EventSubSubscriptions[i].Transport.Callback == fmt.Sprintf("https://bot.noury.li/eventsub/%s", target) {
 			eventSubID = resp.Data.EventSubSubscriptions[i].ID
 		}
 	}
@@ -117,7 +118,7 @@ func (app *application) createOfflineSubscription(target, channel string) string
 		},
 		Transport: helix.EventSubTransport{
 			Method:   "webhook",
-			Callback: "https://bot.noury.li/eventsub",
+			Callback: fmt.Sprintf("https://bot.noury.li/eventsub/%v", target),
 			Secret:   app.Config.eventSubSecret,
 		},
 	})
@@ -164,7 +165,8 @@ func (app *application) deleteOfflineSubscription(target, channel string) string
 	// which one has the type we want for this event. Then use this ones ID.
 	var eventSubID string
 	for i := 0; i < len(resp.Data.EventSubSubscriptions); i++ {
-		if resp.Data.EventSubSubscriptions[i].Type == "stream.offline" {
+		if resp.Data.EventSubSubscriptions[i].Type == "stream.offline" &&
+			resp.Data.EventSubSubscriptions[i].Transport.Callback == fmt.Sprintf("https://bot.noury.li/eventsub/%s", target) {
 			eventSubID = resp.Data.EventSubSubscriptions[i].ID
 		}
 	}

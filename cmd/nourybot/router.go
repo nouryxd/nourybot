@@ -10,7 +10,6 @@ import (
 	"net/http"
 	"os"
 	"sort"
-	"time"
 
 	"github.com/julienschmidt/httprouter"
 	"github.com/lyx0/nourybot/internal/data"
@@ -23,7 +22,7 @@ func (app *application) startRouter() {
 	router := httprouter.New()
 	router.GET("/", app.homeRoute)
 	router.GET("/status", app.statusPageRoute)
-	router.POST("/eventsub", app.eventsubFollow)
+	router.POST("/eventsub/:channel", app.eventsubFollow)
 	router.GET("/commands", app.commandsRoute)
 	router.GET("/commands/:channel", app.channelCommandsRoute)
 	router.GET("/timer", app.timersRoute)
@@ -46,9 +45,10 @@ type eventSubNotification struct {
 // eventsubMessageId stores the last message id of an event sub. Twitch resends events
 // if it is unsure that you have gotten them so we check if the last event has the same
 // message id and if it does discard the event.
-var lastEventSubSubscriptionId = ""
+var lastEventSubSubscriptionId = []string{"xd"}
 
-func (app *application) eventsubFollow(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
+func (app *application) eventsubFollow(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
+	channel := ps.ByName("channel")
 	body, err := io.ReadAll(r.Body)
 	if err != nil {
 		log.Println(err)
@@ -74,11 +74,16 @@ func (app *application) eventsubFollow(w http.ResponseWriter, r *http.Request, _
 		w.Write([]byte(vals.Challenge))
 		return
 	}
+	//r.Body.Close()
 
-	if vals.Subscription.ID == lastEventSubSubscriptionId {
-		return
-	} else {
-		lastEventSubSubscriptionId = vals.Subscription.ID
+	// Check if the current events subscription id equals the last events.
+	// If it does ignore the event since it's a repeated event.
+	for i := 0; i < len(lastEventSubSubscriptionId); i++ {
+		if vals.Subscription.ID == lastEventSubSubscriptionId[i] {
+			return
+		} else {
+			lastEventSubSubscriptionId[i] = vals.Subscription.ID
+		}
 	}
 
 	switch vals.Subscription.Type {
@@ -86,24 +91,22 @@ func (app *application) eventsubFollow(w http.ResponseWriter, r *http.Request, _
 		var liveEvent helix.EventSubStreamOnlineEvent
 
 		err = json.NewDecoder(bytes.NewReader(vals.Event)).Decode(&liveEvent)
-		log.Printf("got stream online event webhook: %s is live\n", liveEvent.BroadcasterUserName)
+		log.Printf("got stream online event webhook: [%s]: %s is live\n", channel, liveEvent.BroadcasterUserName)
 		w.WriteHeader(200)
 		w.Write([]byte("ok"))
-
-		time.Sleep(5 * time.Second)
 
 		game := ivr.GameByUsername(liveEvent.BroadcasterUserLogin)
 		title := ivr.TitleByUsername(liveEvent.BroadcasterUserLogin)
 
-		app.SendNoBanphrase("nouryxd", fmt.Sprintf("%s went live FeelsGoodMan Game: %s; Title: %s; https://twitch.tv/%s", liveEvent.BroadcasterUserName, game, title, liveEvent.BroadcasterUserLogin))
+		app.SendNoBanphrase(channel, fmt.Sprintf("%s went live FeelsGoodMan Game: %s; Title: %s; https://twitch.tv/%s", liveEvent.BroadcasterUserName, game, title, liveEvent.BroadcasterUserLogin))
 
 	case helix.EventSubTypeStreamOffline:
 		var offlineEvent helix.EventSubStreamOfflineEvent
 		err = json.NewDecoder(bytes.NewReader(vals.Event)).Decode(&offlineEvent)
-		log.Printf("got stream offline event webhook: %s is now offline\n", offlineEvent.BroadcasterUserName)
+		log.Printf("got stream online event webhook: [%s]: %s is live\n", channel, offlineEvent.BroadcasterUserName)
 		w.WriteHeader(200)
 		w.Write([]byte("ok"))
-		app.SendNoBanphrase("nouryxd", fmt.Sprintf("%s went offline FeelsBadMan", offlineEvent.BroadcasterUserName))
+		app.SendNoBanphrase(channel, fmt.Sprintf("%s went offline FeelsBadMan", offlineEvent.BroadcasterUserName))
 	}
 }
 
