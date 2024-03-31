@@ -6,10 +6,10 @@ import (
 	"strings"
 
 	"github.com/gempir/go-twitch-irc/v4"
-	"github.com/lyx0/nourybot/pkg/commands"
-	"github.com/lyx0/nourybot/pkg/common"
-	"github.com/lyx0/nourybot/pkg/lastfm"
-	"github.com/lyx0/nourybot/pkg/owm"
+	"github.com/nouryxd/nourybot/pkg/commands"
+	"github.com/nouryxd/nourybot/pkg/common"
+	"github.com/nouryxd/nourybot/pkg/lastfm"
+	"github.com/nouryxd/nourybot/pkg/owm"
 )
 
 // handleCommand takes in a twitch.PrivateMessage and then routes the message

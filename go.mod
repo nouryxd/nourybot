@@ -1,4 +1,4 @@
-module github.com/lyx0/nourybot
+module github.com/nouryxd/nourybot
 
 go 1.20
 

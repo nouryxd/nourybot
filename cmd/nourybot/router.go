@@ -12,8 +12,8 @@ import (
 	"sort"
 
 	"github.com/julienschmidt/httprouter"
-	"github.com/lyx0/nourybot/internal/data"
-	"github.com/lyx0/nourybot/pkg/common"
+	"github.com/nouryxd/nourybot/internal/data"
+	"github.com/nouryxd/nourybot/pkg/common"
 	"github.com/nicklaw5/helix/v2"
 )
 
@@ -357,7 +357,7 @@ func (app *application) channelCommandsRoute(w http.ResponseWriter, r *http.Requ
 func (app *application) statusPageRoute(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
 	commit := common.GetVersion()
 	started := common.GetUptime().Format("2006-1-2 15:4:5")
-	commitLink := fmt.Sprintf("https://github.com/lyx0/nourybot/commit/%v", common.GetVersionPure())
+	commitLink := fmt.Sprintf("https://github.com/nouryxd/nourybot/commit/%v", common.GetVersionPure())
 
 	fmt.Print(w, fmt.Sprint(
 		"started: \t"+started+"\n"+

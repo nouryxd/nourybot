@@ -6,7 +6,7 @@ import (
 	"io"
 	"net/http"
 
-	"github.com/lyx0/nourybot/pkg/common"
+	"github.com/nouryxd/nourybot/pkg/common"
 )
 
 type xkcdResponse struct {

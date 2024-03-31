@@ -7,7 +7,7 @@ import (
 
 	"github.com/gempir/go-twitch-irc/v4"
 	"github.com/google/uuid"
-	"github.com/lyx0/nourybot/internal/data"
+	"github.com/nouryxd/nourybot/internal/data"
 )
 
 // AddTimer slices the message into relevant parts, adding the values onto a

@@ -7,7 +7,7 @@ import (
 
 	"github.com/gempir/go-twitch-irc/v4"
 	"github.com/google/uuid"
-	"github.com/lyx0/nourybot/internal/data"
+	"github.com/nouryxd/nourybot/internal/data"
 )
 
 // AddCommand splits a message into two parts and passes on the name and text

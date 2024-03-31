@@ -3,7 +3,7 @@ package commands
 import (
 	"fmt"
 
-	"github.com/lyx0/nourybot/pkg/common"
+	"github.com/nouryxd/nourybot/pkg/common"
 )
 
 // Preview returns a link to an almost live image of a given twitch stream

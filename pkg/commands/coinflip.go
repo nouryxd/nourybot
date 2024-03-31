@@ -1,7 +1,7 @@
 package commands
 
 import (
-	"github.com/lyx0/nourybot/pkg/common"
+	"github.com/nouryxd/nourybot/pkg/common"
 )
 
 // Coinflip returns either "Heads!" or "Tails!"

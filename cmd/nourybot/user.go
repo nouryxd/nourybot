@@ -5,8 +5,8 @@ import (
 	"strconv"
 
 	"github.com/gempir/go-twitch-irc/v4"
-	"github.com/lyx0/nourybot/pkg/lastfm"
-	"github.com/lyx0/nourybot/pkg/owm"
+	"github.com/nouryxd/nourybot/pkg/lastfm"
+	"github.com/nouryxd/nourybot/pkg/owm"
 )
 
 // InitUser is called on each command usage and checks if the user that sent the command
