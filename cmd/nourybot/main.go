@@ -13,9 +13,9 @@ import (
 	"github.com/jakecoffman/cron"
 	"github.com/joho/godotenv"
 	_ "github.com/lib/pq"
+	"github.com/nicklaw5/helix/v2"
 	"github.com/nouryxd/nourybot/internal/data"
 	"github.com/nouryxd/nourybot/pkg/common"
-	"github.com/nicklaw5/helix/v2"
 
 	"go.uber.org/zap"
 )

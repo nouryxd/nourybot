@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"io"
 	"net/http"
+	"regexp"
 	"strings"
 
 	"github.com/gempir/go-twitch-irc/v4"
@@ -38,6 +39,18 @@ var (
 // More information:
 // https://gist.github.com/pajlada/57464e519ba8d195a97ddcd0755f9715
 func (app *application) checkMessage(text string) (bool, string) {
+	pattern := `\bi(?:'|\s?a)?m\s?(?:\d|1[0-2])(?:\s?year|$)`
+
+	re, err := regexp.Compile(pattern)
+	if err != nil {
+		app.Log.Error("Error compiling regular expression:", err)
+		return true, "could not check regex"
+	}
+
+	if re.MatchString(text) {
+		return true, "regex matched"
+	}
+
 	// {"message": "AHAHAHAHA LUL"}
 	reqBody, err := json.Marshal(map[string]string{
 		"message": text,
@@ -83,6 +96,18 @@ func (app *application) checkMessage(text string) (bool, string) {
 
 // SendNoContext is used to send twitch replies without the full twitch.PrivateMessage context to be logged.
 func (app *application) SendNoContext(target, message string) {
+	pattern := `\bi(?:'|\s?a)?m\s?(?:\d|1[0-2])(?:\s?year|$)`
+
+	re, err := regexp.Compile(pattern)
+	if err != nil {
+		app.Log.Error("Error compiling regular expression:", err)
+		return
+	}
+
+	if re.MatchString(message) {
+		return
+	}
+
 	// Message we are trying to send is empty.
 	if len(message) == 0 {
 		return
@@ -142,6 +167,17 @@ func (app *application) SendNoContext(target, message string) {
 // Send is used to send twitch replies and contains the necessary safeguards and logic for that.
 // Send also logs the twitch.PrivateMessage contents into the database.
 func (app *application) Send(target, message string, msgContext twitch.PrivateMessage) {
+	pattern := `\bi(?:'|\s?a)?m\s?(?:\d|1[0-2])(?:\s?year|$)`
+
+	re, err := regexp.Compile(pattern)
+	if err != nil {
+		app.Log.Error("Error compiling regular expression:", err)
+		return
+	}
+
+	if re.MatchString(message) {
+		return
+	}
 	// Message we are trying to send is empty.
 	if len(message) == 0 {
 		return
@@ -201,6 +237,18 @@ func (app *application) Send(target, message string, msgContext twitch.PrivateMe
 
 // SendNoBanphrase does not check the banphrase before sending a twitch mesage.
 func (app *application) SendNoBanphrase(target, message string) {
+	pattern := `\bi(?:'|\s?a)?m\s?(?:\d|1[0-2])(?:\s?year|$)`
+
+	re, err := regexp.Compile(pattern)
+	if err != nil {
+		app.Log.Error("Error compiling regular expression:", err)
+		return
+	}
+
+	if re.MatchString(message) {
+		return
+	}
+
 	// Message we are trying to send is empty.
 	if len(message) == 0 {
 		return
@@ -231,6 +279,17 @@ func (app *application) SendNoBanphrase(target, message string) {
 // Used in sending commands from the database since the command has to have
 // been gotten in there somehow. So it fits. Still checks for banphrases.
 func (app *application) SendNoLimit(target, message string) {
+	pattern := `\bi(?:'|\s?a)?m\s?(?:\d|1[0-2])(?:\s?year|$)`
+
+	re, err := regexp.Compile(pattern)
+	if err != nil {
+		app.Log.Error("Error compiling regular expression:", err)
+		return
+	}
+
+	if re.MatchString(message) {
+		return
+	}
 	// Message we are trying to send is empty.
 	if len(message) == 0 {
 		return
