@@ -380,6 +380,11 @@ func (app *application) handleCommand(message twitch.PrivateMessage) {
 		// 1000 User Level
 		// Admin
 		//------------------------------------
+	case "say":
+		if userLevel >= 1000 {
+			reply = message.Message[6:len(message.Message)]
+		}
+
 	case "join":
 		if userLevel >= 1000 {
 			go app.AddChannel(cmdParams[1], message)
