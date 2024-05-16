@@ -227,16 +227,6 @@ func (app *application) handleCommand(message twitch.PrivateMessage) {
 			return
 		}
 
-	case "conv":
-		if userLevel >= 100 {
-			app.ConvertToMP4(cmdParams[1], message)
-		}
-
-	case "meme":
-		if userLevel >= 100 {
-			app.ConvertAndSave(cmdParams[1], cmdParams[2], message)
-		}
-
 	case "set":
 		switch cmdParams[1] {
 		case "lastfm":
@@ -380,6 +370,24 @@ func (app *application) handleCommand(message twitch.PrivateMessage) {
 		// 1000 User Level
 		// Admin
 		//------------------------------------
+	case "conv":
+		if userLevel >= 1000 {
+			if msgLen > 1 {
+				reply = "Not enough arguments provided"
+			} else if msgLen == 2 {
+				app.ConvertToMP4(cmdParams[1], message)
+			}
+		}
+
+	case "meme":
+		if userLevel < 1000 { // Unauthorized
+			return
+		} else if userLevel >= 1000 && msgLen <= 2 { // Authorized but not enough args.
+			reply = "Not enough arguments provided."
+		} else if userLevel >= 1000 && msgLen >= 3 {
+			app.ConvertAndSave(cmdParams[1], cmdParams[2], message)
+		}
+
 	case "say":
 		if userLevel >= 1000 {
 			reply = message.Message[6:len(message.Message)]
