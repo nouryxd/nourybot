@@ -194,3 +194,25 @@ func (app *application) deleteOfflineSubscription(target, channel string) string
 	app.Log.Infof("%+v\n", resp2)
 	return fmt.Sprintf("Successfully deleted live notification for channel %s; id=%v", channel, uid)
 }
+
+// createLiveSubscription creates a stream.online twitch eventsub subscription for the specified channel
+func (app *application) listEventSubSubscriptions() string {
+	resp, err := app.HelixClient.GetEventSubSubscriptions(&helix.EventSubSubscriptionsParams{})
+
+	if err != nil {
+		app.Log.Errorw("Error listing Eventsub subscriptions",
+			"resp", resp,
+			"err", err,
+		)
+	}
+	app.Log.Infof("%+v\n", resp)
+
+	link, err := app.uploadPaste(fmt.Sprint(resp))
+	if err != nil {
+		app.Log.Errorw("Error creating paste",
+			"err", err,
+		)
+	}
+	app.Log.Info(link)
+	return fmt.Sprintf("Subscriptions: asdad")
+}

@@ -179,7 +179,6 @@ func (app *application) handleCommand(message twitch.PrivateMessage) {
 		}
 	case "ping":
 		reply = commands.Ping(app.Environment)
-		// ()bttv <emote name>
 
 		// ()weather <location>
 	case "weather":
@@ -266,6 +265,10 @@ func (app *application) handleCommand(message twitch.PrivateMessage) {
 		case "timers":
 			if userLevel >= 100 {
 				app.DebugChannelTimers(message.Channel)
+			}
+		case "eventsub":
+			if userLevel >= 1000 {
+				reply = app.listEventSubSubscriptions()
 			}
 		}
 
@@ -388,10 +391,20 @@ func (app *application) handleCommand(message twitch.PrivateMessage) {
 			app.ConvertAndSave(cmdParams[1], cmdParams[2], message)
 		}
 
+	case "echo":
+		if userLevel >= 1000 {
+			reply = message.Message[7:len(message.Message)]
+		}
+
 	case "say":
 		if userLevel >= 1000 {
 			reply = message.Message[6:len(message.Message)]
 		}
+
+	// case "whisper":
+	// 	if userLevel >= 1000 {
+	// 		go app.sendWhisper(cmdParams[1], message.Message[10:len(message.Message)])
+	// 	}
 
 	case "join":
 		if userLevel >= 1000 {
@@ -495,6 +508,13 @@ var helpText = map[string]command{
 		Level:       "0",
 		Usage:       "()commands",
 	},
+	"conv": {
+		Name:        "conv",
+		Alias:       nil,
+		Description: "Converts the linked video into an .mp4 file.",
+		Level:       "1000",
+		Usage:       "()conv <video link>",
+	},
 	"currency": {
 		Name:        "currency",
 		Alias:       []string{"currency", "money"},
@@ -508,6 +528,13 @@ var helpText = map[string]command{
 		Description: "Returns the environment currently running in.",
 		Level:       "100",
 		Usage:       "()debug env",
+	},
+	"debug eventsub": {
+		Name:        "debug eventsub",
+		Alias:       nil,
+		Description: "Returns information about current eventsub subscriptions.",
+		Level:       "1000",
+		Usage:       "()debug eventsub",
 	},
 	"debug user": {
 		Name:        "debug user",
@@ -614,6 +641,13 @@ var helpText = map[string]command{
 		Level:       "0",
 		Usage:       "()lastfm [username]",
 	},
+	"meme": {
+		Name:        "meme",
+		Alias:       nil,
+		Description: "Downloads the linked video and saves it with the specified name in .mp4 format.",
+		Level:       "1000",
+		Usage:       "()meme <name> <video link>",
+	},
 	"notify live": {
 		Name:        "notify live",
 		Alias:       nil,
@@ -669,6 +703,13 @@ var helpText = map[string]command{
 		Description: "Returns a link to a random xkcd comic.",
 		Level:       "0",
 		Usage:       "()randomxkcd",
+	},
+	"say": {
+		Name:        "say",
+		Alias:       []string{"say", "echo"},
+		Description: "Makes the bot say something.",
+		Level:       "1000",
+		Usage:       "()say xD",
 	},
 	"seventv": {
 		Name:        "seventv",

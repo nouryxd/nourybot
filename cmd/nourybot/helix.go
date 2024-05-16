@@ -79,3 +79,22 @@ func (app *application) getChannelGameByUsername(username string) string {
 	reply := app.getChannelGame(channelID)
 	return reply
 }
+
+//func (app *application) sendWhisper(username, text string) {
+//	toID, err := app.getUserID(username)
+//	if err != nil {
+//		app.Log.Error(err)
+//		return
+//	}
+//
+//	resp, err := app.HelixClient.SendUserWhisper(&helix.SendUserWhisperParams{
+//		FromUserID: "mycoolid",
+//		ToUserID:   toID,
+//		Message:    text,
+//	})
+//	if err != nil {
+//		app.Log.Error(err)
+//	}
+//
+//	app.Log.Infof("%+v\n", resp)
+//}
