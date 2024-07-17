@@ -4,7 +4,7 @@ go 1.20
 
 require (
 	github.com/gempir/go-twitch-irc/v4 v4.0.0
-	github.com/google/uuid v1.3.1
+	github.com/google/uuid v1.4.0
 	github.com/jakecoffman/cron v0.0.0-20190106200828-7e2009c226a5
 	github.com/lib/pq v1.10.9
 	github.com/nicklaw5/helix/v2 v2.25.1
@@ -15,8 +15,11 @@ require (
 )
 
 require (
-	github.com/aws/aws-sdk-go v1.38.20 // indirect
-	github.com/golang-jwt/jwt/v4 v4.0.0 // indirect
+	github.com/aws/aws-sdk-go v1.49.6 // indirect
+	github.com/golang-jwt/jwt/v4 v4.4.2 // indirect
+	github.com/golang-migrate/migrate/v4 v4.17.1 // indirect
+	github.com/hashicorp/errwrap v1.1.0 // indirect
+	github.com/hashicorp/go-multierror v1.1.1 // indirect
 	github.com/jmespath/go-jmespath v0.4.0 // indirect
 	github.com/u2takey/go-utils v0.3.1 // indirect
 	go.uber.org/atomic v1.7.0 // indirect

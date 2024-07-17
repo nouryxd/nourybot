@@ -25,3 +25,5 @@ nourybot-api
 Nourybot-Web
 nourybot-web
 docker-compose.yml
+
+db/

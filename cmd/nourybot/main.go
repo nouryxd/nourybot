@@ -10,6 +10,9 @@ import (
 	"time"
 
 	"github.com/gempir/go-twitch-irc/v4"
+	"github.com/golang-migrate/migrate/v4"
+	_ "github.com/golang-migrate/migrate/v4/database/postgres"
+	_ "github.com/golang-migrate/migrate/v4/source/file"
 	"github.com/jakecoffman/cron"
 	"github.com/joho/godotenv"
 	_ "github.com/lib/pq"
@@ -27,6 +30,7 @@ type config struct {
 	twitchClientSecret string
 	eventSubSecret     string
 	twitchID           string
+	migrate            string
 	wolframAlphaAppID  string
 	commandPrefix      string
 	env                string
@@ -60,7 +64,7 @@ func main() {
 	}
 }
 
-func run(ctx context.Context, w io.Writer, args []string) error {
+func run(_ context.Context, _ io.Writer, _ []string) error {
 	var cfg config
 
 	logger := zap.NewExample()
@@ -85,6 +89,7 @@ func run(ctx context.Context, w io.Writer, args []string) error {
 	cfg.twitchOauth = os.Getenv("TWITCH_OAUTH")
 	cfg.twitchClientId = os.Getenv("TWITCH_CLIENT_ID")
 	cfg.twitchClientSecret = os.Getenv("TWITCH_CLIENT_SECRET")
+	cfg.migrate = os.Getenv("MIGRATE")
 	cfg.eventSubSecret = os.Getenv("EVENTSUB_SECRET")
 	cfg.wolframAlphaAppID = os.Getenv("WOLFRAMALPHA_APP_ID")
 	cfg.twitchID = os.Getenv("TWITCH_ID")
@@ -93,16 +98,26 @@ func run(ctx context.Context, w io.Writer, args []string) error {
 
 	switch cfg.env {
 	case "dev":
-		cfg.db.dsn = os.Getenv("DEV_DSN")
+		cfg.db.dsn = os.Getenv("DSN")
 		cfg.commandPrefix = "!!"
 	case "prod":
-		cfg.db.dsn = os.Getenv("PROD_DSN")
+		cfg.db.dsn = os.Getenv("DSN")
 		cfg.commandPrefix = "()"
 	}
 	// Database config variables
 	cfg.db.maxOpenConns = 25
 	cfg.db.maxIdleConns = 25
 	cfg.db.maxIdleTime = "15m"
+
+	if cfg.migrate != "no" {
+		sugar.Infow("Running database migration",
+			"direction", cfg.migrate)
+		if cfg.migrate == "up" {
+			migrateDB("up", cfg.db.dsn, sugar)
+		} else if cfg.migrate == "down" {
+			migrateDB("down", cfg.db.dsn, sugar)
+		}
+	}
 
 	// Initialize a new Helix Client, request a new AppAccessToken
 	// and set the token on the client.
@@ -214,7 +229,6 @@ func run(ctx context.Context, w io.Writer, args []string) error {
 			"Database", db.Stats(),
 			"Helix", helixResp,
 		)
-
 	})
 
 	// Start status page
@@ -261,4 +275,32 @@ func openDB(cfg config) (*sql.DB, error) {
 
 	return db, nil
 
+}
+
+func migrateDB(direction string, dsn string, logger *zap.SugaredLogger) {
+	defer os.Exit(69)
+	m, err := migrate.New(
+		"file://migrations/prod",
+		dsn)
+	if err != nil {
+		logger.Fatal(err)
+	}
+
+	switch direction {
+	case "up":
+		if err := m.Up(); err != nil {
+			logger.Fatalw("Error migrating database",
+				"err", err)
+		}
+		logger.Infow("Database migration successful",
+			"direction", direction)
+	case "down":
+		if err := m.Down(); err != nil {
+			logger.Fatalw("Error migrating database",
+				"err", err)
+		}
+		logger.Infow("Database migration successful",
+			"direction", direction)
+	default:
+	}
 }

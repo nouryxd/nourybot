@@ -12,9 +12,9 @@ import (
 	"sort"
 
 	"github.com/julienschmidt/httprouter"
+	"github.com/nicklaw5/helix/v2"
 	"github.com/nouryxd/nourybot/internal/data"
 	"github.com/nouryxd/nourybot/pkg/common"
-	"github.com/nicklaw5/helix/v2"
 )
 
 func (app *application) startRouter() {
