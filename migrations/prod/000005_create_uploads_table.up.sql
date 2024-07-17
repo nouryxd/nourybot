@@ -12,6 +12,5 @@ CREATE TABLE IF NOT EXISTS uploads (
 );
 
 INSERT INTO uploads (added_at,twitchlogin,twitchid,twitchchannel,twitchmessage,filehoster,downloadurl,uploadurl,identifier) VALUES
-	 (NOW(),'nouryxd','31437432','nouryxd','()yaf https://www.youtube.com/watch?v=3rBFkwtaQbU','yaf','https://www.youtube.com/watch?v=3rBFkwtaQbU','https://i.yaf.li/LEFuX.webm','a4af2284-4e13-46fa-9896-393bb1771a9d'),
-	 (NOW(),'uudelleenkytkeytynyt','465178364','nouryxd','()gofile https://www.youtube.com/watch?v=st6yupvNkVo','gofile','https://www.youtube.com/watch?v=st6yupvNkVo','https://gofile.io/d/PD1QNr','4ec952cc-42c0-41cd-9b07-637b4ec3c2b3');
+	 (NOW(),'nouryxd','31437432','nouryxd','()yaf https://www.youtube.com/watch?v=3rBFkwtaQbU','yaf','https://www.youtube.com/watch?v=3rBFkwtaQbU','https://i.yaf.li/LEFuX.webm','a4af2284-4e13-46fa-9896-393bb1771a9d');
 

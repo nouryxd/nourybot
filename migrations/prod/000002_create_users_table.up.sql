@@ -9,8 +9,4 @@ CREATE TABLE IF NOT EXISTS users (
 );
 
 INSERT INTO users (added_at,login,twitchid,"level",location,lastfm_username) VALUES
-	 (NOW(),'nouryxd','31437432',1000,'vilnius','nouryqt'),
-	 (NOW(),'nourybot','596581605',1000,'',''),
-	 (NOW(),'uudelleenkytkeytynyt','465178364',1000,'',''),
-	 (NOW(),'xnoury','197780373',500,'',''),
-	 (NOW(),'noemience','135447564',500,'','');
+	 (NOW(),'nouryxd','31437432',1000,'vilnius','nouryqt');
