@@ -1,24 +1,24 @@
-version: "3.7"
-
 services:
-  database:
-    image: postgres
-    restart: always
-    env_file:
-      - .env
-    volumes:
-      - data:/var/lib/postgresql/data
   nourybot:
-    user: "1000:1000"
     build:
       context: .
       dockerfile: Dockerfile
+    restart: unless-stopped
     env_file: .env
-    volumes:
-      - "/tmp/CHANGE_THIS_DIRECTORY/:/public/uploads"
-    ports:
-      - "127.0.0.1:42069:8080"
     depends_on:
-      - database
+      - postgres
+    volumes:
+      - "/tmp/CHANGE_ME/uploads:/public/uploads"
+    ports:
+      - "127.0.0.1:8080:8080"
+  postgres:
+    image: postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: nourybot
+      POSTGRES_USER: nourybot
+      POSTGRES_PASSWORD: coolpassword
+    volumes:
+      - nourybotdb:/var/lib/postgresql/data
 volumes:
-  data:
+  nourybotdb:
