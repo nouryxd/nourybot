@@ -7,15 +7,13 @@
 package common
 
 import (
-	"fmt"
 	"runtime/debug"
 )
 
 // GetVersion returns the current git commit hash.
-// If the version is modified the hash ends in "-dirty"
 func GetVersion() string {
 	var revision string
-	var modified bool
+	var short string
 
 	bi, ok := debug.ReadBuildInfo()
 	if ok {
@@ -23,10 +21,7 @@ func GetVersion() string {
 			switch s.Key {
 			case "vcs.revision":
 				revision = s.Value
-			case "vcs.modified":
-				if s.Value == "true" {
-					modified = true
-				}
+				short = revision[:7]
 			}
 		}
 	}
@@ -35,11 +30,7 @@ func GetVersion() string {
 		return "unavailable"
 	}
 
-	if modified {
-		return fmt.Sprintf("%s-dirty", revision)
-	}
-
-	return revision
+	return short
 }
 
 // GetVersion returns the current git commit hash.
