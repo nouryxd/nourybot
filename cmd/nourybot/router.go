@@ -10,6 +10,7 @@ import (
 	"net/http"
 	"os"
 	"sort"
+	"strconv"
 
 	"github.com/julienschmidt/httprouter"
 	"github.com/nicklaw5/helix/v2"
@@ -355,15 +356,18 @@ func (app *application) channelCommandsRoute(w http.ResponseWriter, r *http.Requ
 }
 
 func (app *application) statusPageRoute(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
-	commit := common.GetVersion()
+	commit := common.GetCommit()
+	commandsUsed := strconv.Itoa(common.GetCommandsUsed())
 	started := common.GetUptime().Format("2006-1-2 15:4:5")
-	commitLink := fmt.Sprintf("https://github.com/nouryxd/nourybot/commit/%v", common.GetVersionPure())
+	commitLink := fmt.Sprintf("https://github.com/nouryxd/nourybot/commit/%v", commit)
+	goVersion := common.GetGoVersion()
 
-	fmt.Print(w, fmt.Sprint(
+	fmt.Fprint(w, fmt.Sprint(
 		"started: \t"+started+"\n"+
-			"environment: \t"+app.Environment+"\n"+
-			"commit: \t"+commit+"\n"+
-			"github: \t"+commitLink,
+			"commands used: \t"+commandsUsed+"\n"+
+			"go version: \t"+goVersion+"\n"+
+			"commit: \t"+commitLink+"\n"+
+			"environment: \t"+app.Environment+"\n",
 	))
 }
 
