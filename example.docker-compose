@@ -6,19 +6,23 @@ services:
     restart: unless-stopped
     env_file: .env
     depends_on:
-      - postgres
+      postgres:
+        condition: service_healthy
     volumes:
-      - "/tmp/CHANGE_ME/uploads:/public/uploads"
+      - "/tmp/CHANGEME/uploads:/public/uploads"
     ports:
       - "127.0.0.1:8080:8080"
   postgres:
     image: postgres
     restart: unless-stopped
-    environment:
-      POSTGRES_DB: nourybot
-      POSTGRES_USER: nourybot
-      POSTGRES_PASSWORD: coolpassword
+    env_file: .env
     volumes:
       - nourybotdb:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $$POSTGRES_USER -d $$POSTGRES_DB"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+      start_period: 20s
 volumes:
   nourybotdb:
